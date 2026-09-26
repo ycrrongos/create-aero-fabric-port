@@ -14,7 +14,6 @@ import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,10 +29,10 @@ public abstract class ServerPlayerMixin extends Player {
     @Shadow public ServerGamePacketListenerImpl connection;
 
     /**
-     * The vehicle the player was riding right before its last {@link ServerPlayer#removeVehicle()}
+     * If the vehicle the player was riding right before its last {@link ServerPlayer#removeVehicle()} is inside a sub-level
      */
     @Unique
-    private @Nullable Entity sable$dismountedVehicle = null;
+    private boolean sable$dismountingSubLevelVehicle = false;
 
     public ServerPlayerMixin(final Level level, final GameProfile gameProfile) {
         super(level, gameProfile);
@@ -68,7 +67,8 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Inject(method = "removeVehicle", at = @At("HEAD"))
     private void sable$rememberDismountedVehicle(final CallbackInfo ci) {
-        this.sable$dismountedVehicle = this.getVehicle();
+        final Entity vehicle = this.getVehicle();
+        this.sable$dismountingSubLevelVehicle = vehicle != null && Sable.HELPER.getContaining(vehicle) != null;
     }
 
     /**
@@ -78,10 +78,10 @@ public abstract class ServerPlayerMixin extends Player {
      */
     @Override
     public void dismountTo(final double x, final double y, final double z) {
-        final Entity vehicle = this.sable$dismountedVehicle;
-        this.sable$dismountedVehicle = null;
+        final boolean dismountingSubLevelVehicle = this.sable$dismountingSubLevelVehicle;
+        this.sable$dismountingSubLevelVehicle = false;
 
-        if (vehicle != null && Sable.HELPER.getContaining(vehicle) != null) {
+        if (dismountingSubLevelVehicle) {
             this.setPos(x, y, z);
             return;
         }
