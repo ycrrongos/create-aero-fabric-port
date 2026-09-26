@@ -1,5 +1,7 @@
 package dev.ryanhcode.sable.fabric.client;
 
+import net.fabricmc.loader.api.FabricLoader;
+import dev.ryanhcode.sable.fabric.compatibility.flywheel.FlywheelCompat;
 import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelRenderDispatcher;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.SableClient;
@@ -25,6 +27,10 @@ public final class SableFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         SableClient.init();
+
+        if (FabricLoader.getInstance().isModLoaded("create")) {
+            FlywheelCompat.init();
+        }
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> FloatingBlockMaterialDataHandler.clearMaterials());
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {
