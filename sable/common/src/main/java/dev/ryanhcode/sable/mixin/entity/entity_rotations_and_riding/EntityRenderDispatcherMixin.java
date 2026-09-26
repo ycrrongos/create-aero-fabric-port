@@ -1,72 +1,65 @@
 package dev.ryanhcode.sable.mixin.entity.entity_rotations_and_riding;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.ryanhcode.sable.Sable;
-import dev.ryanhcode.sable.api.entity.EntitySubLevelUtil;
-import dev.ryanhcode.sable.mixinhelpers.camera.camera_rotation.EntitySubLevelRotationHelper;
-import dev.ryanhcode.sable.sublevel.ClientSubLevel;
-import net.minecraft.client.renderer.MultiBufferSource;
+import dev.ryanhcode.sable.mixinterface.entity.entity_rendering.EntityRenderStateExtension;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Quaterniond;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 /**
- * Rotates entity rendering to match the sub-level's rotation
+ * Rotates entity models (and their fire) by the orientation they inherit from sub-levels they stand on or ride.
  */
 @Mixin(EntityRenderDispatcher.class)
 public class EntityRenderDispatcherMixin {
 
-    @Shadow private Level level;
     @Unique
-    private boolean sable$rotated = false;
-
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V", shift = At.Shift.AFTER, ordinal = 0))
-    private <E extends Entity> void sable$rotateEntity(final E entity, final double d, final double e, final double f, final float g, final float h, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i, final CallbackInfo ci) {
-        if (!EntitySubLevelUtil.shouldKick(entity)) {
-            return;
-        }
-
-        final Quaterniond orientation = EntitySubLevelRotationHelper.getEntityOrientation(entity, x -> ((ClientSubLevel) x).renderPose(), h, EntitySubLevelRotationHelper.Type.ENTITY);
-
+    private static boolean sable$pushModelOrientation(final EntityRenderState renderState, final PoseStack poseStack) {
+        final EntityRenderStateExtension extension = (EntityRenderStateExtension) renderState;
+        final Quaternionf orientation = extension.sable$getModelOrientation();
         if (orientation == null) {
-            return;
+            return false;
         }
+
+        final Vector3f offset = extension.sable$getModelOffset();
+        final Vector3f pivot = extension.sable$getModelPivot();
 
         poseStack.pushPose();
-
-        final Vec3 eyeOffset = entity.getEyePosition().subtract(entity.position());
-
-        final Vec3 offset = Sable.HELPER.getEyePositionInterpolated(entity, h).subtract(entity.getEyePosition(h));
         poseStack.translate(offset.x, offset.y, offset.z);
-
-        poseStack.translate(eyeOffset.x, eyeOffset.y, eyeOffset.z);
-        poseStack.mulPose(new Quaternionf(orientation));
-        poseStack.translate(-eyeOffset.x, -eyeOffset.y, -eyeOffset.z);
-
-        this.sable$rotated = true;
+        poseStack.rotateAround(orientation, pivot.x, pivot.y, pivot.z);
+        return true;
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isInvisible()Z"))
-    private void sable$popPose1(final Entity entity, final double d, final double e, final double f, final float g, final float h, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i, final CallbackInfo ci) {
-        if (this.sable$rotated) {
-            poseStack.popPose();
-            this.sable$rotated = false;
+    @WrapOperation(method = "submit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderer;submit(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V"))
+    private <S extends EntityRenderState> void sable$rotateEntity(final EntityRenderer<?, S> renderer, final S renderState, final PoseStack poseStack, final SubmitNodeCollector nodeCollector,
+                                                                  final CameraRenderState cameraRenderState, final Operation<Void> original) {
+        final boolean rotated = sable$pushModelOrientation(renderState, poseStack);
+        try {
+            original.call(renderer, renderState, poseStack, nodeCollector, cameraRenderState);
+        } finally {
+            if (rotated) {
+                poseStack.popPose();
+            }
         }
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V", shift = At.Shift.BEFORE))
-    private void sable$popPose2(final Entity entity, final double d, final double e, final double f, final float g, final float h, final PoseStack poseStack, final MultiBufferSource multiBufferSource, final int i, final CallbackInfo ci) {
-        if (this.sable$rotated) {
-            poseStack.popPose();
-            this.sable$rotated = false;
+    @WrapOperation(method = "submit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitFlame(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lorg/joml/Quaternionf;)V"))
+    private void sable$rotateFlame(final SubmitNodeCollector instance, final PoseStack poseStack, final EntityRenderState renderState, final Quaternionf rotation, final Operation<Void> original) {
+        final boolean rotated = sable$pushModelOrientation(renderState, poseStack);
+        try {
+            original.call(instance, poseStack, renderState, rotation);
+        } finally {
+            if (rotated) {
+                poseStack.popPose();
+            }
         }
     }
 }

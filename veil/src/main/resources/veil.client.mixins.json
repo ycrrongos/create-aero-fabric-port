@@ -11,6 +11,7 @@
     "FogRendererMixin",
     "GlCommandEncoderAccessor",
     "GlDeviceMixin",
+    "GlslNodeStringWriterMixin",
     "LevelRendererAccessor",
     "LevelRendererStageMixin",
     "MinecraftMixin",

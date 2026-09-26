@@ -2,7 +2,7 @@ package dev.ryanhcode.sable.api.command;
 
 import net.minecraft.core.UUIDUtil;
 import com.google.gson.JsonObject;
-import net.minecraft.server.jsonrpc.methods.Message;
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;

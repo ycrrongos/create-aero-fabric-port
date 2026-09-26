@@ -1,47 +1,52 @@
 package dev.ryanhcode.sable.sublevel.render.vanilla;
 
-import com.mojang.blaze3d.opengl.Uniform;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexBuffer;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.companion.math.BoundingBox3i;
 import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
-import dev.ryanhcode.sable.compatibility.SableIrisCompat;
-import dev.ryanhcode.sable.mixin.sublevel_render.RenderSectionAccessor;
 import dev.ryanhcode.sable.mixinterface.sublevel_render.vanilla.RenderSectionExtension;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
+import dev.ryanhcode.sable.sublevel.render.SubLevelRenderContext;
 import dev.ryanhcode.sable.sublevel.render.SubLevelRenderData;
+import dev.ryanhcode.sable.sublevel.render.SubLevelSectionDraws;
 import dev.ryanhcode.sable.sublevel.water_occlusion.WaterOcclusionContainer;
 import dev.ryanhcode.sable.sublevel.water_occlusion.WaterOcclusionRegion;
-import foundry.veil.api.compat.IrisCompat;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.PrioritizeChunkUpdates;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.chunk.CompiledSectionMesh;
 import net.minecraft.client.renderer.chunk.RenderRegionCache;
+import net.minecraft.client.renderer.chunk.SectionMesh;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
+import net.minecraft.client.renderer.chunk.TranslucencyPointOfView;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.joml.*;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3d;
+import org.joml.Vector3i;
+
 import java.util.Collection;
-import java.util.Set;
+
 /**
  * A renderer and view area for a {@link dev.ryanhcode.sable.sublevel.SubLevel}.
+ * <p>
+ * The sections of the plot are compiled by the vanilla section render dispatcher, and drawn with the vanilla terrain
+ * pipelines by {@link dev.ryanhcode.sable.sublevel.render.dispatcher.VanillaSubLevelRenderDispatcher}.
  */
 public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
 
-    private static final Matrix4f TRANSFORM = new Matrix4f();
-    private static final Matrix4f MODEL_MATRIX = new Matrix4f();
-
-    private final Vector3d origin = new Vector3d();
     /**
-     * The origin(minimum) of the render section grid
+     * The origin(minimum) of the render section grid in blocks
+     */
+    private final Vector3i origin = new Vector3i();
+    /**
+     * The origin(minimum) of the render section grid in sections
      */
     private final Vector3i chunkOrigin = new Vector3i();
     /**
@@ -61,6 +66,10 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
      */
     private final ObjectList<SectionRenderDispatcher.RenderSection> dirtyRenderSections = new ObjectArrayList<>();
     /**
+     * The chunk columns registered for camera lookups
+     */
+    private final ObjectList<ChunkColumn> registeredColumns = new ObjectArrayList<>();
+    /**
      * The grid of render sections
      */
     private SectionRenderDispatcher.RenderSection[] renderSections = null;
@@ -68,6 +77,14 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
      * The section render dispatcher to build sections through
      */
     private final SectionRenderDispatcher sectionRenderDispatcher;
+    /**
+     * Reused to check whether translucent sections need to be sorted again
+     */
+    private final TranslucencyPointOfView pointOfView = new TranslucencyPointOfView();
+    /**
+     * The camera position in plot space, updated every frame and read by worker threads
+     */
+    private volatile @Nullable Vec3 localCamera;
 
     /**
      * Creates a new renderer for the given sub-level
@@ -92,6 +109,10 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
      * @return the section if it exists
      */
     private static SectionRenderDispatcher.RenderSection getSection(final SectionRenderDispatcher.RenderSection[] sections, final Vector3i size, final Vector3i origin, final int x, final int y, final int z) {
+        if (sections == null) {
+            return null;
+        }
+
         final int relX = (x - origin.x());
         final int relY = (y - origin.y());
         final int relZ = (z - origin.z());
@@ -133,6 +154,7 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
         this.renderSections = null;
         this.allRenderSections.clear();
         this.dirtyRenderSections.clear();
+        this.unregisterColumns();
 
         final BoundingBox3ic bounds = this.subLevel.getPlot().getBoundingBox();
 
@@ -150,15 +172,22 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
             this.renderSections = new SectionRenderDispatcher.RenderSection[this.size.x() * this.size.y() * this.size.z()];
 
             for (int x = minChunkPos.x(); x <= maxChunkPos.x(); x++) {
+                for (int z = minChunkPos.z(); z <= maxChunkPos.z(); z++) {
+                    SubLevelSectionCameras.register(x, z, this);
+                    this.registeredColumns.add(new ChunkColumn(x, z));
+                }
+            }
+
+            for (int x = minChunkPos.x(); x <= maxChunkPos.x(); x++) {
                 for (int y = minChunkPos.y(); y <= maxChunkPos.y(); y++) {
                     for (int z = minChunkPos.z(); z <= maxChunkPos.z(); z++) {
                         final SectionRenderDispatcher.RenderSection oldSection = getSection(oldRenderSections, oldSize, oldOrigin, x, y, z);
                         final SectionRenderDispatcher.RenderSection newSection;
 
-                        if (oldRenderSections != null && oldSection != null) {
+                        if (oldSection != null) {
                             newSection = oldSection;
                         } else {
-                            newSection = this.sectionRenderDispatcher.new RenderSection(-1, x << 4, y << 4, z << 4);
+                            newSection = this.sectionRenderDispatcher.new RenderSection(-1, SectionPos.asLong(x, y, z));
                             ((RenderSectionExtension) newSection).sable$addDirtyListener(this.dirtyRenderSections::add);
                         }
 
@@ -175,25 +204,35 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
             if (oldRenderSections != null) {
                 for (final SectionRenderDispatcher.RenderSection oldSection : oldRenderSectionsList) {
                     // if not in bounds
-                    final SectionPos oldSectionPos = SectionPos.of(oldSection.getOrigin());
-                    if (oldSectionPos.getX() < minChunkPos.x() || oldSectionPos.getX() > maxChunkPos.x() ||
-                            oldSectionPos.getY() < minChunkPos.y() || oldSectionPos.getY() > maxChunkPos.y() ||
-                            oldSectionPos.getZ() < minChunkPos.z() || oldSectionPos.getZ() > maxChunkPos.z()) {
-
-                        oldSection.releaseBuffers();
-                        oldSection.updateGlobalBlockEntities(Set.of());
-                        oldSection.setCompiled(SectionRenderDispatcher.CompiledSection.EMPTY);
+                    final long oldSectionNode = oldSection.getSectionNode();
+                    final int oldX = SectionPos.x(oldSectionNode);
+                    final int oldY = SectionPos.y(oldSectionNode);
+                    final int oldZ = SectionPos.z(oldSectionNode);
+                    if (oldX < minChunkPos.x() || oldX > maxChunkPos.x() ||
+                            oldY < minChunkPos.y() || oldY > maxChunkPos.y() ||
+                            oldZ < minChunkPos.z() || oldZ > maxChunkPos.z()) {
+                        oldSection.reset();
                     }
                 }
             }
+        } else if (oldRenderSections != null) {
+            for (final SectionRenderDispatcher.RenderSection oldSection : oldRenderSectionsList) {
+                oldSection.reset();
+            }
         }
+    }
+
+    private void unregisterColumns() {
+        for (final ChunkColumn column : this.registeredColumns) {
+            SubLevelSectionCameras.unregister(column.x(), column.z(), this);
+        }
+        this.registeredColumns.clear();
     }
 
     @Override
     public void rebuild() {
         for (final SectionRenderDispatcher.RenderSection renderSection : this.allRenderSections) {
             renderSection.setDirty(true);
-            ((RenderSectionAccessor) renderSection).getGlobalBlockEntities().clear();
         }
     }
 
@@ -203,8 +242,8 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
             return;
         }
 
-        final ProfilerFiller profiler = Minecraft.getInstance().getProfiler();
-        final Vector3d cameraPos = JOMLConversion.atCenterOf(camera.getBlockPosition()).sub(8, 8, 8);
+        final ProfilerFiller profiler = Profiler.get();
+        final Vector3d cameraPos = JOMLConversion.atCenterOf(camera.blockPosition()).sub(8, 8, 8);
         this.subLevel.logicalPose().transformPositionInverse(cameraPos);
 
         for (final SectionRenderDispatcher.RenderSection renderSection : this.dirtyRenderSections) {
@@ -212,7 +251,7 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
 
             boolean buildSync = false;
             if (chunkUpdates == PrioritizeChunkUpdates.NEARBY) {
-                final BlockPos origin = renderSection.getOrigin();
+                final BlockPos origin = renderSection.getRenderOrigin();
                 buildSync = cameraPos.distanceSquared(origin.getX(), origin.getY(), origin.getZ()) < 768.0 || renderSection.isDirtyFromPlayer();
             } else if (chunkUpdates == PrioritizeChunkUpdates.PLAYER_AFFECTED) {
                 buildSync = renderSection.isDirtyFromPlayer();
@@ -224,7 +263,7 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
                 profiler.pop();
             } else {
                 profiler.push("sublevel_schedule_async_compile");
-                renderSection.rebuildSectionAsync(this.sectionRenderDispatcher, renderRegionCache);
+                renderSection.rebuildSectionAsync(renderRegionCache);
                 profiler.pop();
             }
 
@@ -255,7 +294,7 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
         }
 
         final int index = this.getIndex(x, y, z);
-        return index >= 0 && index < this.renderSections.length && this.renderSections[index].compiled.get() != SectionRenderDispatcher.CompiledSection.UNCOMPILED;
+        return index >= 0 && index < this.renderSections.length && this.renderSections[index].sectionMesh.get() != CompiledSectionMesh.UNCOMPILED;
     }
 
     @Override
@@ -281,105 +320,90 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
         return this.allRenderSections;
     }
 
-    public void renderChunkedSubLevel(final RenderType layer, final ShaderInstance shader, final Matrix4f modelView, final double camX, final double camY, final double camZ) {
-        final Pose3dc renderPose = this.subLevel.renderPose();
-        final Vector3d renderPos = new Vector3d(renderPose.position());
-        final Quaterniondc renderRot = renderPose.orientation();
-        final Vector3d renderCOR = renderRot.transform(new Vector3d(renderPose.rotationPoint()).sub(this.origin));
+    /**
+     * @return The camera position in the plot space of this sub-level, as of the last rendered frame
+     */
+    public @Nullable Vec3 getLocalCamera() {
+        return this.localCamera;
+    }
 
-        float[] oldFogColor = null;
-
-        if (shader.FOG_COLOR != null) {
-            final WaterOcclusionContainer<?> container = WaterOcclusionContainer.getContainer(this.subLevel.getLevel());
-
-            final Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-            final WaterOcclusionRegion occludingRegion = container.getOccludingRegion(camera.position());
-
-            // TODO: Redo to swap to main fog instead of just getting rid of it
-            if (occludingRegion != null && Sable.HELPER.getContaining(this.subLevel.getLevel(), occludingRegion.getVolume().getMinBlockPos()) == this.subLevel) {
-                oldFogColor = RenderSystem.getShaderFogColor();
-                shader.FOG_COLOR.set(0.0f, 0.0f, 0.0f, 0.0f);
-                shader.FOG_COLOR.upload();
-            }
+    /**
+     * @return Whether the camera is inside a water occlusion region of this sub-level, in which case fog is not applied to it
+     */
+    private boolean isCameraInOwnOcclusionRegion(final SubLevelRenderContext context) {
+        final WaterOcclusionContainer<?> container = WaterOcclusionContainer.getContainer(this.subLevel.getLevel());
+        if (container == null) {
+            return false;
         }
 
-        final Uniform sableSkyLightScale = shader.getUniform("SableSkyLightScale");
-        if (sableSkyLightScale != null) {
-            final int skyLight = this.subLevel.getLatestSkyLightScale();
-            sableSkyLightScale.set(skyLight / 15.0f);
-            sableSkyLightScale.upload();
+        final WaterOcclusionRegion occludingRegion = container.getOccludingRegion(new Vec3(context.cameraX(), context.cameraY(), context.cameraZ()));
+        return occludingRegion != null && Sable.HELPER.getContaining(this.subLevel.getLevel(), occludingRegion.getVolume().getMinBlockPos()) == this.subLevel;
+    }
+
+    @Override
+    public void collectDraws(final SubLevelSectionDraws draws) {
+        final SubLevelRenderContext context = draws.getContext();
+        final Pose3dc renderPose = this.subLevel.renderPose(context.partialTicks());
+        final Vec3 localCamera = renderPose.transformPositionInverse(new Vec3(context.cameraX(), context.cameraY(), context.cameraZ()));
+
+        if (context.mainLevel()) {
+            this.localCamera = localCamera;
         }
 
-        renderPos.sub(renderCOR);
-
-        final Matrix4f transform = TRANSFORM.identity();
-
-        // convert the camera pos to local to the origin / rotated
-        final Vector3d fogOffset = new Vector3d(camX, camY, camZ).sub(renderPos).mul(-1.0);
-
-        transform.translate((float) (renderPos.x() - camX - fogOffset.x), (float) (renderPos.y() - camY - fogOffset.y), (float) (renderPos.z() - camZ - fogOffset.z));
-        transform.rotate(new Quaternionf(renderRot));
-
-        if (shader.MODEL_VIEW_MATRIX != null) {
-            shader.MODEL_VIEW_MATRIX.set(modelView.mul(transform, MODEL_MATRIX));
-            shader.MODEL_VIEW_MATRIX.upload();
-
-            if (IrisCompat.isLoaded()) {
-                SableIrisCompat.refreshModelMatrices(shader);
-            }
-        }
-
-        // TODO: sorting
-        final Uniform chunkOffsetUniform = shader.CHUNK_OFFSET;
+        final boolean disableFog = context.mainLevel() && this.isCameraInOwnOcclusionRegion(context);
+        final SubLevelSectionDraws.Batch batch = draws.begin(this.subLevel, renderPose, this.origin.x(), this.origin.y(), this.origin.z(),
+                this.subLevel.getLatestSkyLightScale() / 15.0F, disableFog);
 
         for (final SectionRenderDispatcher.RenderSection renderSection : this.allRenderSections) {
-            if (renderSection.getCompiled().isEmpty(layer)) {
+            final SectionMesh mesh = renderSection.getSectionMesh();
+            if (!(mesh instanceof final CompiledSectionMesh compiledMesh) || !compiledMesh.hasRenderableLayers()) {
                 continue;
             }
 
-            if (chunkOffsetUniform != null) {
-                final BlockPos pos = renderSection.getOrigin();
-                final Vector3d fogOffsetRot = renderRot.transformInverse(fogOffset, new Vector3d());
-                chunkOffsetUniform.set((float) (pos.getX() - this.origin.x() + fogOffsetRot.x), (float) (pos.getY() - this.origin.y() + fogOffsetRot.y), (float) (pos.getZ() - this.origin.z() + fogOffsetRot.z));
-                chunkOffsetUniform.upload();
+            final BlockPos sectionOrigin = renderSection.getRenderOrigin();
+            final double sortDistance = localCamera.distanceToSqr(sectionOrigin.getX() + 8.0, sectionOrigin.getY() + 8.0, sectionOrigin.getZ() + 8.0);
+            draws.addSection(batch, sectionOrigin.getX(), sectionOrigin.getY(), sectionOrigin.getZ(), sortDistance, compiledMesh::getBuffers);
+
+            if (context.mainLevel()) {
+                this.scheduleResort(renderSection, compiledMesh, localCamera);
             }
+        }
+    }
 
-            final VertexBuffer buffer = renderSection.getBuffer(layer);
-            buffer.bind();
-            buffer.draw();
+    /**
+     * Sorts the translucent geometry of a section again when the camera moved relative to it, like vanilla does for
+     * world sections.
+     */
+    private void scheduleResort(final SectionRenderDispatcher.RenderSection section, final CompiledSectionMesh mesh, final Vec3 localCamera) {
+        if (!mesh.hasTranslucentGeometry() || section.transparencyResortingScheduled()) {
+            return;
         }
 
-        if (chunkOffsetUniform != null) {
-            chunkOffsetUniform.set(0f, 0f, 0f);
-        }
-
-        if (oldFogColor != null) {
-            shader.FOG_COLOR.set(oldFogColor[0], oldFogColor[1], oldFogColor[2], oldFogColor[3]);
+        this.pointOfView.set(localCamera, section.getSectionNode());
+        if (mesh.isDifferentPointOfView(this.pointOfView)) {
+            section.resortTransparency(this.sectionRenderDispatcher);
         }
     }
 
     @Override
     public void close() {
         for (final SectionRenderDispatcher.RenderSection section : this.allRenderSections) {
-            section.releaseBuffers();
-            section.updateGlobalBlockEntities(Set.of());
-            section.setCompiled(SectionRenderDispatcher.CompiledSection.EMPTY);
+            section.reset();
         }
         this.allRenderSections.clear();
+        this.dirtyRenderSections.clear();
+        this.unregisterColumns();
         this.renderSections = null;
     }
 
     public SectionRenderDispatcher.RenderSection getRenderSection(final SectionPos sectionPos) {
-        if (this.renderSections == null) {
+        if (this.renderSections == null || !this.inBounds(sectionPos.getX(), sectionPos.getY(), sectionPos.getZ())) {
             return null;
         }
 
-        final int index = this.getIndex(sectionPos.getX(), sectionPos.getY(), sectionPos.getZ());
+        return this.renderSections[this.getIndex(sectionPos.getX(), sectionPos.getY(), sectionPos.getZ())];
+    }
 
-        if (index < 0 || index >= this.renderSections.length) {
-            return null;
-        }
-
-        return this.renderSections[index];
+    private record ChunkColumn(int x, int z) {
     }
 }

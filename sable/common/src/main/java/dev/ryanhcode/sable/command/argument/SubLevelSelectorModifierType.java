@@ -1,6 +1,6 @@
 package dev.ryanhcode.sable.command.argument;
 
-import net.minecraft.server.jsonrpc.methods.Message;
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;

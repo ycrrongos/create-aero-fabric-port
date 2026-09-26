@@ -87,7 +87,7 @@ public class PhysicsBlockPropertyTypes {
      * @return The codec for the property
      */
     public static Codec<Object> getPropertyCodec(final Identifier id) {
-        final PhysicsBlockPropertyType<?> property = REGISTRY.get(id);
+        final PhysicsBlockPropertyType<?> property = REGISTRY.getValue(id);
 
         if (property != null) {
             //noinspection unchecked
@@ -104,7 +104,7 @@ public class PhysicsBlockPropertyTypes {
      * @return The property type
      */
     public static PhysicsBlockPropertyType<?> getPropertyType(final Identifier id) {
-        final PhysicsBlockPropertyType<?> property = REGISTRY.get(id);
+        final PhysicsBlockPropertyType<?> property = REGISTRY.getValue(id);
 
         if (property != null) {
             return property;

@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GLCapabilities;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -99,7 +100,7 @@ public final class VanillaShaderProcessor {
         };
 
         try {
-            GlslTree tree = GlslParser.preprocessParse(source, Map.of());
+            GlslTree tree = GlslParser.preprocessParse(source, new HashMap<>());
             String before = tree.toSourceString();
             processors.processor().modify(context, tree);
             String after = tree.toSourceString();

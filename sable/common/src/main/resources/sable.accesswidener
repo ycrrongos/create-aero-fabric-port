@@ -90,7 +90,7 @@ accessible field net/minecraft/world/entity/Entity levelCallback Lnet/minecraft/
 accessible class net/minecraft/server/level/ChunkMap$DistanceManager
 
 # Gizmo
-accessible method net/minecraft/client/renderer/GameRenderer getFov (Lnet/minecraft/client/Camera;FZ)D
+accessible method net/minecraft/client/renderer/GameRenderer getFov (Lnet/minecraft/client/Camera;FZ)F
 
 # Sub-Level rendering
 accessible method net/minecraft/client/renderer/chunk/SectionRenderDispatcher$RenderSection updateGlobalBlockEntities (Ljava/util/Collection;)V
@@ -102,10 +102,6 @@ mutable field net/minecraft/client/renderer/chunk/SectionRenderDispatcher buffer
 # Entity Getting
 accessible method net/minecraft/world/level/Level getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
 
-# Respawning
-accessible class net/minecraft/server/level/ServerPlayer$RespawnPosAngle
-accessible method net/minecraft/server/level/ServerPlayer$RespawnPosAngle <init> (Lnet/minecraft/world/phys/Vec3;F)V
-accessible method net/minecraft/server/level/ServerPlayer findRespawnAndUseSpawnBlock (Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;FZZ)Ljava/util/Optional;
 
 # Entity Riding
 accessible method net/minecraft/world/entity/LivingEntity dismountVehicle (Lnet/minecraft/world/entity/Entity;)V
@@ -115,13 +111,17 @@ extendable method net/minecraft/world/entity/Entity getEyePosition (F)Lnet/minec
 extendable method net/minecraft/world/entity/Entity setRemoved (Lnet/minecraft/world/entity/Entity$RemovalReason;)V
 
 #Abstract hurting projectile accel
-accessible field net/minecraft/world/entity/projectile/AbstractHurtingProjectile accelerationPower D
+accessible field net/minecraft/world/entity/projectile/hurtingprojectile/AbstractHurtingProjectile accelerationPower D
 
 # Physics Chunk Ticket Manager
 accessible method net/minecraft/server/level/Ticket <init> (Lnet/minecraft/server/level/TicketType;ILjava/lang/Object;)V
 accessible field net/minecraft/server/level/DistanceManager tickingTicketsTracker Lnet/minecraft/server/level/TickingTracker;
 accessible method net/minecraft/server/level/DistanceManager addTicket (JLnet/minecraft/server/level/Ticket;)V
 accessible method net/minecraft/server/level/DistanceManager removeTicket (JLnet/minecraft/server/level/Ticket;)V
-# Respawning on sub-levels (1.21.11)
+# Respawning
 accessible class net/minecraft/server/level/ServerPlayer$RespawnPosAngle
 accessible method net/minecraft/server/level/ServerPlayer$RespawnPosAngle <init> (Lnet/minecraft/world/phys/Vec3;FF)V
+
+# Entity interpolation while standing on sub-levels
+accessible class net/minecraft/world/entity/InterpolationHandler$InterpolationData
+accessible field net/minecraft/world/entity/InterpolationHandler$InterpolationData steps I

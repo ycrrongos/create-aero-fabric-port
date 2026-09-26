@@ -1,39 +1,53 @@
 package dev.ryanhcode.sable.sublevel.render.vanilla;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.ryanhcode.sable.companion.math.BoundingBox3ic;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
+import dev.ryanhcode.sable.mixinterface.dynamic_directional_shading.ModelBlockRendererCacheExtension;
 import dev.ryanhcode.sable.platform.SableSubLevelRenderPlatform;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
+import dev.ryanhcode.sable.sublevel.render.SubLevelRenderContext;
 import dev.ryanhcode.sable.sublevel.render.SubLevelRenderData;
+import dev.ryanhcode.sable.sublevel.render.SubLevelSectionDraws;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.PrioritizeChunkUpdates;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.chunk.RenderRegionCache;
+import net.minecraft.client.renderer.chunk.SectionBuffers;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.*;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+
 /**
- * A renderer and view area for a {@link dev.ryanhcode.sable.sublevel.SubLevel}.
+ * A renderer for a {@link dev.ryanhcode.sable.sublevel.SubLevel} consisting of a single block.
+ * <p>
+ * The block is tessellated every frame, lit with the light at the position of the sub-level in the world, and drawn
+ * with the vanilla terrain pipeline of its chunk layer.
  */
 public class VanillaSingleSubLevelRenderData implements SubLevelRenderData {
 
-    private static final RandomSource RANDOM = RandomSource.create();
     private static final SingleBlockSubLevelWrapper LEVEL_WRAPPER = new SingleBlockSubLevelWrapper();
-    private static final Matrix4f TRANSFORM = new Matrix4f();
-    private static final Vector3d CENTER_OF_ROT = new Vector3d();
+    private static final int INITIAL_BUFFER_SIZE = 16 * 1024;
 
     /**
      * The sub-level this renderer is for
@@ -56,10 +70,16 @@ public class VanillaSingleSubLevelRenderData implements SubLevelRenderData {
     private long singleBlockSeed = 42L;
 
     /**
-     * The cached block entity position for single block rendering
+     * The cached block entity for single block rendering, if it isn't rendered globally
      */
-    private BlockEntity singleBlockEntity = null;
-    private boolean singleBlockEntityGlobal = false;
+    private @Nullable BlockEntity singleBlockEntity = null;
+
+    private final RandomSource random = RandomSource.create();
+    private final List<BlockModelPart> parts = new ArrayList<>();
+    private @Nullable ByteBufferBuilder byteBuffer;
+    private @Nullable GpuBuffer vertexBuffer;
+    private @Nullable SectionBuffers buffers;
+    private @Nullable ChunkSectionLayer bufferLayer;
 
     /**
      * Creates a new renderer for the given sub-level
@@ -71,80 +91,99 @@ public class VanillaSingleSubLevelRenderData implements SubLevelRenderData {
         this.rebuild();
     }
 
-    private <E extends BlockEntity> void handleBlockEntity(@Nullable final E blockEntity) {
-        if (Objects.equals(this.singleBlockEntity, blockEntity)) {
-            return;
-        }
-
+    private void handleBlockEntity(@Nullable final BlockEntity blockEntity) {
         if (blockEntity == null) {
-            this.removeBlockEntity();
+            this.singleBlockEntity = null;
             return;
         }
 
-        final BlockEntityRenderer<E> blockEntityRenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(blockEntity);
-        if (blockEntityRenderer == null) {
-            this.removeBlockEntity();
-            return;
-        }
+        final BlockEntityRenderer<BlockEntity, ?> blockEntityRenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(blockEntity);
 
-        this.singleBlockEntity = blockEntity;
-        this.singleBlockEntityGlobal = blockEntityRenderer.shouldRenderOffScreen(blockEntity);
+        // Block entities rendered off screen are rendered through the globally rendered block entities of the level
+        this.singleBlockEntity = blockEntityRenderer != null && !blockEntityRenderer.shouldRenderOffScreen() ? blockEntity : null;
     }
 
-    private void removeBlockEntity() {
-        if (this.singleBlockEntity != null && this.singleBlockEntityGlobal) {
-            Minecraft.getInstance().levelRenderer.updateGlobalBlockEntities(Set.of(this.singleBlockEntity), Set.of());
-        }
-        this.singleBlockEntity = null;
-        this.singleBlockEntityGlobal = false;
-    }
-
-    public void renderSingleBlock(final RenderType layer, final VertexConsumer consumer, final Matrix4f modelView, final double camX, final double camY, final double camZ) {
+    /**
+     * Tessellates the block into the vertex buffer of its chunk layer.
+     *
+     * @return Whether anything was tessellated
+     */
+    private boolean tessellate(final Pose3dc renderPose) {
         final Minecraft client = Minecraft.getInstance();
         if (this.singleBlockState.isAir()) {
             this.rebuild();
         }
 
         if (this.singleBlockState.getRenderShape() != RenderShape.MODEL) {
-            return;
+            return false;
         }
 
-        final BakedModel bakedModel = client.getBlockRenderer().getBlockModel(this.singleBlockState);
-        final Pose3dc renderPose = this.subLevel.renderPose();
-        final Vector3dc renderPos = renderPose.position();
-        LEVEL_WRAPPER.setup(this.subLevel.getLevel(), renderPos.x(), renderPos.y(), renderPos.z(), this.singleBlockPos, this.singleBlockState);
+        final Vec3 renderPos = renderPose.transformPosition(Vec3.atCenterOf(this.singleBlockPos));
+        LEVEL_WRAPPER.setup(this.subLevel.getLevel(), renderPos.x, renderPos.y, renderPos.z, this.singleBlockPos, this.singleBlockState);
 
-        RANDOM.setSeed(this.singleBlockSeed);
-        final List<RenderType> renderLayers = SableSubLevelRenderPlatform.INSTANCE.getRenderLayers(LEVEL_WRAPPER, bakedModel, this.singleBlockState, this.singleBlockPos, RANDOM);
-        if (!renderLayers.contains(layer)) {
+        try {
+            final ChunkSectionLayer layer = SableSubLevelRenderPlatform.INSTANCE.getRenderLayer(LEVEL_WRAPPER, this.singleBlockState, this.singleBlockPos);
+
+            this.random.setSeed(this.singleBlockSeed);
+            this.parts.clear();
+            client.getBlockRenderer().getBlockModel(this.singleBlockState).collectParts(this.random, this.parts);
+
+            if (this.byteBuffer == null) {
+                this.byteBuffer = new ByteBufferBuilder(INITIAL_BUFFER_SIZE);
+            }
+
+            final BufferBuilder builder = new BufferBuilder(this.byteBuffer, VertexFormat.Mode.QUADS, DefaultVertexFormat.BLOCK);
+            final ModelBlockRendererCacheExtension cache = (ModelBlockRendererCacheExtension) ModelBlockRenderer.CACHE.get();
+            cache.sable$setOnSubLevel(true);
+            try {
+                SableSubLevelRenderPlatform.INSTANCE.tesselateBlock(LEVEL_WRAPPER, this.parts, this.singleBlockState, this.singleBlockPos, new PoseStack(), builder, OverlayTexture.NO_OVERLAY);
+            } finally {
+                cache.sable$setOnSubLevel(false);
+            }
+
+            try (final MeshData meshData = builder.build()) {
+                if (meshData == null) {
+                    return false;
+                }
+
+                this.upload(layer, meshData);
+                return true;
+            }
+        } finally {
             LEVEL_WRAPPER.clear();
+        }
+    }
+
+    private void upload(final ChunkSectionLayer layer, final MeshData meshData) {
+        final ByteBuffer vertices = meshData.vertexBuffer();
+        if (this.vertexBuffer == null || this.vertexBuffer.isClosed() || this.vertexBuffer.size() < vertices.remaining()) {
+            if (this.vertexBuffer != null) {
+                this.vertexBuffer.close();
+            }
+            this.vertexBuffer = RenderSystem.getDevice().createBuffer(() -> "Sable single block sub-level vertex buffer", GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST, vertices);
+        } else {
+            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(this.vertexBuffer.slice(0, vertices.remaining()), vertices);
+        }
+
+        final MeshData.DrawState drawState = meshData.drawState();
+        this.buffers = new SectionBuffers(this.vertexBuffer, null, drawState.indexCount(), drawState.indexType());
+        this.bufferLayer = layer;
+    }
+
+    @Override
+    public void collectDraws(final SubLevelSectionDraws draws) {
+        final SubLevelRenderContext context = draws.getContext();
+        final Pose3dc renderPose = this.subLevel.renderPose(context.partialTicks());
+
+        if (!this.tessellate(renderPose) || this.buffers == null) {
             return;
         }
 
-        final PoseStack stack = new PoseStack();
-
-        // These NEED to be here because renderPos is mutated below
-        final double renderX = renderPos.x();
-        final double renderY = renderPos.y();
-        final double renderZ = renderPos.z();
-        {
-            final Quaterniondc renderRot = renderPose.orientation();
-            final Vector3d renderCOR = renderRot.transform(CENTER_OF_ROT.set(renderPose.rotationPoint()).sub(this.singleBlockPos.getX(), this.singleBlockPos.getY(), this.singleBlockPos.getZ()));
-
-            renderCOR.negate().add(renderX, renderY, renderZ);
-
-            final Matrix4f transform = TRANSFORM.identity();
-
-            // convert the camera pos to local to the origin / rotated
-            transform.translate((float) (renderCOR.x() - camX), (float) (renderCOR.y() - camY), (float) (renderCOR.z() - camZ));
-            transform.rotate(new Quaternionf(renderRot));
-
-            stack.last().pose().mul(modelView).mul(transform);
-            transform.normal(stack.last().normal());
-        }
-
-        SableSubLevelRenderPlatform.INSTANCE.tesselateBlock(LEVEL_WRAPPER, bakedModel, this.singleBlockState, this.singleBlockPos, stack, consumer, RANDOM, this.singleBlockSeed, OverlayTexture.NO_OVERLAY, layer);
-        LEVEL_WRAPPER.clear();
+        final BlockPos pos = this.singleBlockPos;
+        final SubLevelSectionDraws.Batch batch = draws.begin(this.subLevel, renderPose, pos.getX(), pos.getY(), pos.getZ(), 1.0F, false);
+        final ChunkSectionLayer layer = this.bufferLayer;
+        final SectionBuffers sectionBuffers = this.buffers;
+        draws.addSection(batch, pos.getX(), pos.getY(), pos.getZ(), 0.0, requested -> requested == layer ? sectionBuffers : null);
     }
 
     public @Nullable BlockEntity getRenderBlockEntity() {
@@ -198,6 +237,15 @@ public class VanillaSingleSubLevelRenderData implements SubLevelRenderData {
 
     @Override
     public void close() {
-        this.removeBlockEntity();
+        this.singleBlockEntity = null;
+        this.buffers = null;
+        if (this.vertexBuffer != null) {
+            this.vertexBuffer.close();
+            this.vertexBuffer = null;
+        }
+        if (this.byteBuffer != null) {
+            this.byteBuffer.close();
+            this.byteBuffer = null;
+        }
     }
 }

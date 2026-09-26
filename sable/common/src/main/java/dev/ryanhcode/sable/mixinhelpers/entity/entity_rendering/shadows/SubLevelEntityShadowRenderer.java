@@ -1,6 +1,8 @@
 package dev.ryanhcode.sable.mixinhelpers.entity.entity_rendering.shadows;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import org.jetbrains.annotations.Nullable;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelHelper;
@@ -55,14 +57,24 @@ public class SubLevelEntityShadowRenderer {
     };
 
     /**
-     * Renders the shadows of entities on sub-levels.
+     * Number of floats stored per shadow vertex: x, y, z, u, v, alpha
      */
-    public static void renderEntityShadowOnSubLevels(final Entity entity,
-                                                     final float f,
-                                                     final float partialTick,
-                                                     final float shadowRadius,
-                                                     final VertexConsumer vertexConsumer,
-                                                     final PoseStack.Pose pose) {
+    public static final int VERTEX_STRIDE = 6;
+
+    /**
+     * Computes the shadows of entities on sub-levels.
+     *
+     * @param entity       The entity casting the shadow
+     * @param f            The strength of the shadow
+     * @param partialTick  The partial tick
+     * @param shadowRadius The radius of the shadow
+     * @return The shadow quad vertices relative to the entity origin, see {@link #VERTEX_STRIDE}, or null if there is no shadow
+     */
+    public static float @Nullable [] computeEntityShadowOnSubLevels(final Entity entity,
+                                                                    final float f,
+                                                                    final float partialTick,
+                                                                    final float shadowRadius) {
+        final FloatArrayList vertices = new FloatArrayList();
         final Quaterniondc customOrientation = EntitySubLevelUtil.getCustomEntityOrientation(entity, partialTick);
         final Vec3 entityOrigin = entity.getPosition(partialTick);
         Vec3 entityFeet = entityOrigin;
@@ -191,17 +203,26 @@ public class SubLevelEntityShadowRenderer {
 
                         LOCAL_POS.add(entityFeet.x - entityOrigin.x, entityFeet.y - entityOrigin.y, entityFeet.z - entityOrigin.z);
 
-                        shadowVertex(pose,
-                                vertexConsumer,
-                                alpha << 24 | 0xFFFFFF,
-                                (float) LOCAL_POS.x,
-                                (float) LOCAL_POS.y,
-                                (float) LOCAL_POS.z,
-                                (float) ((entityLocalPos.x + shadowRadius) / (shadowRadius * 2.0F)),
-                                (float) ((entityLocalPos.z + shadowRadius) / (shadowRadius * 2.0F)));
+                        vertices.add((float) LOCAL_POS.x);
+                        vertices.add((float) LOCAL_POS.y);
+                        vertices.add((float) LOCAL_POS.z);
+                        vertices.add((float) ((entityLocalPos.x + shadowRadius) / (shadowRadius * 2.0F)));
+                        vertices.add((float) ((entityLocalPos.z + shadowRadius) / (shadowRadius * 2.0F)));
+                        vertices.add(Math.min(alpha, 255));
                     }
                 }
             }
+        }
+
+        return vertices.isEmpty() ? null : vertices.toFloatArray();
+    }
+
+    /**
+     * Emits previously computed shadow vertices.
+     */
+    public static void emit(final float[] vertices, final PoseStack.Pose pose, final VertexConsumer vertexConsumer) {
+        for (int i = 0; i + VERTEX_STRIDE <= vertices.length; i += VERTEX_STRIDE) {
+            shadowVertex(pose, vertexConsumer, ((int) vertices[i + 5]) << 24 | 0xFFFFFF, vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3], vertices[i + 4]);
         }
     }
 

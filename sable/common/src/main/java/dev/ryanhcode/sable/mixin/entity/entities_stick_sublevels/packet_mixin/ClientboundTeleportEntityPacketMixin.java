@@ -1,13 +1,14 @@
 package dev.ryanhcode.sable.mixin.entity.entities_stick_sublevels.packet_mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.ryanhcode.sable.mixinterface.entity.entities_stick_sublevels.packet_mixin.PacketActuallyInSubLevelExtension;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 @Mixin(ClientboundTeleportEntityPacket.class)
 public class ClientboundTeleportEntityPacketMixin implements PacketActuallyInSubLevelExtension {
     /**
@@ -16,14 +17,9 @@ public class ClientboundTeleportEntityPacketMixin implements PacketActuallyInSub
     @Unique
     private boolean sable$actuallyInSubLevel;
 
-    @Inject(method = "<init>(Lnet/minecraft/network/FriendlyByteBuf;)V", at = @At("RETURN"))
-    private void sable$readActuallyInSubLevel(final FriendlyByteBuf friendlyByteBuf, final CallbackInfo ci) {
-        this.sable$setActuallyInSubLevel(friendlyByteBuf.readBoolean());
-    }
-
-    @Inject(method = "write", at = @At("TAIL"))
-    private void sable$writeActuallyInSubLevel(final FriendlyByteBuf friendlyByteBuf, final CallbackInfo ci) {
-        friendlyByteBuf.writeBoolean(this.sable$actuallyInSubLevel);
+    @ModifyExpressionValue(method = "<clinit>", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/codec/StreamCodec;composite(Lnet/minecraft/network/codec/StreamCodec;Ljava/util/function/Function;Lnet/minecraft/network/codec/StreamCodec;Ljava/util/function/Function;Lnet/minecraft/network/codec/StreamCodec;Ljava/util/function/Function;Lnet/minecraft/network/codec/StreamCodec;Ljava/util/function/Function;Lcom/mojang/datafixers/util/Function4;)Lnet/minecraft/network/codec/StreamCodec;"))
+    private static StreamCodec<FriendlyByteBuf, ClientboundTeleportEntityPacket> sable$networkActuallyInSubLevel(final StreamCodec<FriendlyByteBuf, ClientboundTeleportEntityPacket> original) {
+        return PacketActuallyInSubLevelExtension.wrapCodec(original);
     }
 
     @Override

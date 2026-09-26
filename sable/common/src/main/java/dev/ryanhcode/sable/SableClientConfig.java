@@ -86,9 +86,8 @@ public final class SableClientConfig {
         Minecraft.getInstance().execute(() -> SubLevelRenderer.setImpl(SableClientConfig.SELECTED_RENDERER.get()));
 
         if (notify) {
-            // ShaderInstance map removed in 1.21.11 — full reload deferred to RenderPipeline port
             if (reloadShaders) {
-                reloadChunks = true;
+                Minecraft.getInstance().execute(VeilRenderSystem::reloadVanillaShaders);
             }
 
             if (reloadChunks) {

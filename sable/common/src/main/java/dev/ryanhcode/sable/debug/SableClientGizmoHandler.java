@@ -1,26 +1,19 @@
 package dev.ryanhcode.sable.debug;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
-import foundry.veil.api.client.render.MatrixStack;
-import foundry.veil.api.event.VeilRenderLevelStageEvent;
-import foundry.veil.platform.VeilEventPlatform;
-import net.minecraft.client.Camera;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.core.Direction;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.util.ARGB;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -37,7 +30,6 @@ public class SableClientGizmoHandler {
     private @Nullable GizmoSelection selection;
 
     public void init() {
-        VeilEventPlatform.INSTANCE.onVeilRenderLevelStage(this::onRenderStage);
     }
 
     public static Vec3 getRay(final Matrix4fc projectionMatrix, final float normalizedMouseX, final float normalizedMouseY) {
@@ -63,49 +55,34 @@ public class SableClientGizmoHandler {
     }
 
 
-    private void onRenderStage(final VeilRenderLevelStageEvent.Stage stage,
-                               final LevelRenderer levelRenderer,
-                               final MultiBufferSource.BufferSource bufferSource,
-                               final MatrixStack matrixStack,
-                               final Matrix4fc modelViewMat,
-                               final Matrix4fc projMat,
-                               final int renderTicks,
-                               final DeltaTracker deltaTracker,
-                               final Camera camera,
-                               final Frustum frustum) {
-
-        if (stage != VeilRenderLevelStageEvent.Stage.AFTER_WEATHER) {
-            return;
-        }
-
+    /**
+     * Emits the gizmos of all sub-levels. Called while vanilla collects the debug gizmos of the frame.
+     */
+    public void emitGizmos(final float partialTicks) {
         if (!this.enabled) return;
-
-        final float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
 
         final Minecraft minecraft = Minecraft.getInstance();
         final ClientLevel level = minecraft.level;
-        final Vec3 cameraPos = camera.getPosition();
         final SubLevelContainer container = SubLevelContainer.getContainer(level);
-        assert container != null;
+        if (container == null) {
+            return;
+        }
 
         this.updateMouseDir(minecraft, partialTicks);
         this.updateSelection();
 
-        final PoseStack poseStack = new PoseStack();
         for (final SubLevel subLevel : container.getAllSubLevels()) {
             final ClientSubLevel clientSubLevel = (ClientSubLevel) subLevel;
 
             final Pose3dc renderPose = clientSubLevel.renderPose();
-            final Vector3d renderPos = renderPose.position().sub(cameraPos.x, cameraPos.y, cameraPos.z, new Vector3d());
+            final Vector3dc renderPos = renderPose.position();
 
-            poseStack.pushPose();
-            poseStack.translate(renderPos.x, renderPos.y, renderPos.z);
-
-            DebugRenderer.renderFilledBox(poseStack, bufferSource, new AABB(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f).inflate(0.1d), 1.0f, 1.0f, 1.0f, 0.4f);
+            Gizmos.cuboid(new AABB(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f).inflate(0.1d).move(renderPos.x(), renderPos.y(), renderPos.z()),
+                    GizmoStyle.fill(ARGB.colorFromFloat(0.4f, 1.0f, 1.0f, 1.0f)));
 
             for (final Direction.Axis axis : Direction.Axis.VALUES) {
                 final Direction dir = Direction.get(Direction.AxisDirection.POSITIVE, axis);
-                final Vec3i normal = dir.getNormal();
+                final Vec3i normal = dir.getUnitVec3i();
 
                 float r = (float) (Math.max(normal.getX(), 0.2) * 0.8);
                 float g = (float) (Math.max(normal.getY(), 0.2) * 0.8);
@@ -125,22 +102,21 @@ public class SableClientGizmoHandler {
                     b *= 1.2f;
                 }
 
-
-                DebugRenderer.renderFilledBox(poseStack, bufferSource, bb, r, g, b, 0.9f);
+                Gizmos.cuboid(bb.move(renderPos.x(), renderPos.y(), renderPos.z()), GizmoStyle.fill(ARGB.colorFromFloat(0.9f, Math.min(r, 1.0f), Math.min(g, 1.0f), Math.min(b, 1.0f))));
             }
-            poseStack.popPose();
         }
     }
 
     private void updateSelection() {
         final Minecraft minecraft = Minecraft.getInstance();
         final ClientLevel level = minecraft.level;
-        final Vec3 cameraPos = minecraft.gameRenderer.getMainCamera().getPosition();
-
-        final PoseStack poseStack = new PoseStack();
+        final Vec3 cameraPos = minecraft.gameRenderer.getMainCamera().position();
 
         final SubLevelContainer container = SubLevelContainer.getContainer(level);
-        assert container != null;
+        if (container == null) {
+            this.selection = null;
+            return;
+        }
 
         for (final SubLevel subLevel : container.getAllSubLevels()) {
             final ClientSubLevel clientSubLevel = (ClientSubLevel) subLevel;
@@ -148,12 +124,9 @@ public class SableClientGizmoHandler {
             final Pose3dc renderPose = clientSubLevel.renderPose();
             final Vector3d renderPos = renderPose.position().sub(cameraPos.x, cameraPos.y, cameraPos.z, new Vector3d());
 
-            poseStack.pushPose();
-            poseStack.translate(renderPos.x, renderPos.y, renderPos.z);
-
             for (final Direction.Axis axis : Direction.Axis.VALUES) {
                 final Direction dir = Direction.get(Direction.AxisDirection.POSITIVE, axis);
-                final Vec3i normal = dir.getNormal();
+                final Vec3i normal = dir.getUnitVec3i();
 
                 final Vec3 normalD = new Vec3(normal.getX(), normal.getY(), normal.getZ());
                 final Vec3 expandDir = normalD
@@ -183,7 +156,7 @@ public class SableClientGizmoHandler {
         final double yPos = mouseHandler.ypos() / (double) window.getScreenHeight() * 2.0 - 1.0;
 
         final GameRenderer gameRenderer = minecraft.gameRenderer;
-        final double fov = gameRenderer.getFov(gameRenderer.getMainCamera(), partialTicks, true);
+        final float fov = gameRenderer.getFov(gameRenderer.getMainCamera(), partialTicks, true);
         final Matrix4f proj = gameRenderer.getProjectionMatrix(fov);
 
         final float yaw = player.getViewYRot(partialTicks);

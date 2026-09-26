@@ -34,8 +34,14 @@ public abstract class EntityRendererMixin {
     @Final
     protected EntityRenderDispatcher entityRenderDispatcher;
 
+    @Shadow
+    protected abstract AABB getBoundingBoxForCulling(Entity entity);
+
+    @Shadow
+    protected abstract boolean affectedByCulling(Entity entity);
+
     @ModifyReturnValue(method = "getPackedLightCoords", at = @At("RETURN"))
-    public final int getPackedLightCoords(final int original, final Entity arg, final float f) {
+    private int sable$getPackedLightCoords(final int original, final Entity arg, final float f) {
         final Vec3 lightProbeOffset = arg.getLightProbePosition(f).subtract(arg.getEyePosition(f));
         final Vector3d lightProbePosition = JOMLConversion.toJOML(Sable.HELPER.getEyePositionInterpolated(arg, f)).add(lightProbeOffset.x, lightProbeOffset.y, lightProbeOffset.z);
         final BlockPos blockpos = BlockPos.containing(lightProbePosition.x, lightProbePosition.y, lightProbePosition.z);
@@ -113,7 +119,7 @@ public abstract class EntityRendererMixin {
 
     @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void sable$shouldRender(final E entity, final Frustum frustum, final double pCamX, final double pCamY, final double pCamZ, final CallbackInfoReturnable<Boolean> cir) {
-        if (entity.noCulling) {
+        if (!this.affectedByCulling(entity)) {
             cir.setReturnValue(true);
             return;
         }
@@ -138,7 +144,7 @@ public abstract class EntityRendererMixin {
                     .subtract(0.0, entity.getEyeHeight(), 0.0);
 
 
-            AABB aABB = entity.getBoundingBoxForCulling().inflate(0.5);
+            AABB aABB = this.getBoundingBoxForCulling(entity).inflate(0.5);
             if (aABB.hasNaN() || aABB.getSize() == 0.0) {
                 aABB = new AABB(entity.getX() - 2.0, entity.getY() - 2.0, entity.getZ() - 2.0, entity.getX() + 2.0, entity.getY() + 2.0, entity.getZ() + 2.0);
             }
@@ -151,7 +157,8 @@ public abstract class EntityRendererMixin {
                 if (entity instanceof final Leashable leashable) {
                     final Entity entity2 = leashable.getLeashHolder();
                     if (entity2 != null) {
-                        cir.setReturnValue(frustum.isVisible(entity2.getBoundingBoxForCulling()));
+                        final AABB holderBounds = ((EntityRendererMixin) (Object) this.entityRenderDispatcher.getRenderer(entity2)).getBoundingBoxForCulling(entity2);
+                        cir.setReturnValue(frustum.isVisible(holderBounds) || frustum.isVisible(aABB.minmax(holderBounds)));
                         return;
                     }
                 }

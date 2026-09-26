@@ -1,41 +1,56 @@
 package dev.ryanhcode.sable.render.sky_light_shadow;
 
-import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.opengl.Uniform;
-import dev.ryanhcode.sable.Sable;
-import dev.ryanhcode.sable.companion.math.JOMLConversion;
-import foundry.veil.api.client.render.MatrixStack;
+import com.mojang.blaze3d.ProjectionType;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.textures.GpuTextureView;
+import dev.ryanhcode.sable.api.sublevel.ClientSubLevelContainer;
+import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
+import dev.ryanhcode.sable.render.terrain.SableTerrainShader;
+import dev.ryanhcode.sable.sublevel.ClientSubLevel;
+import dev.ryanhcode.sable.sublevel.render.SubLevelRenderContext;
+import dev.ryanhcode.sable.sublevel.render.SubLevelSectionDraws;
+import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelRenderDispatcher;
 import foundry.veil.api.client.render.VeilLevelPerspectiveRenderer;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.framebuffer.AdvancedFbo;
-import foundry.veil.api.event.VeilRenderLevelStageEvent;
-import net.minecraft.client.Camera;
-import net.minecraft.client.DeltaTracker;
+import foundry.veil.api.client.render.framebuffer.AdvancedFboTextureAttachment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.Level;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.PerspectiveProjectionMatrixBuffer;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Quaternionf;
-import org.joml.Vector3d;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL13C;
+import org.lwjgl.opengl.GL33C;
+import org.lwjgl.opengl.GL45C;
+
+/**
+ * Sky light shadows cast by sub-levels onto the world.
+ * <p>
+ * Every frame the sub-levels around the camera are drawn into an orthographic top-down depth map. The terrain shader
+ * then darkens the sky light of world geometry that is below sub-level geometry in that map.
+ */
 public class SableSkyLightShadows {
 
     public static final float SHADOW_VOLUME_SIZE = 256f / 2f;
+    private static final float SHADOW_NEAR_PLANE = 0.5F;
+    private static final int SHADOW_MAP_RESOLUTION = 1024;
 
-    private static final Identifier FRAMEBUFFER_NAME = Sable.sablePath("sub_level_shadow");
     private static final Matrix4f PROJECTION_MAT = new Matrix4f();
-    private static final Vector3d SHADOW_CAMERA_POSITION = new Vector3d();
-    private static final Quaternionf SHADOW_CAMERA_ORIENTATION = new Quaternionf();
+    private static final Matrix4f SHADOW_VIEW_MAT = new Matrix4f().rotationX((float) (Math.PI / 2));
+    private static final Vec3[] SHADOW_CAMERA_POSITION = {Vec3.ZERO};
 
     private static boolean isRenderingShadowMap = false;
     private static boolean isEnabled = false;
+    private static boolean hasShadowMap = false;
+
+    private static @Nullable AdvancedFbo shadowFbo;
+    private static @Nullable PerspectiveProjectionMatrixBuffer projectionBuffer;
 
     public static boolean isEnabled() {
         return isEnabled;
@@ -43,71 +58,131 @@ public class SableSkyLightShadows {
 
     public static void setIsEnabled(final boolean isEnabled) {
         SableSkyLightShadows.isEnabled = isEnabled;
-    }
-
-    public static void renderShadowMap(final VeilRenderLevelStageEvent.Stage stage, final LevelRenderer levelRenderer, final MultiBufferSource.BufferSource bufferSource, final MatrixStack matrixStack, final Matrix4fc frustumMatrix, final Matrix4fc projectionMatrix, final int renderTick, final DeltaTracker deltaTracker, final Camera camera, final Frustum frustum) {
-        if (!SableSkyLightShadows.isEnabled()) {
-            return;
+        if (!isEnabled) {
+            free();
         }
-        if (VeilLevelPerspectiveRenderer.isRenderingPerspective()) {
-            return;
-        }
-        if (stage != VeilRenderLevelStageEvent.Stage.AFTER_LEVEL) {
-            return;
-        }
-
-        final AdvancedFbo fbo = getShadowsFramebuffer();
-
-
-        if (fbo != null) {
-            fbo.bind(true);
-            GL30.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-            fbo.clear();
-
-            final Minecraft client = Minecraft.getInstance();
-            final Level level = client.level;
-            final Window window = client.getWindow();
-
-            final Matrix4f modelView = new Matrix4f();
-            PROJECTION_MAT.identity().ortho(-SHADOW_VOLUME_SIZE, SHADOW_VOLUME_SIZE, -SHADOW_VOLUME_SIZE, SHADOW_VOLUME_SIZE, 0.5f, SHADOW_VOLUME_SIZE);
-
-            // account for the smaller screen size
-            final Vec3 cameraPosition = camera.getPosition();
-            final Vec3 shadowCameraPosition = new Vec3(cameraPosition.x, cameraPosition.y + SHADOW_VOLUME_SIZE / 2.0f, cameraPosition.z);
-
-            JOMLConversion.toJOML(shadowCameraPosition, SHADOW_CAMERA_POSITION);
-            SHADOW_CAMERA_POSITION.set(Math.floor(SHADOW_CAMERA_POSITION.x), SHADOW_CAMERA_POSITION.y, Math.floor(SHADOW_CAMERA_POSITION.z));
-            isRenderingShadowMap = true;
-            VeilLevelPerspectiveRenderer.render(fbo, modelView, PROJECTION_MAT, SHADOW_CAMERA_POSITION, SHADOW_CAMERA_ORIENTATION.identity().rotateX((float) (Math.PI / 2)), SHADOW_VOLUME_SIZE / 16f, deltaTracker, false);
-            isRenderingShadowMap = false;
-        }
-    }
-
-    public static @Nullable AdvancedFbo getShadowsFramebuffer() {
-        return VeilRenderSystem.renderer().getFramebufferManager().getFramebuffer(FRAMEBUFFER_NAME);
     }
 
     public static boolean renderingShadowMap() {
         return isRenderingShadowMap;
     }
 
-    public static void bindShadowMapTexture(final ShaderInstance shader) {
-        if (!SableSkyLightShadows.isEnabled()) {
+    private static AdvancedFbo getShadowsFramebuffer() {
+        if (shadowFbo == null) {
+            shadowFbo = AdvancedFbo.withSize(SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION)
+                    .setName("Sable sub-level shadows")
+                    .addColorTextureBuffer()
+                    .setDepthTextureBuffer()
+                    .build(true);
+        }
+        return shadowFbo;
+    }
+
+    /**
+     * Renders the top-down depth map of all sub-levels near the camera.
+     *
+     * @param level        The level being rendered
+     * @param camera       The camera position
+     * @param partialTicks The partial tick
+     */
+    public static void renderShadowMap(final ClientLevel level, final Vec3 camera, final float partialTicks) {
+        hasShadowMap = false;
+        if (!isEnabled || VeilLevelPerspectiveRenderer.isRenderingPerspective()) {
             return;
         }
 
-        final Uniform volumeSizeUniform = shader.getUniform(SableDynamicSkyLightShadowPreProcessor.SHADOW_VOLUME_SIZE_UNIFORM);
-        if (volumeSizeUniform != null) {
-            volumeSizeUniform.set(SableSkyLightShadows.SHADOW_VOLUME_SIZE);
-        }
-
-        final Uniform offsetUniform = shader.getUniform(SableDynamicSkyLightShadowPreProcessor.SHADOW_ORIGIN_UNIFORM);
-        if (offsetUniform != null) {
-            final Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-            offsetUniform.set((float) (SHADOW_CAMERA_POSITION.x - camera.x), (float) (SHADOW_CAMERA_POSITION.y - camera.y), (float) (SHADOW_CAMERA_POSITION.z - camera.z));
-        }
-
         final AdvancedFbo fbo = getShadowsFramebuffer();
-        shader.setSampler(SableDynamicSkyLightShadowPreProcessor.SAMPLER_NAME, fbo.getDepthTextureAttachment());
+        final AdvancedFboTextureAttachment color = fbo.getColorTextureAttachment(0);
+        final AdvancedFboTextureAttachment depth = fbo.getDepthTextureAttachment();
+        RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(color.getTexture(), 0xFFFFFFFF, depth.getTexture(), 1.0);
+
+        final Vec3 shadowCamera = new Vec3(Math.floor(camera.x), camera.y + SHADOW_VOLUME_SIZE / 2.0f, Math.floor(camera.z));
+        SHADOW_CAMERA_POSITION[0] = shadowCamera;
+
+        PROJECTION_MAT.setOrtho(-SHADOW_VOLUME_SIZE, SHADOW_VOLUME_SIZE, -SHADOW_VOLUME_SIZE, SHADOW_VOLUME_SIZE, SHADOW_NEAR_PLANE, SHADOW_VOLUME_SIZE);
+        if (projectionBuffer == null) {
+            projectionBuffer = new PerspectiveProjectionMatrixBuffer("Sable sub-level shadows");
+        }
+
+        final GpuBufferSlice oldProjection = RenderSystem.getProjectionMatrixBuffer();
+        final ProjectionType oldProjectionType = RenderSystem.getProjectionType();
+        RenderSystem.setProjectionMatrix(projectionBuffer.getBuffer(PROJECTION_MAT), ProjectionType.ORTHOGRAPHIC);
+
+        isRenderingShadowMap = true;
+        VeilLevelPerspectiveRenderer.beginPerspective();
+        try {
+            final ClientSubLevelContainer container = SubLevelContainer.getContainer(level);
+            if (container == null) {
+                return;
+            }
+
+            final Iterable<ClientSubLevel> subLevels = container.getAllSubLevels();
+            final SubLevelRenderContext context = new SubLevelRenderContext(SHADOW_VIEW_MAT, shadowCamera.x, shadowCamera.y, shadowCamera.z, partialTicks,
+                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST), false, false);
+
+            final SubLevelRenderDispatcher dispatcher = SubLevelRenderDispatcher.get();
+            final SubLevelSectionDraws draws = dispatcher.prepareSections(subLevels, context);
+            dispatcher.renderSectionLayer(draws, ChunkSectionLayer.SOLID, color.getTextureView(), depth.getTextureView());
+            dispatcher.renderSectionLayer(draws, ChunkSectionLayer.CUTOUT, color.getTextureView(), depth.getTextureView());
+            hasShadowMap = true;
+        } finally {
+            VeilLevelPerspectiveRenderer.endPerspective();
+            isRenderingShadowMap = false;
+            RenderSystem.setProjectionMatrix(oldProjection, oldProjectionType);
+        }
+    }
+
+    /**
+     * Binds the shadow map to the terrain pipelines, so world geometry can be shadowed.
+     *
+     * @param camera The camera position of the main level render
+     */
+    public static void bindShadowMap(final Vec3 camera) {
+        if (!isEnabled || !hasShadowMap || shadowFbo == null) {
+            return;
+        }
+
+        final Vec3 shadowCamera = SHADOW_CAMERA_POSITION[0];
+        final GpuTextureView depth = shadowFbo.getDepthTextureAttachment().getTextureView();
+        bindTexture(SableTerrainShader.SHADOW_TEXTURE_UNIT, VeilRenderSystem.getTextureId(depth));
+
+        for (final RenderPipeline pipeline : SableTerrainShader.PIPELINES) {
+            VeilRenderSystem.getVanillaUniform(pipeline, SableTerrainShader.SHADOW_SAMPLER).setInt(SableTerrainShader.SHADOW_TEXTURE_UNIT);
+            VeilRenderSystem.getVanillaUniform(pipeline, SableTerrainShader.SHADOW_VOLUME_SIZE).setFloat(SHADOW_VOLUME_SIZE);
+            VeilRenderSystem.getVanillaUniform(pipeline, SableTerrainShader.SHADOW_ORIGIN).setVector(
+                    (float) (shadowCamera.x - camera.x),
+                    (float) (shadowCamera.y - camera.y),
+                    (float) (shadowCamera.z - camera.z));
+        }
+    }
+
+    /**
+     * Binds a texture to a texture unit outside the range vanilla tracks, without disturbing the vanilla state caches.
+     */
+    public static void bindTexture(final int unit, final int texture) {
+        if (VeilRenderSystem.directStateAccessSupported()) {
+            GL45C.glBindTextureUnit(unit, texture);
+        } else {
+            final int activeTexture = GL11C.glGetInteger(GL13C.GL_ACTIVE_TEXTURE);
+            GL13C.glActiveTexture(GL13C.GL_TEXTURE0 + unit);
+            GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, texture);
+            GL13C.glActiveTexture(activeTexture);
+        }
+        GL33C.glBindSampler(unit, 0);
+    }
+
+    public static void free() {
+        hasShadowMap = false;
+        if (shadowFbo != null) {
+            shadowFbo.free();
+            shadowFbo = null;
+        }
+        if (projectionBuffer != null) {
+            projectionBuffer.close();
+            projectionBuffer = null;
+        }
+    }
+
+    private SableSkyLightShadows() {
     }
 }

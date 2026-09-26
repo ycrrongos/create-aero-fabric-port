@@ -1,30 +1,30 @@
 package dev.ryanhcode.sable.mixin.sublevel_render;
 
-import dev.ryanhcode.sable.Sable;
+import com.mojang.blaze3d.vertex.VertexSorting;
 import dev.ryanhcode.sable.mixinterface.sublevel_render.vanilla.RenderSectionExtension;
+import dev.ryanhcode.sable.sublevel.render.vanilla.SubLevelSectionCameras;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.core.SectionPos;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 import java.util.Set;
+
 /**
- * Fixes distance check used for priority and chunk building to take sublevels into account
+ * Notifies sub-level renderers of dirty sections, and sorts translucent sub-level geometry from the camera position in
+ * plot space.
  */
 @Mixin(SectionRenderDispatcher.RenderSection.class)
 public class RenderSectionMixin implements RenderSectionExtension {
 
-    @Shadow
-    private AABB bb;
     @Shadow
     private boolean dirty;
 
@@ -44,18 +44,15 @@ public class RenderSectionMixin implements RenderSectionExtension {
         }
     }
 
-    /**
-     * @author RyanH
-     * @reason Fixes distance check to take sublevels into account
-     */
-    @Overwrite
-    public double getDistToPlayerSqr() {
-        final ClientLevel level = Minecraft.getInstance().level;
-        final Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        final double x = this.bb.minX + 8.0;
-        final double y = this.bb.minY + 8.0;
-        final double z = this.bb.minZ + 8.0;
-        return Sable.HELPER.distanceSquaredWithSubLevels(level, camera.position(), x, y, z);
+    @Inject(method = "createVertexSorting", at = @At("HEAD"), cancellable = true)
+    private void sable$sortInPlotSpace(final SectionPos sectionPos, final CallbackInfoReturnable<VertexSorting> cir) {
+        final Vec3 localCamera = SubLevelSectionCameras.getLocalCamera(sectionPos.getX(), sectionPos.getZ());
+        if (localCamera != null) {
+            cir.setReturnValue(VertexSorting.byDistance(
+                    (float) (localCamera.x - sectionPos.minBlockX()),
+                    (float) (localCamera.y - sectionPos.minBlockY()),
+                    (float) (localCamera.z - sectionPos.minBlockZ())));
+        }
     }
 
     @Override

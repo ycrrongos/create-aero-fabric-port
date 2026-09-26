@@ -48,6 +48,13 @@ public interface SubLevelRenderData extends Closeable {
 
     int getVisibleSectionCount();
 
+    /**
+     * Adds the draws of this sub-level for the current render.
+     *
+     * @param draws The draws of the current render
+     */
+    void collectDraws(SubLevelSectionDraws draws);
+
     default Matrix4f getTransformation(final double camX, final double camY, final double camZ) {
         return this.getTransformation(camX, camY, camZ, new Matrix4f());
     }

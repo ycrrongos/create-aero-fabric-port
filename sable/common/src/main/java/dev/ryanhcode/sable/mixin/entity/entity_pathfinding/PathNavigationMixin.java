@@ -8,6 +8,7 @@ import dev.ryanhcode.sable.mixinterface.entity.pathfinding.PathExtension;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.Level;
@@ -75,13 +76,13 @@ public abstract class PathNavigationMixin {
                 final Vec3 localMobPosition = pose.transformPositionInverse(this.mob.position());
                 final BlockPos localMobBlockPosition = BlockPos.containing(localMobPosition);
 
-                this.level.getProfiler().push("pathfind_sub_level");
+                Profiler.get().push("pathfind_sub_level");
 
                 // turn global set to local
                 final Set<BlockPos> localSet = new ObjectOpenHashSet<>();
 
                 for (final BlockPos globalPos : globalSet) {
-                    if (Sable.HELPER.getContaining(this.level) == trackingSubLevel) {
+                    if (Sable.HELPER.getContaining(this.level, globalPos) == trackingSubLevel) {
                         localSet.add(globalPos);
                         continue;
                     }
@@ -94,12 +95,12 @@ public abstract class PathNavigationMixin {
                 final int k = (int) (f + (float) i);
                 final PathNavigationRegion pathNavigationRegion = new PathNavigationRegion(this.level, blockPos.offset(-k, -k, -k), blockPos.offset(k, k, k));
                 final Path path = this.pathFinder.findPath(pathNavigationRegion, this.mob, localSet, f, j, this.maxVisitedNodesMultiplier);
-                this.level.getProfiler().pop();
+                Profiler.get().pop();
                 if (path != null && path.getTarget() != null) {
                     this.targetPos = path.getTarget();
                     this.reachRange = j;
                     this.resetStuckTimeout();
-                    ((PathExtension) path).sable$setLocalPath(this.level, true);
+                    ((PathExtension) (Object) path).sable$setLocalPath(this.level, true);
                 }
 
 

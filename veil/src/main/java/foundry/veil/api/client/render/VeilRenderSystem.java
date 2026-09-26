@@ -7,6 +7,7 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.opengl.GlTextureView;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
+import foundry.veil.impl.client.render.VeilGlStateSync;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.MeshData;
 import foundry.veil.Veil;
@@ -335,6 +336,18 @@ public final class VeilRenderSystem {
     @ApiStatus.Internal
     public static void clearVanillaProgramCache() {
         VANILLA_UNIFORMS.clear();
+    }
+
+    /**
+     * Discards every compiled vanilla pipeline so they are recompiled (running all vanilla shader pre-processors again)
+     * the next time they are used. Call this when the state a {@link foundry.veil.api.client.render.shader.processor.ShaderPreProcessor}
+     * depends on changes.
+     */
+    public static void reloadVanillaShaders() {
+        RenderSystem.assertOnRenderThread();
+        RenderSystem.getDevice().clearPipelineCache();
+        VeilGlStateSync.invalidateVanillaCaches();
+        clearVanillaProgramCache();
     }
 
     private static final class VanillaProgramUniforms {

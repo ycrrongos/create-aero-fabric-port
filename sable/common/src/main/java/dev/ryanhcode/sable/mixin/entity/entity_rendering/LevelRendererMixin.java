@@ -1,47 +1,38 @@
 package dev.ryanhcode.sable.mixin.entity.entity_rendering;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalDoubleRef;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ryanhcode.sable.Sable;
-import dev.ryanhcode.sable.api.entity.EntitySubLevelUtil;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
+import dev.ryanhcode.sable.mixinterface.entity.entity_rendering.EntityRenderStateExtension;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
-import foundry.veil.api.client.render.MatrixStack;
-import foundry.veil.api.client.render.VeilRenderBridge;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+/**
+ * Renders entities inside sub-levels (and entities standing on them) at their position in the world.
+ */
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
 
-    @Inject(method = "renderEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getYRot()F"))
-    private void renderEntityOnSubLevel(final Entity entity,
-                                        final double cameraX,
-                                        final double cameraY,
-                                        final double cameraZ,
-                                        final float partialTick,
-                                        final PoseStack poseStack,
-                                        final MultiBufferSource multiBufferSource,
-                                        final CallbackInfo ci,
-                                        @Local(ordinal = 3) final LocalDoubleRef entityX,
-                                        @Local(ordinal = 4) final LocalDoubleRef entityY,
-                                        @Local(ordinal = 5) final LocalDoubleRef entityZ,
-                                        @Share("renderPose") final LocalRef<Pose3dc> renderPoseShare) {
+    @ModifyReturnValue(method = "extractEntity", at = @At("RETURN"))
+    private EntityRenderState sable$extractEntityOnSubLevel(final EntityRenderState state, final Entity entity, final float partialTick) {
+        final EntityRenderStateExtension extension = (EntityRenderStateExtension) state;
+        extension.sable$setSubLevelOrientation(null);
+
         // Render the entity on the data
         final ClientSubLevel subLevel = (ClientSubLevel) Sable.HELPER.getContaining(entity);
 
@@ -62,46 +53,43 @@ public class LevelRendererMixin {
                 final Pose3dc renderPose = clientSubLevel.renderPose(partialTick);
                 renderPose.transformPosition(interpolatedTrackingPosLocal);
 
-                entityX.set(interpolatedTrackingPosLocal.x);
-                entityY.set(interpolatedTrackingPosLocal.y);
-                entityZ.set(interpolatedTrackingPosLocal.z);
+                state.x = interpolatedTrackingPosLocal.x;
+                state.y = interpolatedTrackingPosLocal.y;
+                state.z = interpolatedTrackingPosLocal.z;
             }
 
-            return;
+            return state;
         }
 
         final Pose3dc renderPose = subLevel.renderPose(partialTick);
-        final Vector3d transformedPosition = renderPose.transformPosition(new Vector3d(entityX.get(), entityY.get(), entityZ.get()));
+        final Vector3d transformedPosition = renderPose.transformPosition(new Vector3d(state.x, state.y, state.z));
 
-        renderPoseShare.set(renderPose);
+        extension.sable$setSubLevelOrientation(new Quaternionf(renderPose.orientation()));
 
-        entityX.set(transformedPosition.x);
-        entityY.set(transformedPosition.y);
-        entityZ.set(transformedPosition.z);
+        state.x = transformedPosition.x;
+        state.y = transformedPosition.y;
+        state.z = transformedPosition.z;
+        return state;
     }
 
-    @WrapOperation(method = "renderEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;render(Lnet/minecraft/world/entity/Entity;DDDFFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"))
-    private void renderEntity(final EntityRenderDispatcher instance,
-                              final Entity entity,
-                              final double x,
-                              final double y,
-                              final double z,
-                              final float g,
-                              final float h,
-                              final PoseStack poseStack,
-                              final MultiBufferSource multiBufferSource,
-                              final int i,
-                              final Operation<Void> original,
-                              @Share("renderPose") final LocalRef<Pose3dc> renderPoseShare) {
-        final Pose3dc pose = renderPoseShare.get();
-        if (pose != null) {
-            final MatrixStack matrixStack = VeilRenderBridge.create(poseStack);
-            matrixStack.matrixPush();
-            matrixStack.rotateAround(pose.orientation(), x, y, z);
-            original.call(instance, entity, x, y, z, g, h, poseStack, multiBufferSource, i);
-            matrixStack.matrixPop();
+    @WrapOperation(method = "submitEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;submit(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/client/renderer/state/CameraRenderState;DDDLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;)V"))
+    private void sable$submitEntityOnSubLevel(final EntityRenderDispatcher instance,
+                                              final EntityRenderState renderState,
+                                              final CameraRenderState cameraRenderState,
+                                              final double x,
+                                              final double y,
+                                              final double z,
+                                              final PoseStack poseStack,
+                                              final SubmitNodeCollector nodeCollector,
+                                              final Operation<Void> original) {
+        final Quaternionf orientation = ((EntityRenderStateExtension) renderState).sable$getSubLevelOrientation();
+        if (orientation != null) {
+            poseStack.pushPose();
+            poseStack.rotateAround(orientation, (float) x, (float) y, (float) z);
+            original.call(instance, renderState, cameraRenderState, x, y, z, poseStack, nodeCollector);
+            poseStack.popPose();
         } else {
-            original.call(instance, entity, x, y, z, g, h, poseStack, multiBufferSource, i);
+            original.call(instance, renderState, cameraRenderState, x, y, z, poseStack, nodeCollector);
         }
     }
 }

@@ -28,6 +28,12 @@ public class SubLevelVertexConsumer implements VertexConsumer {
     }
 
     @Override
+    public VertexConsumer setColor(final int color) {
+        this.delegate.setColor(color);
+        return this;
+    }
+
+    @Override
     public VertexConsumer setUv(final float f, final float g) {
         this.delegate.setUv(f, g);
         return this;
@@ -56,9 +62,9 @@ public class SubLevelVertexConsumer implements VertexConsumer {
     }
 
     @Override
-    public void putBulkData(final PoseStack.Pose pose, final BakedQuad bakedQuad, final float[] fs, final float f, final float g, final float h, final float i, final int[] is, final int j, final boolean bl) {
-        this.verticalNormal = !bakedQuad.isShade();
-        VertexConsumer.super.putBulkData(pose, bakedQuad, fs, f, g, h, i, is, j, bl);
+    public void putBulkData(final PoseStack.Pose pose, final BakedQuad bakedQuad, final float[] brightness, final float red, final float green, final float blue, final float alpha, final int[] lightmap, final int packedOverlay) {
+        this.verticalNormal = !bakedQuad.shade();
+        VertexConsumer.super.putBulkData(pose, bakedQuad, brightness, red, green, blue, alpha, lightmap, packedOverlay);
         this.verticalNormal = false;
     }
 

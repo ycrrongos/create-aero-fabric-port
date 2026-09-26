@@ -167,7 +167,7 @@ public class ShaderManager implements PreparableReloadListener, NativeResource {
         }
 
         try {
-            GlslTree tree = GlslParser.preprocessParse(assembled, Map.of());
+            GlslTree tree = GlslParser.preprocessParse(assembled, new HashMap<>());
             ShaderImporter importer = this.createImporter();
             ShaderPreProcessor.VeilContext context = new ShaderPreProcessor.VeilContext() {
                 @Override
@@ -233,7 +233,7 @@ public class ShaderManager implements PreparableReloadListener, NativeResource {
                 added.add(name);
                 try {
                     String expanded = ShaderManager.this.sources.expandIncludes(include, new HashSet<>(Set.of(name)));
-                    return GlslParser.preprocessParse(VeilShaderSources.stripVersion(expanded), Map.of());
+                    return GlslParser.preprocessParse(VeilShaderSources.stripVersion(expanded), new HashMap<>());
                 } catch (Exception e) {
                     throw new IOException("Failed to parse include " + name, e);
                 }
