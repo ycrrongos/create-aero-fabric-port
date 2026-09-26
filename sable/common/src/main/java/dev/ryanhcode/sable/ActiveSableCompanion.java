@@ -36,11 +36,9 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiFunction;
-
 /**
  * The default Sable companion for when Sable is loaded
  */
@@ -432,18 +430,12 @@ public class ActiveSableCompanion implements SableCompanion {
 
     @Override
     public @Nullable SubLevel getTrackingSubLevel(final Entity entity) {
-        if (!(entity instanceof final EntityMovementExtension extension)) {
-            return null;
-        }
-        return extension.sable$getTrackingSubLevel();
+        return ((EntityMovementExtension) entity).sable$getTrackingSubLevel();
     }
 
     @Override
     public @Nullable SubLevel getLastTrackingSubLevel(final Entity entity) {
-        if (!(entity instanceof final EntityMovementExtension extension)) {
-            return null;
-        }
-        final UUID uuid = extension.sable$getLastTrackingSubLevelID();
+        final UUID uuid = ((EntityMovementExtension) entity).sable$getLastTrackingSubLevelID();
         if (uuid != null) {
             final SubLevelContainer container = SubLevelContainer.getContainer(entity.level());
             return container.getSubLevel(uuid);

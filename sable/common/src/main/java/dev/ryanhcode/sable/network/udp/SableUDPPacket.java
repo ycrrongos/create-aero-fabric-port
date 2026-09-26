@@ -9,9 +9,7 @@ import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-
 import java.net.InetSocketAddress;
-
 public interface SableUDPPacket {
 
     static void configureSerialization(final ChannelPipeline pipeline, final PacketFlow flow, final boolean memoryOnly, @Nullable final BandwidthDebugMonitor debugMonitor) {
@@ -24,14 +22,14 @@ public interface SableUDPPacket {
     }
 
     private static ChannelOutboundHandler createFrameEncoder(final boolean memoryOnly) {
-        return memoryOnly ? new LocalFrameEncoder() : new Varint21LengthFieldPrepender();
+        return memoryOnly ? new NoOpFrameEncoder() : new Varint21LengthFieldPrepender();
     }
 
     private static ChannelInboundHandler createFrameDecoder(@Nullable final BandwidthDebugMonitor debugMonitor, final boolean memoryOnly) {
         if (!memoryOnly) {
             return new Varint21FrameDecoder(debugMonitor);
         } else {
-            return debugMonitor != null ? new MonitoredLocalFrameDecoder(debugMonitor) : new LocalFrameDecoder();
+            return debugMonitor != null ? new MonitorFrameDecoder(debugMonitor) : new NoOpFrameDecoder();
         }
     }
 

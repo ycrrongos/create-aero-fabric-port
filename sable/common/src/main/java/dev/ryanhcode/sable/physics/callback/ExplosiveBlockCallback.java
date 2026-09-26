@@ -8,7 +8,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3d;
-
 public class ExplosiveBlockCallback extends FragileBlockCallback {
     public static final ExplosiveBlockCallback INSTANCE = new ExplosiveBlockCallback();
 

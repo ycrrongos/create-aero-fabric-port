@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 /**
  * Send a player a UDP authentication packet when they join the server in hopes for an {@link dev.ryanhcode.sable.network.packets.udp.SableUDPAuthenticationPacket} back
  */

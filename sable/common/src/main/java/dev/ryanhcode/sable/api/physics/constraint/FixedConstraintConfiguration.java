@@ -4,7 +4,6 @@ import dev.ryanhcode.sable.api.physics.PhysicsPipelineBody;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
 import org.joml.Quaterniondc;
 import org.joml.Vector3dc;
-
 /**
  * A configuration for a fixed constraint, with both bodies locked to eachother.
  *

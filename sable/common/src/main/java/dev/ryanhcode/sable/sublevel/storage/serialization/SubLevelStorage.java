@@ -18,10 +18,8 @@ import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
-
 import java.io.IOException;
 import java.nio.file.Path;
-
 /**
  * Manages the sub-level holding chunks and regions for a level
  */

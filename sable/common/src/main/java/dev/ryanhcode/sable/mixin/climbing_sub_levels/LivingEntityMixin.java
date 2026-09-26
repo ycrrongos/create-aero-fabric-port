@@ -21,7 +21,6 @@ import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
 /**
  * Allows living entities to climb ladders on sub-levels
  * <p>

@@ -17,9 +17,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
-
 import java.util.Collection;
-
 public class SableJointCommands {
 
     public static final SimpleCommandExceptionType MISSING_JOINT_SUBLEVEL_TARGET =

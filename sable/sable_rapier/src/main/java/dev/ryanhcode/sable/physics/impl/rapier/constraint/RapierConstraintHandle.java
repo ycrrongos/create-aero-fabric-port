@@ -4,7 +4,6 @@ import dev.ryanhcode.sable.api.physics.constraint.ConstraintJointAxis;
 import dev.ryanhcode.sable.physics.impl.rapier.Rapier3D;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
-
 @ApiStatus.Internal
 public abstract class RapierConstraintHandle {
 

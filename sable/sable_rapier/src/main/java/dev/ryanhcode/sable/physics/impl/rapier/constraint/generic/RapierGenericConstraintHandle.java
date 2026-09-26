@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniondc;
 import org.joml.Vector3dc;
-
 @ApiStatus.Internal
 public class RapierGenericConstraintHandle extends RapierConstraintHandle implements GenericConstraintHandle {
 

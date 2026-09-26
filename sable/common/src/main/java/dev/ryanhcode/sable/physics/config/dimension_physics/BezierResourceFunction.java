@@ -7,10 +7,8 @@ import dev.ryanhcode.sable.util.SableCodecUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-
 import java.util.ArrayList;
 import java.util.List;
-
 public class BezierResourceFunction {
     public static final Codec<BezierResourceFunction> CODEC = BezierPoint.CODEC.listOf().flatXmap(
             (bezierPoints -> DataResult.success(new BezierResourceFunction(bezierPoints))),

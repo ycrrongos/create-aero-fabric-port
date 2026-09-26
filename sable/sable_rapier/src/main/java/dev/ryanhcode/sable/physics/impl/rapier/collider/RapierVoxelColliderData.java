@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.physics.impl.rapier.collider;
 import dev.ryanhcode.sable.api.physics.collider.VoxelColliderData;
 import dev.ryanhcode.sable.physics.impl.rapier.Rapier3D;
 import org.joml.Vector3dc;
-
 /**
  * Represents a block physics data entry in the physics world.
  *

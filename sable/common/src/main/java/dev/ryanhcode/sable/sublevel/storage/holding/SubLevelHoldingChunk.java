@@ -13,9 +13,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
-
 /**
  * A chunk-sized container of unloaded sub-level data in memory
  */
@@ -161,7 +159,7 @@ public class SubLevelHoldingChunk {
     public static SubLevelHoldingChunk from(final ChunkPos pos, final CompoundTag tag) {
         final SubLevelHoldingChunk chunk = new SubLevelHoldingChunk(pos);
 
-        final int[] pointer = tag.getIntArray("pointers").orElseGet(() -> new int[0]);
+        final int[] pointer = tag.getIntArray("pointers");
         chunk.pointers.addAll(Arrays.stream(pointer).mapToObj(SavedSubLevelPointer::unpack).toList());
 
         return chunk;

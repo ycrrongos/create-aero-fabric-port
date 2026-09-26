@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.sublevel.storage;
 
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
-
 /**
  * The reason a sub-level was removed from a {@link SubLevelContainer}
  */

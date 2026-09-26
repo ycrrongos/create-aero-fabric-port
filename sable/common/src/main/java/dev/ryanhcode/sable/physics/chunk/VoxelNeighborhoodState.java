@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.jetbrains.annotations.Nullable;
 import java.util.function.BiFunction;
-
 public enum VoxelNeighborhoodState {
     EMPTY(0x000000),
     FACE(0x8bd21c),

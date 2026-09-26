@@ -3,9 +3,7 @@ package dev.ryanhcode.sable.api.physics.force;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.joml.Vector3dc;
-
 import java.util.List;
-
 /**
  * A grouping of applied point forces, alongside a force total to be applied.
  */

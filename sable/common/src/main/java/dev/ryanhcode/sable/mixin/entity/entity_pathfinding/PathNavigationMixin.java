@@ -22,10 +22,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.util.Iterator;
 import java.util.Set;
-
 @Mixin(PathNavigation.class)
 public abstract class PathNavigationMixin {
 
@@ -83,7 +81,7 @@ public abstract class PathNavigationMixin {
                 final Set<BlockPos> localSet = new ObjectOpenHashSet<>();
 
                 for (final BlockPos globalPos : globalSet) {
-                    if (Sable.HELPER.getContaining(this.level) == trackingSubLevel) {
+                    if (Sable.HELPER.getContaining(this.level, globalPos) == trackingSubLevel) {
                         localSet.add(globalPos);
                         continue;
                     }

@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3dc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 public interface MassData {
 
     /**

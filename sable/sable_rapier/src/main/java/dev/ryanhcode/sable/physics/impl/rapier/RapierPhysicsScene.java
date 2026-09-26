@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.physics.impl.rapier;
 
 import org.jetbrains.annotations.ApiStatus;
-
 /**
  * A physics scene, stored natively in {@link Rapier3D}
  */

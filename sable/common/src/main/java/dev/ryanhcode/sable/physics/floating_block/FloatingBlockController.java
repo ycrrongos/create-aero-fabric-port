@@ -10,11 +10,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.*;
-
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Clusters & manages forces caused by floating block materials
  */

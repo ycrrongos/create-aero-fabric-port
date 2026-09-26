@@ -4,7 +4,6 @@ import dev.ryanhcode.sable.mixinterface.physics.ServerLevelSceneExtension;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-
 @Mixin(ServerLevel.class)
 public class ServerLevelMixin implements ServerLevelSceneExtension {
 

@@ -27,9 +27,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
 import java.util.*;
-
 /**
  * Holds all sub-levels and plots in a {@link ServerLevel}
  */

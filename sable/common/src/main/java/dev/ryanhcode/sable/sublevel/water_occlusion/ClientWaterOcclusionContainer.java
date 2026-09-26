@@ -5,9 +5,7 @@ import dev.ryanhcode.sable.render.region.SimpleCulledRenderRegion;
 import dev.ryanhcode.sable.util.BoundedBitVolume3i;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-
 import java.util.List;
-
 /**
  * TODO: Re-do all of this state management & how we're interacting with the water occlusion renderer
  */

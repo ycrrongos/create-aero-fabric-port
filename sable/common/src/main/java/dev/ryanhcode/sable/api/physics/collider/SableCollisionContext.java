@@ -2,7 +2,6 @@ package dev.ryanhcode.sable.api.physics.collider;
 
 import dev.ryanhcode.sable.physics.impl.SableCollisionContextImpl;
 import net.minecraft.world.phys.shapes.CollisionContext;
-
 /**
  * Context used for getting collision shapes for sable physics pipelines.
  */

@@ -8,9 +8,7 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
-
 import java.util.Map;
-
 public class ReactionWheelManager {
     private static final Vector3d totalLocalAngularMomentum = new Vector3d();
     private static final Vector3d temp = new Vector3d();

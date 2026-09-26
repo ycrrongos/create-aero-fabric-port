@@ -13,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-
 @Mixin(IntegratedServer.class)
 public class IntegratedServerMixin implements SableToastableServer {
     @Shadow @Final private Minecraft minecraft;

@@ -23,9 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.*;
-
 import java.lang.Math;
-
 public class SubLevelEntityShadowRenderer {
 
     /**
@@ -143,7 +141,7 @@ public class SubLevelEntityShadowRenderer {
                         continue;
                     }
 
-                    if (renderPose.transformNormal(JOMLConversion.atLowerCornerOf(direction.getUnitVec3i(), NORMAL)).dot(upDir) < 0.6) {
+                    if (renderPose.transformNormal(JOMLConversion.atLowerCornerOf(direction.getNormal(), NORMAL)).dot(upDir) < 0.6) {
                         continue;
                     }
 

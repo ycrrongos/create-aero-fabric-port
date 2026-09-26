@@ -25,7 +25,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 /**
  * A sub-level in a {@link net.minecraft.client.multiplayer.ClientLevel}
  */
@@ -297,7 +296,7 @@ public class ClientSubLevel extends SubLevel implements ClientSubLevelAccess {
      */
     @Override
     public Pose3dc renderPose() {
-        final float pt = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
+        final float pt = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
 
         if (this.lastRenderPosePartialTick == pt) {
             return this.renderPose;

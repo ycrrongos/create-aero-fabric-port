@@ -17,10 +17,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
 import java.util.Objects;
 import java.util.function.Function;
-
 /**
  * A collider bakery that creates and caches collision shapes for blocks in Rapier
  *

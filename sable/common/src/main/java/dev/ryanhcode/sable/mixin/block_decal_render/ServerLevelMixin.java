@@ -4,7 +4,6 @@ import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
-
 /**
  * Fixes {@link net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket ClientboundBlockDestructionPackets} not being sent to players outside of a hardcoded range
  */

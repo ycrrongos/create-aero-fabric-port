@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.mixinterface.sublevel_render.vanilla;
 
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
-
 public interface RenderSectionExtension {
 
     void sable$addDirtyListener(DirtyListener listener);

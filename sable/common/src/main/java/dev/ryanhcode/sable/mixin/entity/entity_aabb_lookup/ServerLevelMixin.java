@@ -8,7 +8,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.LevelEntityGetter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
 /**
  * Wraps the client and server level {@link net.minecraft.world.level.entity.LevelEntityGetterAdapter} in a {@link SubLevelInclusiveLevelEntityGetter}
  */

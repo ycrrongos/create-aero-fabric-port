@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.mixin.particle;
 import dev.ryanhcode.sable.api.particle.ParticleSubLevelKickable;
 import net.minecraft.client.particle.BlockMarker;
 import org.spongepowered.asm.mixin.Mixin;
-
 @Mixin(BlockMarker.class)
 public class BlockMarkerMixin implements ParticleSubLevelKickable {
 

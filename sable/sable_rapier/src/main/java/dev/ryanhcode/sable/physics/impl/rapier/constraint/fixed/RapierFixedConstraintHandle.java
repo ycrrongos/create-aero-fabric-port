@@ -7,7 +7,6 @@ import dev.ryanhcode.sable.physics.impl.rapier.Rapier3D;
 import dev.ryanhcode.sable.physics.impl.rapier.constraint.RapierConstraintHandle;
 import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.Nullable;
-
 public class RapierFixedConstraintHandle extends RapierConstraintHandle implements FixedConstraintHandle {
     /**
      * Creates a rapier constraint handle

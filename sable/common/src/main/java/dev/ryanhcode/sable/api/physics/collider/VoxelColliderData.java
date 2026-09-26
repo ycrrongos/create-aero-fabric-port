@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.api.physics.collider;
 
 import org.joml.Vector3dc;
-
 public interface VoxelColliderData {
     /**
      * Adds a collision box to the block physics data entry.

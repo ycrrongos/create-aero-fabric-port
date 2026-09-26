@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 /**
  * A handle for easy access to physics-related operations on a {@link dev.ryanhcode.sable.sublevel.ServerSubLevel}.
  */

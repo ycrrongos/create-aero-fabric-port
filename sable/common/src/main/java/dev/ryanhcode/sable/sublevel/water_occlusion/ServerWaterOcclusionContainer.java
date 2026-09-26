@@ -2,7 +2,6 @@ package dev.ryanhcode.sable.sublevel.water_occlusion;
 
 import dev.ryanhcode.sable.util.BoundedBitVolume3i;
 import net.minecraft.world.level.Level;
-
 public class ServerWaterOcclusionContainer extends WaterOcclusionContainer<WaterOcclusionRegion> {
 
     public static ServerWaterOcclusionContainer create(final Level level) {

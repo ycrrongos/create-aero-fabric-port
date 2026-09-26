@@ -5,7 +5,6 @@ import dev.ryanhcode.sable.sound.SoundInstanceDelegated;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-
 @Mixin(AbstractSoundInstance.class)
 public class AbstractSoundInstanceMixin implements SoundInstanceDelegated {
 

@@ -8,7 +8,6 @@ import dev.ryanhcode.sable.network.packets.udp.SableUDPEchoPacket;
 import dev.ryanhcode.sable.network.packets.udp.SableUDPServerboundAlivePacket;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-
 public enum SableUDPPacketType {
     PING(SableUDPEchoPacket.CODEC),
     SNAPSHOT(ClientboundSableSnapshotDualPacket.CODEC),

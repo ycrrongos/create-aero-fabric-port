@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity{
 
@@ -51,7 +50,7 @@ public abstract class LivingEntityMixin extends Entity{
                 this.addDeltaMovement(JOMLConversion.toMojang(orientation.transform(JOMLConversion.toJOML(horizontalImpulse))));
             }
 
-            this.hurtMarked = true;
+            this.hasImpulse = true;
         }
 
         ci.cancel();

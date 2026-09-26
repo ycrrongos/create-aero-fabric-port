@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.mixinterface.plot.serialization;
 
 import java.util.Collection;
-
 public interface ChunkAccessExtension {
 
     /**

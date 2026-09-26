@@ -39,9 +39,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
 import java.util.*;
-
 /**
  * A sub-level in a {@link ServerLevel}
  */

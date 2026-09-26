@@ -10,7 +10,6 @@ import dev.ryanhcode.sable.index.SableTags;
 import dev.ryanhcode.sable.network.tcp.SableTCPPackets;
 import dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertiesDefinitionLoader;
 import dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertyTypes;
-import dev.ryanhcode.sable.sublevel.system.ticket.SableTicketTypes;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import dev.ryanhcode.sable.sublevel.system.SubLevelTrackingSystem;
 import dev.ryanhcode.sable.sublevel.tracking_points.SubLevelTrackingPointObserver;
@@ -20,11 +19,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
-
 public final class Sable {
 
     public static final String MOD_NAME = "Sable";
@@ -37,7 +34,6 @@ public final class Sable {
 
     @ApiStatus.Internal
     public static void init() {
-        SableTicketTypes.bootstrap();
         SableTCPPackets.init();
         SableTags.register();
         PhysicsBlockPropertyTypes.register();

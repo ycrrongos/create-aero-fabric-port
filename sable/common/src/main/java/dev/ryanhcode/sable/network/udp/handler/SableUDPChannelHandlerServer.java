@@ -7,7 +7,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerConnectionListener;
-
 public class SableUDPChannelHandlerServer extends SimpleChannelInboundHandler<AddressedSableUDPPacket> {
 
     private final MinecraftServer server;

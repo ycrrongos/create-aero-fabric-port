@@ -6,10 +6,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
-
 import java.util.Map;
 import java.util.Objects;
-
 public class SableAttributes {
 
     public static final String PUNCH_STRENGTH_NAME = "player.sub_level_punch_strength";

@@ -11,7 +11,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-
 public record ClientboundStopTrackingSubLevelPacket(long plotCoordinate) implements SableTCPPacket {
 
     public static final Type<ClientboundStopTrackingSubLevelPacket> TYPE = new Type<>(Sable.sablePath("stop_tracking_sub_level"));

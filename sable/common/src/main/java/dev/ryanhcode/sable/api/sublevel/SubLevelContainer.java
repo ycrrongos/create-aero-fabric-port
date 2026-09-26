@@ -26,9 +26,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 import org.joml.Vector3dc;
-
 import java.util.*;
-
 /**
  * Holds all sub-levels and plots in a {@link Level}
  */

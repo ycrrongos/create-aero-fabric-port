@@ -35,9 +35,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3f;
-
 import java.util.*;
-
 /**
  * Handles the loading and unloading of {@link SubLevel SubLevels} for {@link ServerPlayer ServerPlayers}.
  */
@@ -92,7 +90,7 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
     private void collectPlayers(final Vector3d position, final Collection<UUID> tracking) {
         for (final ServerPlayer player : this.level.players()) {
             if (this.shouldLoad(player, position)) {
-                tracking.add(player.getGameProfile().id());
+                tracking.add(player.getGameProfile().getId());
             }
         }
     }
@@ -212,7 +210,7 @@ public class SubLevelTrackingSystem implements SubLevelObserver {
 
             // add players who SHOULD be tracking but aren't
             for (final ServerPlayer player : this.level.players()) {
-                final UUID uuid = player.getGameProfile().id();
+                final UUID uuid = player.getGameProfile().getId();
                 if (this.shouldLoad(player, entityPos) && !tracking.contains(uuid)) {
                     tracking.add(uuid);
                     this.sendFullSync(player, serverSubLevel, null);

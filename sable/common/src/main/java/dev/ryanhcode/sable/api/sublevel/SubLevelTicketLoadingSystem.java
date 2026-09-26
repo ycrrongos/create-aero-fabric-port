@@ -6,9 +6,7 @@ import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.storage.SubLevelRemovalReason;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import org.jetbrains.annotations.ApiStatus;
-
 import java.util.UUID;
-
 /**
  * Manages the {@code activeTickets} map in {@link ServerSubLevelContainer}
  */

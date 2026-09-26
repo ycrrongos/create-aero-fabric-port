@@ -9,13 +9,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
 public class TheFasterEntityCollisionContext extends EntityCollisionContext {
 
     private final Entity entity;
 
     public TheFasterEntityCollisionContext(final Entity entity) {
-        super(false, false, 0.0, ItemStack.EMPTY, false, entity);
+        super(false, 0.0, ItemStack.EMPTY, atack -> false, entity);
         this.entity = entity;
     }
 

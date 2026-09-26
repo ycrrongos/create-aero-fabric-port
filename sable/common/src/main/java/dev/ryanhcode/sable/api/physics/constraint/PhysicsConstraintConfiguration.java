@@ -4,7 +4,6 @@ import dev.ryanhcode.sable.api.physics.PhysicsPipelineBody;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import org.joml.Vector3dc;
-
 /**
  * A configuration for a physics constraint.
  * @param <T> the type of constraint handle this configuration produces

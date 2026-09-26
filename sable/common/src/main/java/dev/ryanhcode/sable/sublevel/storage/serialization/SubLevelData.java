@@ -5,11 +5,9 @@ import dev.ryanhcode.sable.companion.math.Pose3d;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
 /**
  * A half-loaded sub-level data stored inside a chunk
  */

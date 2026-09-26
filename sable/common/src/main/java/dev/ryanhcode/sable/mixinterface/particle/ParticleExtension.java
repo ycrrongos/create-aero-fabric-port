@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.mixinterface.particle;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.world.phys.Vec3;
-
 public interface ParticleExtension {
 
     void sable$initialKickOut();

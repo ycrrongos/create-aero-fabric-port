@@ -18,7 +18,6 @@ import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3dc;
 import org.joml.Vector3dc;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -27,7 +26,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 /**
  * Java side of the sable_rapier bridge for using the Rapier 3D physics engine.
  * This is purely for internal use. Use {@link dev.ryanhcode.sable.api.physics.PhysicsPipeline} for interacting with the physics engine.

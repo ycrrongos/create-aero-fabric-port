@@ -5,7 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-
 public record FloatingBlockMaterial(boolean preventSelfLift, boolean scaleWithPressure,boolean scaleWithGravity, double liftStrength,
                                     double transitionSpeed, double slowVerticalFriction, double fastVerticalFriction,
                                     double slowHorizontalFriction, double fastHorizontalFriction) {

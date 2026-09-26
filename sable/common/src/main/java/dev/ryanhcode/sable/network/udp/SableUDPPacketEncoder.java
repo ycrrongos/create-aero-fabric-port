@@ -7,9 +7,7 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.EncoderException;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-
 import java.util.List;
-
 public class SableUDPPacketEncoder extends MessageToMessageEncoder<AddressedSableUDPPacket> {
 
     @Override

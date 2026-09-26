@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
-
 public final class SableConfig {
 
     public static final ModConfigSpec SPEC;

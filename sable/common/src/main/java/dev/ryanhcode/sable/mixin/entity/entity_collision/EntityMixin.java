@@ -5,7 +5,6 @@ import dev.ryanhcode.sable.mixinterface.entity.entity_collision.EntityExtension;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-
 @Mixin(Entity.class)
 public class EntityMixin implements EntityExtension {
 

@@ -14,7 +14,6 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 public final class SingleBlockSubLevelWrapper implements BlockAndTintGetter {
 
     private ClientLevel level;
@@ -60,7 +59,7 @@ public final class SingleBlockSubLevelWrapper implements BlockAndTintGetter {
 
     @Override
     public boolean canSeeSky(final BlockPos pos) {
-        return this.getBrightness(LightLayer.SKY, this.globalPos) >= net.minecraft.world.level.lighting.LightEngine.MAX_LEVEL;
+        return this.getBrightness(LightLayer.SKY, this.globalPos) >= this.getMaxLightLevel();
     }
 
     @Override
@@ -97,8 +96,8 @@ public final class SingleBlockSubLevelWrapper implements BlockAndTintGetter {
     }
 
     @Override
-    public int getMinY() {
-        return this.level.getMinY();
+    public int getMinBuildHeight() {
+        return this.level.getMinBuildHeight();
     }
 
     public ClientLevel getLevel() {

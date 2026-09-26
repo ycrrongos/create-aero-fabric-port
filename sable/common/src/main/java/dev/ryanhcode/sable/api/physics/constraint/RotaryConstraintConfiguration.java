@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.api.physics.constraint;
 import dev.ryanhcode.sable.api.physics.PhysicsPipelineBody;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
 import org.joml.Vector3dc;
-
 /**
  * A configuration for a rotary joint constraint, with a single angular DOF.
  * @param pos1 the position in world space assumed to be inside the plot of the first sub-level (ex. a block position).

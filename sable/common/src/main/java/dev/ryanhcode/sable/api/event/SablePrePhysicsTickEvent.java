@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.api.event;
 
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
-
 /**
  * Fired when Sable's {@link dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem} is ticking physics.
  * </br>

@@ -12,7 +12,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-
 public record ClientboundStopMovingSubLevelPacket(long plotCoordinate) implements SableTCPPacket {
 
     public static final Type<ClientboundStopMovingSubLevelPacket> TYPE = new Type<>(Sable.sablePath("stop_moving_sub_level"));

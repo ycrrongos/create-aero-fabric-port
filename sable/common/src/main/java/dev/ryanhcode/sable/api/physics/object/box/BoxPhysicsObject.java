@@ -15,7 +15,6 @@ import org.joml.Matrix3d;
 import org.joml.Matrix3dc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 /**
  * A box cuboid physics object. Some may say.
  */

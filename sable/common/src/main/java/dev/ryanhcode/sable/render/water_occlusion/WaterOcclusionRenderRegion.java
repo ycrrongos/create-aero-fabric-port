@@ -5,9 +5,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.ryanhcode.sable.render.region.SimpleCulledRenderRegion;
 import dev.ryanhcode.sable.render.region.SimpleCulledRenderRegionBuilder;
 import net.minecraft.core.BlockPos;
-
 import java.util.Collection;
-
 public class WaterOcclusionRenderRegion extends SimpleCulledRenderRegion {
     public WaterOcclusionRenderRegion(final Collection<BlockPos> blocks) {
         super(blocks);

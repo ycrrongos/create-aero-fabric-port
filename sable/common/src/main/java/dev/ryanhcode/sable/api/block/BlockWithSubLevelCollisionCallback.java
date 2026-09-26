@@ -5,7 +5,6 @@ import dev.ryanhcode.sable.mixinterface.block_properties.BlockStateExtension;
 import dev.ryanhcode.sable.physics.callback.FragileBlockCallback;
 import dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertyTypes;
 import net.minecraft.world.level.block.state.BlockState;
-
 /**
  * Interface for sub-classes of {@link net.minecraft.world.level.block.Block} to implement for physics collision callbacks.
  */

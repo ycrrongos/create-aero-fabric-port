@@ -7,7 +7,6 @@ import dev.ryanhcode.sable.physics.impl.rapier.Rapier3D;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Quaterniondc;
 import org.joml.Vector3dc;
-
 @ApiStatus.Internal
 public record RapierBoxHandle(long sceneHandle, int id, double[] poseCache) implements BoxHandle {
 

@@ -3,18 +3,33 @@ package dev.ryanhcode.sable.sublevel.render;
 import dev.ryanhcode.sable.api.sublevel.ClientSubLevelContainer;
 import dev.ryanhcode.sable.mixinterface.plot.SubLevelContainerHolder;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
-import dev.ryanhcode.sable.sublevel.render.dispatcher.NoopSubLevelRenderDispatcher;
 import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelRenderDispatcher;
+import dev.ryanhcode.sable.sublevel.render.dispatcher.VanillaSubLevelRenderDispatcher;
+import foundry.veil.api.compat.SodiumCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-
 /**
  * Renders sub-levels in the world.
- * 1.21.11 spike: only the noop dispatcher is available until RenderPipeline port.
  */
 public final class SubLevelRenderer {
 
-    public static final SelectedRenderer DEFAULT = SelectedRenderer.NOOP;
+    public static final SelectedRenderer DEFAULT;
+
+    static {
+        SelectedRenderer impl = null;
+        for (final SelectedRenderer render : SelectedRenderer.values()) {
+            if (render.isSupported()) {
+                impl = render;
+                break;
+            }
+        }
+
+        if (impl == null) {
+            throw new RuntimeException("Failed to find a supported sub-level renderer");
+        }
+
+        DEFAULT = impl;
+    }
 
     private static SubLevelRenderDispatcher dispatcher;
     private static SelectedRenderer selected = DEFAULT;
@@ -58,17 +73,18 @@ public final class SubLevelRenderer {
     }
 
     public enum SelectedRenderer {
-        NOOP {
+        VANILLA {
             @Override
             public boolean isSupported() {
-                return true;
+                return !SodiumCompat.isLoaded();
             }
 
             @Override
             public SubLevelRenderDispatcher create() {
-                return new NoopSubLevelRenderDispatcher();
+                return new VanillaSubLevelRenderDispatcher();
             }
         };
+
 
         public abstract boolean isSupported();
 

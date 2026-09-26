@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.api.physics.force;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 /**
  * A grouping of forces, for queued force totals & display to the user for making contraptions
  *

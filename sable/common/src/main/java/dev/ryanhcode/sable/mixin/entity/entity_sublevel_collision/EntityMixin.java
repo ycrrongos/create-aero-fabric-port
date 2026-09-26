@@ -35,10 +35,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import java.util.Iterator;
 import java.util.UUID;
-
 @Mixin(value = Entity.class, priority = 1100)
 public abstract class EntityMixin implements EntityMovementExtension {
 

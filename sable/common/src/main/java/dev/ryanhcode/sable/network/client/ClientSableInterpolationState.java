@@ -8,9 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.ApiStatus;
-
 import java.util.function.Consumer;
-
 /**
  * TODO: there's too large of a window that we're okay with being within for latency / delay.
  */

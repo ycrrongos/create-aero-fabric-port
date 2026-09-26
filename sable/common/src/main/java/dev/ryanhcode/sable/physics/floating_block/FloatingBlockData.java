@@ -6,7 +6,6 @@ import dev.ryanhcode.sable.util.SableMathUtils;
 import org.joml.Matrix3d;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 public class FloatingBlockData {
     private static final Matrix3d tempMassMatrix = new Matrix3d();
     private static final Vector3d tempPosOffset = new Vector3d();

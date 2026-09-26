@@ -2,7 +2,6 @@ package dev.ryanhcode.sable.api.physics.object.box;
 
 import dev.ryanhcode.sable.companion.math.Pose3d;
 import org.jetbrains.annotations.ApiStatus;
-
 /**
  * A handle to an active box in the physics engine.
  *

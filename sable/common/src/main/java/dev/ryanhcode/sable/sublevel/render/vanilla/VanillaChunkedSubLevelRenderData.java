@@ -29,10 +29,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.joml.*;
-
 import java.util.Collection;
 import java.util.Set;
-
 /**
  * A renderer and view area for a {@link dev.ryanhcode.sable.sublevel.SubLevel}.
  */
@@ -295,7 +293,7 @@ public class VanillaChunkedSubLevelRenderData implements SubLevelRenderData {
             final WaterOcclusionContainer<?> container = WaterOcclusionContainer.getContainer(this.subLevel.getLevel());
 
             final Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-            final WaterOcclusionRegion occludingRegion = container.getOccludingRegion(camera.position());
+            final WaterOcclusionRegion occludingRegion = container.getOccludingRegion(camera.getPosition());
 
             // TODO: Redo to swap to main fog instead of just getting rid of it
             if (occludingRegion != null && Sable.HELPER.getContaining(this.subLevel.getLevel(), occludingRegion.getVolume().getMinBlockPos()) == this.subLevel) {

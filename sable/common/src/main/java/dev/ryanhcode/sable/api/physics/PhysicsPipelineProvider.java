@@ -3,12 +3,10 @@ package dev.ryanhcode.sable.api.physics;
 import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Comparator;
 import java.util.ServiceLoader;
-
 /**
  * A provider of physics pipelines for levels
  */

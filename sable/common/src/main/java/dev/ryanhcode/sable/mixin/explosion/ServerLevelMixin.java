@@ -15,7 +15,6 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin {
 

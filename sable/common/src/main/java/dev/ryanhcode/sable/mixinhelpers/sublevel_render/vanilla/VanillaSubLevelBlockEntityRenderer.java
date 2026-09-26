@@ -13,10 +13,8 @@ import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.BlockDestructionProgress;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import java.util.Collection;
 import java.util.SortedSet;
-
 public class VanillaSubLevelBlockEntityRenderer implements SubLevelRenderDispatcher.BlockEntityRenderer {
 
     private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;

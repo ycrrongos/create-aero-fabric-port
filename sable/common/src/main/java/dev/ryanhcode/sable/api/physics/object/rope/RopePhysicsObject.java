@@ -11,9 +11,7 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 import net.minecraft.world.level.ChunkPos;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.Collection;
-
 /**
  * A rope made of points. Some may say.
  */

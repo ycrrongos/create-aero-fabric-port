@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.platform;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import java.nio.file.Path;
-
 @ApiStatus.Internal
 public interface SableLoaderPlatform {
 

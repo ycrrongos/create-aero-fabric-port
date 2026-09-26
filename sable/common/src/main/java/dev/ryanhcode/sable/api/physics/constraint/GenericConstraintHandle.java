@@ -2,7 +2,6 @@ package dev.ryanhcode.sable.api.physics.constraint;
 
 import org.joml.Quaterniondc;
 import org.joml.Vector3dc;
-
 /**
  * A generic constraint between two bodies.
  *

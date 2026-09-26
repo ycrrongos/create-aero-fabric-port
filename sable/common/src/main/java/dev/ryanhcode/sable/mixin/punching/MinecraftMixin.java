@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
     @Shadow
@@ -34,7 +33,7 @@ public abstract class MinecraftMixin {
     @Inject(method = "startAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;resetAttackStrengthTicker()V"))
     private void tryPaddling(final CallbackInfoReturnable<Boolean> cir) {
         if (!this.player.getMainHandItem().is(SableTags.PADDLES) ||
-                this.player.getCooldowns().isOnCooldown(this.player.getMainHandItem())) {
+                this.player.getCooldowns().isOnCooldown(this.player.getMainHandItem().getItem())) {
             return;
         }
 

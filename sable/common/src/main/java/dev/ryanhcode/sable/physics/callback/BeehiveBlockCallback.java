@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
-
 public class BeehiveBlockCallback extends FragileBlockCallback {
     public static final BeehiveBlockCallback INSTANCE = new BeehiveBlockCallback();
 

@@ -1,7 +1,5 @@
 package dev.ryanhcode.sable.mixin.respawn_point;
 
-import net.minecraft.core.UUIDUtil;
-
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelHelper;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
@@ -30,10 +28,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import java.util.Optional;
 import java.util.UUID;
-
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension {
 
@@ -107,14 +103,14 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
     private void sable$addRespawnPoint(final CompoundTag compoundTag, final CallbackInfo ci) {
         if (this.sable$respawnPoint != null) {
-            compoundTag.store("RespawnPoint", UUIDUtil.CODEC, this.sable$respawnPoint);
+            compoundTag.putUUID("RespawnPoint", this.sable$respawnPoint);
         }
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void sable$readRespawnPoint(final CompoundTag compoundTag, final CallbackInfo ci) {
-        if (compoundTag.read("RespawnPoint", UUIDUtil.CODEC).isPresent()) {
-            this.sable$respawnPoint = compoundTag.read("RespawnPoint", UUIDUtil.CODEC).orElseThrow();
+        if (compoundTag.hasUUID("RespawnPoint")) {
+            this.sable$respawnPoint = compoundTag.getUUID("RespawnPoint");
         }
     }
 

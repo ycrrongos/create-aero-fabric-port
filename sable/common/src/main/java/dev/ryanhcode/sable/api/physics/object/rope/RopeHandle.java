@@ -4,9 +4,7 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.List;
-
 /**
  * A handle to an active rope in the physics engine.
  *

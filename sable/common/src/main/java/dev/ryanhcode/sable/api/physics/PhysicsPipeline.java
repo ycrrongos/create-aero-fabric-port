@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 /**
  * An abstracted physics engine & pipeline for handling {@link dev.ryanhcode.sable.sublevel.SubLevel} physics calculations.
  */

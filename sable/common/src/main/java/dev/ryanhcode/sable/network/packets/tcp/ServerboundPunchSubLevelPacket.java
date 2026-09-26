@@ -31,9 +31,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.Objects;
-
 /**
  * Sends hit position relative to center of mass of target sublevel, and target angle relative to sublevel player is tracking
  *
@@ -100,10 +98,10 @@ public record ServerboundPunchSubLevelPacket(BlockPos punchedBlock, Vector3dc lo
 
         final double attributeStrength = Objects.requireNonNull(player.getAttribute(SableAttributes.PUNCH_STRENGTH)).getValue();
         final int customCooldown = SableAttributes.getPushCooldownTicks(player);
-        if (!physicsSystem.tryPunch(player.getGameProfile().id(), customCooldown)) {
+        if (!physicsSystem.tryPunch(player.getGameProfile().getId(), customCooldown)) {
             return;
         }
-        player.getCooldowns().addCooldown(player.getMainHandItem(), customCooldown);
+        player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), customCooldown);
 
         final double downwardStrengthMultiplier = SableConfig.SUB_LEVEL_PUNCH_DOWNWARD_STRENGTH_MULTIPLIER.getAsDouble();
 

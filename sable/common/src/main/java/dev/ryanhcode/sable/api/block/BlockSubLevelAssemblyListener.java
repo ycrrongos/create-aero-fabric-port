@@ -4,7 +4,6 @@ import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
-
 /**
  * An interface for sub-classes of {@link net.minecraft.world.level.block.Block} to implement that indicates the
  * {@link SubLevelAssemblyHelper} should notify the block any time it is "moved" as a part of sub-level assembly.

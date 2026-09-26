@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.api.block;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3dc;
-
 /**
  * Interface for sub-classes of {@link net.minecraft.world.level.block.Block} to implement to specify a custom center
  * of mass for sub-level physics.

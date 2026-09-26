@@ -2,10 +2,8 @@ package dev.ryanhcode.sable.network.udp;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.net.InetSocketAddress;
 import java.util.UUID;
-
 /**
  * The authentication state for a player's connection to the server through UDP
  */

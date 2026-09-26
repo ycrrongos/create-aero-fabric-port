@@ -5,7 +5,6 @@ import dev.ryanhcode.sable.network.packets.ClientboundSableSnapshotDualPacket;
 import dev.ryanhcode.sable.network.packets.ClientboundSableSnapshotInfoDualPacket;
 import dev.ryanhcode.sable.network.packets.tcp.*;
 import foundry.veil.api.network.VeilPacketManager;
-
 public class SableTCPPackets {
 
     private static final VeilPacketManager PACKET_MANAGER = VeilPacketManager.create(Sable.MOD_ID, "1");

@@ -8,7 +8,6 @@ import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
 @Mixin(targets = "net.minecraft.server.level.ChunkMap$TrackedEntity")
 public class TrackedEntityMixin {
 

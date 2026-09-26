@@ -5,7 +5,6 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 /**
  * An interface for sub-classes of {@link net.minecraft.world.level.block.entity.BlockEntity} to implement behaviour
  * when mounted on a sub-level.

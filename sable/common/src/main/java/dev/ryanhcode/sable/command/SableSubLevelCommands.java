@@ -25,10 +25,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 import org.joml.Vector2i;
 import org.joml.Vector3d;
-
 import java.util.Collection;
 import java.util.Objects;
-
 public class SableSubLevelCommands {
 
     /**

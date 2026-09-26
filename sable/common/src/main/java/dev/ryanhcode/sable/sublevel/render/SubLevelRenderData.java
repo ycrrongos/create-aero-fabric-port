@@ -6,9 +6,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.PrioritizeChunkUpdates;
 import net.minecraft.client.renderer.chunk.RenderRegionCache;
 import org.joml.*;
-
 import java.io.Closeable;
-
 public interface SubLevelRenderData extends Closeable {
 
     @Override

@@ -13,7 +13,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.joml.Vector3d;
-
 public class ClientSubLevelPunchHelper {
     /**
      * @param testCreativeBreaking whether to prevent pushing if a creative player will destroy the block
@@ -22,12 +21,16 @@ public class ClientSubLevelPunchHelper {
         final Minecraft minecraft = Minecraft.getInstance();
         final LocalPlayer player = minecraft.player;
         if (player.blockActionRestricted(level, hitResult.getBlockPos(), minecraft.gameMode.getPlayerMode()) ||
-                player.getCooldowns().isOnCooldown(player.getMainHandItem())) {
+                player.getCooldowns().isOnCooldown(player.getMainHandItem().getItem())) {
             return;
         }
 
         if (player.isCreative() && testCreativeBreaking) {
-            // Item.canAttackBlock removed in 1.21.11; creative punch gate deferred
+            final BlockState blockState = minecraft.level.getBlockState(hitResult.getBlockPos());
+
+            if (player.getMainHandItem().getItem().canAttackBlock(blockState, minecraft.level, hitResult.getBlockPos(), player)) {
+                return;
+            }
         }
 
         final Vector3d hitPosition = JOMLConversion.toJOML(hitResult.getLocation());
@@ -54,7 +57,7 @@ public class ClientSubLevelPunchHelper {
 
         final int customCooldown = SableAttributes.getPushCooldownTicks(player);
         if (customCooldown > 0) {
-            player.getCooldowns().addCooldown(player.getMainHandItem(), customCooldown);
+            player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), customCooldown);
         }
 
         minecraft.getConnection().send(new ServerboundCustomPayloadPacket(new ServerboundPunchSubLevelPacket(

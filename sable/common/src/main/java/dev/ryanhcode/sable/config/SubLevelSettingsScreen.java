@@ -12,7 +12,6 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.common.ModConfigSpec;
-
 public class SubLevelSettingsScreen extends OptionsSubScreen {
     public static final Component TITLE = Component.translatable("options.sable_menu");
 

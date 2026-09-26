@@ -7,10 +7,8 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import net.minecraft.network.ProtocolSwapHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-
 import java.io.IOException;
 import java.util.List;
-
 public class SableUDPPacketDecoder extends MessageToMessageDecoder<DatagramPacket> implements ProtocolSwapHandler {
 
     public SableUDPPacketDecoder() {

@@ -7,9 +7,7 @@ import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-
 import java.util.concurrent.CompletableFuture;
-
 @Mixin(MovingSoundInstanceDelegate.class)
 public abstract class MovingSoundInstanceDelegateMixin implements SoundInstance {
 

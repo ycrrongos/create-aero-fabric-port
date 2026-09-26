@@ -21,10 +21,8 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
-
 import java.util.List;
 import java.util.Objects;
-
 public final class ClientboundSableSnapshotDualPacket implements SableUDPPacket, SableTCPPacket {
     public static final Type<ClientboundSableSnapshotDualPacket> TYPE = new Type<>(Sable.sablePath("snapshot_packet"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundSableSnapshotDualPacket> CODEC = StreamCodec.of((buf, value) -> value.encode(buf), ClientboundSableSnapshotDualPacket::new);

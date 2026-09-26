@@ -9,7 +9,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BellAttachType;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
-
 public class BellBlockCallback extends FragileBlockCallback {
     public static final BellBlockCallback INSTANCE = new BellBlockCallback();
 
@@ -34,7 +33,7 @@ public class BellBlockCallback extends FragileBlockCallback {
             zMul = 1;
         }
 
-        final Direction direction = Direction.getNearest(net.minecraft.util.Mth.floor(hitDir.x * xMul * 1000.0), 0, net.minecraft.util.Mth.floor(hitDir.z * zMul * 1000.0), Direction.NORTH);
+        final Direction direction = Direction.getNearest(hitDir.x * xMul, 0.0, hitDir.z * zMul);
         ((BellBlock) state.getBlock()).attemptToRing(level, pos, direction.getOpposite());
 
         return new CollisionResult(JOMLConversion.ZERO, false);

@@ -5,10 +5,7 @@ import dev.ryanhcode.sable.companion.math.Pose3dc;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.Comparator;
-
-
 /**
  * Manages snapshot interpolation for client sub-levels.
  */

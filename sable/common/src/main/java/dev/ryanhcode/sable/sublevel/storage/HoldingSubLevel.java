@@ -3,9 +3,7 @@ package dev.ryanhcode.sable.sublevel.storage;
 import dev.ryanhcode.sable.sublevel.storage.holding.GlobalSavedSubLevelPointer;
 import dev.ryanhcode.sable.sublevel.storage.serialization.SubLevelData;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
-
 public final class HoldingSubLevel {
     private final @NotNull SubLevelData data;
     private GlobalSavedSubLevelPointer pointer;

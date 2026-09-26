@@ -3,10 +3,8 @@ package dev.ryanhcode.sable.mixinhelpers.voxel_shape_iteration;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 import org.jetbrains.annotations.ApiStatus;
-
 import java.util.Arrays;
 import java.util.BitSet;
-
 /**
  * This manually replicates the behavior from {@link BitSet} with all checks removed.
  * A second internal array exists for resetting to the original state.

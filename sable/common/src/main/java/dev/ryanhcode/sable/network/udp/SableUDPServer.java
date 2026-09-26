@@ -19,10 +19,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-
 import java.net.InetSocketAddress;
 import java.util.*;
-
 /**
  * Handles UDP authentication and communication
  *
@@ -74,7 +72,7 @@ public class SableUDPServer {
         }
 
         if (player.connection.getRemoteAddress() instanceof LocalAddress) {
-            if (player.level().getServer().isSingleplayer() && player.level().getServer().isSingleplayerOwner(new net.minecraft.server.players.NameAndId(player.getGameProfile())))
+            if (player.server.isSingleplayer() && player.server.isSingleplayerOwner(player.getGameProfile()))
                 return true;
         }
 

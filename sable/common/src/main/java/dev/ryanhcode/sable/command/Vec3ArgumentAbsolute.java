@@ -12,15 +12,12 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.world.phys.Vec3;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-
 import static net.minecraft.commands.arguments.coordinates.WorldCoordinate.ERROR_EXPECTED_DOUBLE;
-
 public class Vec3ArgumentAbsolute implements ArgumentType<Vec3>
 {
     public static Vec3ArgumentAbsolute vec3() {

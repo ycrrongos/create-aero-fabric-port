@@ -8,12 +8,10 @@ import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
-
 import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
-
 /**
  * Holds all sub-levels and plots in a {@link ClientLevel}
  */

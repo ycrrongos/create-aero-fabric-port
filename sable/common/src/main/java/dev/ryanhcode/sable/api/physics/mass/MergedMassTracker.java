@@ -11,10 +11,8 @@ import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
-
 import java.util.Collection;
 import java.util.Objects;
-
 public class MergedMassTracker implements MassData {
     private final MassTracker selfTracker;
     /**

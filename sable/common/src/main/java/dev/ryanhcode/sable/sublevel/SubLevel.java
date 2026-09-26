@@ -9,9 +9,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4d;
-
 import java.util.UUID;
-
 /**
  * A sub-level is a subdivision of a level, containing:
  * <ul>

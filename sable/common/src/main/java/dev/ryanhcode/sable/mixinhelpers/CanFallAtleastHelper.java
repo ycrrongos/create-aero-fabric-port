@@ -17,9 +17,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-
 import java.util.Iterator;
-
 public class CanFallAtleastHelper {
 
     public static Vector3d canFallAtleastWithSubLevels(final Level level, final AABB aabb) {

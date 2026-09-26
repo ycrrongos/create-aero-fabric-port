@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
-
 /**
  * Makes the chunk access methods in the client chunk cache use the plot system.
  */
@@ -106,7 +105,7 @@ public abstract class ClientChunkCacheMixin implements DebugChunkProviderAttachm
     }
 
     @Inject(method = "replaceWithPacketData", at = @At("HEAD"), cancellable = true)
-    private void replaceWithPacketData(final int x, final int z, final FriendlyByteBuf friendlyByteBuf, final java.util.Map<net.minecraft.world.level.levelgen.Heightmap.Types, long[]> heightmaps,
+    private void replaceWithPacketData(final int x, final int z, final FriendlyByteBuf friendlyByteBuf, final CompoundTag compoundTag,
                                        final Consumer<ClientboundLevelChunkPacketData.BlockEntityTagOutput> consumer, final CallbackInfoReturnable<LevelChunk> cir) {
         final SubLevelContainer container = this.sable$getPlotContainer();
 
@@ -119,10 +118,10 @@ public abstract class ClientChunkCacheMixin implements DebugChunkProviderAttachm
                     this.level.unload(levelChunk);
                 }
                 levelChunk = new LevelChunk(this.level, chunkPos);
-                levelChunk.replaceWithPacketData(friendlyByteBuf, heightmaps, consumer);
+                levelChunk.replaceWithPacketData(friendlyByteBuf, compoundTag, consumer);
                 container.newPopulatedChunk(chunkPos, levelChunk);
             } else {
-                levelChunk.replaceWithPacketData(friendlyByteBuf, heightmaps, consumer);
+                levelChunk.replaceWithPacketData(friendlyByteBuf, compoundTag, consumer);
             }
 
             this.level.onChunkLoaded(chunkPos);

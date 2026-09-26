@@ -8,10 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-
 import java.util.List;
 import java.util.Set;
-
 @Mixin(LevelChunkTicks.class)
 public class LevelChunkTicksMixin<T> implements LevelChunkTicksExtension<T> {
 

@@ -15,9 +15,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-
 import java.util.Objects;
-
 public record ClientboundChangeBoundsSubLevelPacket(long plotCoordinate,
                                                     BoundingBox3ic bounds) implements SableTCPPacket {
 

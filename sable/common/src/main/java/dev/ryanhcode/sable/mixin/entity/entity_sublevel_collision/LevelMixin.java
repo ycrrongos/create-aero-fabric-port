@@ -5,7 +5,6 @@ import dev.ryanhcode.sable.mixinterface.entity.entity_sublevel_collision.LevelEx
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-
 @Mixin(Level.class)
 public class LevelMixin implements LevelExtension {
 

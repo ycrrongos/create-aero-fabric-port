@@ -8,11 +8,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 public class FloatingClusterContainer {
     public List<FloatingBlockCluster> clusters = new ArrayList<>();
     private final Long2ObjectMap<BlockState> addedBlocks = new Long2ObjectOpenHashMap<>();

@@ -12,7 +12,6 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Quaterniondc;
 import org.joml.Quaternionf;
 import org.joml.Vector3dc;
-
 public class SublevelRenderOffsetHelper {
     /**
      * @param subLevel Sub-level to move PoseStack from
@@ -21,7 +20,7 @@ public class SublevelRenderOffsetHelper {
      */
     public static void posePlotToProjected(final SubLevel subLevel, final PoseStack ps) {
         if (subLevel != null) {
-            final Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().position();
+            final Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 
             final Pose3dc pose = ((ClientSubLevel) subLevel).renderPose();
 

@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 /**
  * Kicks entities out of sublevels if they are added to a {@link dev.ryanhcode.sable.sublevel.plot.LevelPlot}
  */

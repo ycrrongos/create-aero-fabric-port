@@ -35,13 +35,11 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
-
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.SequencedSet;
 import java.util.function.Consumer;
-
 public class VanillaSubLevelRenderDispatcher implements SubLevelRenderDispatcher {
 
     private final SequencedSet<RenderType> singleBlockLayers;

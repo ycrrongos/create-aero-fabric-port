@@ -2,9 +2,7 @@ package dev.ryanhcode.sable.mixinterface.clip_overwrite;
 
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.function.Predicate;
-
 public interface ClipContextExtension {
     @Nullable SubLevel sable$getIgnoredSubLevel();
 

@@ -18,9 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
-
 import static org.lwjgl.openal.AL11.*;
-
 /**
  * A moving sound instance that delegates to another sound instance for the sound data
  */
@@ -79,8 +77,8 @@ public class MovingSoundInstanceDelegate implements SoundInstance, TickableSound
     }
 
     @Override
-    public @NotNull Identifier getIdentifier() {
-        return this.instance.getIdentifier();
+    public @NotNull Identifier getLocation() {
+        return this.instance.getLocation();
     }
 
     @Override

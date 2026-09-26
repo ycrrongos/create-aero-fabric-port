@@ -16,10 +16,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-
 import java.net.InetSocketAddress;
 import java.util.UUID;
-
 public record ClientboundSableUDPActivationPacket(UUID uuid) implements SableTCPPacket {
 
     public static final Type<ClientboundSableUDPActivationPacket> TYPE = new Type<>(Sable.sablePath("udp_activation"));

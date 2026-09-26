@@ -20,9 +20,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.UUID;
-
 public record ClientboundStartTrackingSubLevelPacket(long plotCoordinate, UUID subLevelID, Pose3dc lastPose, Pose3d pose,
                                                      BoundingBox3ic bounds, @Nullable String name, int gameTick) implements SableTCPPacket {
 

@@ -60,7 +60,6 @@ import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 /**
  * Implementation of {@link PhysicsPipeline} for the rust Rapier 3D physics engine.
  */

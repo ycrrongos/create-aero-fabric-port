@@ -14,9 +14,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import org.joml.Vector3d;
-
 import java.util.UUID;
-
 /**
  * Gizmo movement packet
  *
@@ -51,8 +49,8 @@ public record ServerboundGizmoMoveSubLevelPacket(UUID subLevel, Vector3d positio
 
         final ServerSubLevelContainer container = SubLevelContainer.getContainer(level);
 
-        if (false && !context.player().isCreative()) {
-            Sable.LOGGER.warn("Player {} tried to move a sub-level with gizmo without permission", context.player().getGameProfile().name());
+        if (!context.player().hasPermissions(1)) {
+            Sable.LOGGER.warn("Player {} tried to move a sub-level with gizmo without permission", context.player().getGameProfile().getName());
             return;
         }
 

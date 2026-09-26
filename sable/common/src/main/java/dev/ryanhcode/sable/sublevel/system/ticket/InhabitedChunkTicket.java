@@ -3,22 +3,21 @@ package dev.ryanhcode.sable.sublevel.system.ticket;
 import net.minecraft.server.level.Ticket;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
-
 import java.util.UUID;
-
 /**
  * A ticket for a chunk force-loaded by a sub-level in the {@link PhysicsChunkTicketManager}
  */
 @ApiStatus.Internal
 public final class InhabitedChunkTicket {
     private final UUID uuid;
-    private final Ticket ticket;
+    private final Ticket<UUID> ticket;
     private long lastInhabitedTick;
 
     /**
+     * @param pos               the position of the chunk
      * @param lastInhabitedTick the last tick ({@link Level#getGameTime()}) the chunk was inhabited
      */
-    public InhabitedChunkTicket(final UUID uuid, final long lastInhabitedTick, final Ticket ticket) {
+    public InhabitedChunkTicket(final UUID uuid, final long lastInhabitedTick, final Ticket<UUID> ticket) {
         this.uuid = uuid;
         this.lastInhabitedTick = lastInhabitedTick;
         this.ticket = ticket;
@@ -32,12 +31,8 @@ public final class InhabitedChunkTicket {
         this.lastInhabitedTick = lastInhabitedTick;
     }
 
-    public Ticket getTicket() {
+    public Ticket<UUID> getTicket() {
         return this.ticket;
-    }
-
-    public UUID uuid() {
-        return this.uuid;
     }
 
     @Override

@@ -2,65 +2,118 @@ package dev.ryanhcode.sable.physics.config.block_properties;
 
 import com.mojang.serialization.Codec;
 import dev.ryanhcode.sable.Sable;
+import foundry.veil.platform.registry.RegistrationProvider;
+import foundry.veil.platform.registry.RegistryObject;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-
 /**
- * Default physics block properties — plain map, no Veil {@code RegistrationProvider}
- * (Veil 1.21.1 Registry hooks crash on 1.21.11).
+ * All default physics block properties
  */
-public final class PhysicsBlockPropertyTypes {
-    private PhysicsBlockPropertyTypes() {}
+public class PhysicsBlockPropertyTypes {
+    public static final ResourceKey<Registry<PhysicsBlockPropertyType<?>>> REGISTRY_KEY = ResourceKey.createRegistryKey(Sable.sablePath("physics_block_properties"));
+    private static final RegistrationProvider<PhysicsBlockPropertyType<?>> VANILLA_PROVIDER;
+    private static final Registry<PhysicsBlockPropertyType<?>> REGISTRY;
 
-    private static final Map<Identifier, PhysicsBlockPropertyType<?>> BY_ID = new LinkedHashMap<>();
+    static {
+        VANILLA_PROVIDER = RegistrationProvider.get(REGISTRY_KEY, Sable.MOD_ID);
+        REGISTRY = VANILLA_PROVIDER.asVanillaRegistry();
+    }
 
-    public static final Supplier<PhysicsBlockPropertyType<Double>> MASS = register(Sable.sablePath("mass"), Codec.DOUBLE, 1.0);
-    public static final Supplier<PhysicsBlockPropertyType<Vec3>> INERTIA = register(Sable.sablePath("inertia"), Vec3.CODEC, null);
-    public static final Supplier<PhysicsBlockPropertyType<Double>> VOLUME = register(Sable.sablePath("volume"), Codec.DOUBLE, 1.0);
-    public static final Supplier<PhysicsBlockPropertyType<Double>> RESTITUTION = register(Sable.sablePath("restitution"), Codec.DOUBLE, 0.0);
-    public static final Supplier<PhysicsBlockPropertyType<Double>> FRICTION = register(Sable.sablePath("friction"), Codec.DOUBLE, 1.0);
-    public static final Supplier<PhysicsBlockPropertyType<Boolean>> FRAGILE = register(Sable.sablePath("fragile"), Codec.BOOL, false);
-    public static final Supplier<PhysicsBlockPropertyType<Identifier>> FLOATING_MATERIAL = register(Sable.sablePath("floating_material"), Identifier.CODEC, null);
-    public static final Supplier<PhysicsBlockPropertyType<Double>> FLOATING_SCALE = register(Sable.sablePath("floating_scale"), Codec.DOUBLE, 1.0);
+    /**
+     * The mass of a block in [kpg]
+     */
+    public static final RegistryObject<PhysicsBlockPropertyType<Double>> MASS = register(Sable.sablePath("mass"), Codec.DOUBLE, 1.0);
+    /**
+     * The optional 3d vector representing the principal inertia of the block
+     */
+    public static final RegistryObject<PhysicsBlockPropertyType<Vec3>> INERTIA = register(Sable.sablePath("inertia"), Vec3.CODEC, null);
+    /**
+     * The volume of a block, used for buoyancy
+     */
+    public static final RegistryObject<PhysicsBlockPropertyType<Double>> VOLUME = register(Sable.sablePath("volume"), Codec.DOUBLE, 1.0);
+    /**
+     * The restitution of a block
+     */
+    public static final RegistryObject<PhysicsBlockPropertyType<Double>> RESTITUTION = register(Sable.sablePath("restitution"), Codec.DOUBLE, 0.0);
+    /**
+     * The friction multiplier of a block
+     */
+    public static final RegistryObject<PhysicsBlockPropertyType<Double>> FRICTION = register(Sable.sablePath("friction"), Codec.DOUBLE, 1.0);
+    /**
+     * If this block is fragile
+     */
+    public static final RegistryObject<PhysicsBlockPropertyType<Boolean>> FRAGILE = register(Sable.sablePath("fragile"), Codec.BOOL, false);
+    /**
+     * The floating material {@link Identifier} this block should have
+     */
+    public static final RegistryObject<PhysicsBlockPropertyType<Identifier>> FLOATING_MATERIAL = register(Sable.sablePath("floating_material"), Identifier.CODEC, null);
+    /**
+     * The scale / multiplier of the effects caused by the floating material for this block
+     */
+    public static final RegistryObject<PhysicsBlockPropertyType<Double>> FLOATING_SCALE = register(Sable.sablePath("floating_scale"), Codec.DOUBLE, 1.0);
 
     public static void register() {
-        // static init already registered defaults
+        // no-op
     }
-
-    private static <T> Supplier<PhysicsBlockPropertyType<T>> register(final Identifier id, final Codec<T> codec, final T defaultValue) {
-        if (BY_ID.containsKey(id)) {
+    /**
+     * Registers a physics block property.
+     *
+     * @param id    The id of the property
+     * @param codec The codec defining serialization/deserialization for the property
+     * @return The registered property
+     */
+    private static <T> RegistryObject<PhysicsBlockPropertyType<T>> register(final Identifier id, final Codec<T> codec, final T defaultValue) {
+        // Throw if the property is already registered
+        if (REGISTRY.containsKey(id)) {
             throw new IllegalArgumentException("Duplicate physics block property: %s".formatted(id));
         }
-        final PhysicsBlockPropertyType<T> type = new PhysicsBlockPropertyType<>(BY_ID.size(), codec, defaultValue);
-        BY_ID.put(id, type);
-        return () -> type;
+
+        return VANILLA_PROVIDER.register(id, () -> new PhysicsBlockPropertyType<>(REGISTRY.size(), codec, defaultValue));
     }
 
+    /**
+     * The count of registered properties
+     */
     public static int count() {
-        return BY_ID.size();
+        return REGISTRY.size();
     }
 
+    /**
+     * Gets the codec for a property.
+     *
+     * @param id The id of the property
+     * @return The codec for the property
+     */
     public static Codec<Object> getPropertyCodec(final Identifier id) {
-        final PhysicsBlockPropertyType<?> property = BY_ID.get(id);
+        final PhysicsBlockPropertyType<?> property = REGISTRY.get(id);
+
         if (property != null) {
             //noinspection unchecked
             return (Codec<Object>) property.codec;
         }
+
         throw new IllegalArgumentException("Unknown physics block property: %s".formatted(id));
     }
 
+    /**
+     * Gets a property type
+     *
+     * @param id The id of the property
+     * @return The property type
+     */
     public static PhysicsBlockPropertyType<?> getPropertyType(final Identifier id) {
-        final PhysicsBlockPropertyType<?> property = BY_ID.get(id);
+        final PhysicsBlockPropertyType<?> property = REGISTRY.get(id);
+
         if (property != null) {
             return property;
         }
+
         throw new IllegalArgumentException("Unknown physics block property: %s".formatted(id));
     }
 
     public record PhysicsBlockPropertyType<T>(int id, Codec<T> codec, T defaultValue) {
     }
+
 }

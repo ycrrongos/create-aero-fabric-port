@@ -21,11 +21,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.io.File;
 import java.util.Formatter;
 import java.util.Locale;
-
 public class SableStorageCommands {
 
     public static void register(final LiteralArgumentBuilder<CommandSourceStack> sableBuilder, final CommandBuildContext buildContext) {
@@ -159,7 +157,7 @@ public class SableStorageCommands {
                                                 final SubLevelData data = storage.attemptLoadSubLevel(chunkPos, pointer);
 
                                                 final String name = data.fullTag().contains("display_name")
-                                                        ? data.fullTag().getStringOr("display_name", "")
+                                                        ? data.fullTag().getString("display_name")
                                                         : data.uuid().toString();
                                                 if (name != null && name.equals(nameArgument)) {
                                                     logFoundSubLevel(pointer, data, chunkPos, source, level);
@@ -180,7 +178,7 @@ public class SableStorageCommands {
 
         final String uuid = data.uuid().toString();
         final String name = data.fullTag().contains("display_name")
-                ? data.fullTag().getStringOr("display_name", "")
+                ? data.fullTag().getString("display_name")
                 : uuid;
         final GlobalSavedSubLevelPointer globalPointer = new GlobalSavedSubLevelPointer(chunkPos, pointer.storageIndex(), pointer.subLevelIndex());
 
@@ -188,19 +186,19 @@ public class SableStorageCommands {
 
         source.sendSuccess(() -> {
             final MutableComponent component = Component.translatable("commands.sable.info.name", Component.literal(name));
-            component.setStyle(Style.EMPTY.withClickEvent(new ClickEvent.CopyToClipboard(uuid))
-                    .withHoverEvent(new HoverEvent.ShowText(Component.literal(uuid)))
+            component.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, uuid))
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(uuid)))
                     .withColor(ChatFormatting.GRAY));
             return component;
         }, false);
 
         source.sendSuccess(() -> {
             final Vector3dc pos = pose.position();
-            final Identifier dimension = level.dimension().identifier();
+            final Identifier dimension = level.dimension().location();
             final Component fileId = Component.translatable("commands.sable.info.name.tooltip", globalPointer.toString());
             final MutableComponent component = Component.translatable("commands.sable.info.position", pos.x(), pos.y(), pos.z());
-            component.setStyle(Style.EMPTY.withClickEvent(new ClickEvent.SuggestCommand(new Formatter().format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f", dimension, pos.x(), pos.y(), pos.z()).toString()))
-                    .withHoverEvent(new HoverEvent.ShowText(fileId)));
+            component.setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, new Formatter().format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f", dimension, pos.x(), pos.y(), pos.z()).toString()))
+                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, fileId)));
             return component;
         }, false);
 

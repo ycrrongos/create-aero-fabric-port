@@ -8,7 +8,6 @@ import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
-
 public interface BlockEntitySubLevelPropellerActor extends BlockEntitySubLevelActor {
 
     Vector3d THRUST_VECTOR = new Vector3d();
@@ -21,7 +20,7 @@ public interface BlockEntitySubLevelPropellerActor extends BlockEntitySubLevelAc
         final BlockEntityPropeller prop = this.getPropeller();
 
         if (prop.isActive()) {
-            final Vec3 thrustDirection = Vec3.atLowerCornerOf(prop.getBlockDirection().getUnitVec3i());
+            final Vec3 thrustDirection = Vec3.atLowerCornerOf(prop.getBlockDirection().getNormal());
             this.applyForces(subLevel, thrustDirection, timeStep);
         }
     }

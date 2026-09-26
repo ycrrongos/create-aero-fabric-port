@@ -22,9 +22,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
-
 /**
  * Manages the heatmap and flood-fill for sub-level splitting
  */

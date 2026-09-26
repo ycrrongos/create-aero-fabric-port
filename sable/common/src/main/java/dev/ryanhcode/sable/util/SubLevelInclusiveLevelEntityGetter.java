@@ -12,10 +12,8 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4d;
-
 import java.util.UUID;
 import java.util.function.Consumer;
-
 /**
  * A {@link LevelEntityGetter} that delegates all calls to a child, taking into account sub-levels and their plots
  *

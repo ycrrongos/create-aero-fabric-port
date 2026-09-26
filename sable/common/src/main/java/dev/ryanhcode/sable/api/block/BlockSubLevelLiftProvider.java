@@ -14,11 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
 public interface BlockSubLevelLiftProvider {
 
     Direction[] DIRECTIONS = Direction.values();
@@ -99,7 +97,8 @@ public interface BlockSubLevelLiftProvider {
     }
 
     /**
-     * {@code parallelDragScalar = k1)) / 2} to prevent exponential velocity gain. <br>
+     * {@code parallelDragScalar = k1, liftScalar = k2 }<br>
+     * Should be at minimum {@code (-k1 + sqrt(k1^2 + k2^2)) / 2} to prevent exponential velocity gain. <br>
      * @return How effective this lift provider is at producing directionless drag.
      */
     default float sable$getDirectionlessDragScalar() {

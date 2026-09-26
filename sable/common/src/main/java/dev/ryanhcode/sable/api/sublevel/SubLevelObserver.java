@@ -2,7 +2,6 @@ package dev.ryanhcode.sable.api.sublevel;
 
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.storage.SubLevelRemovalReason;
-
 /**
  * Observes additions, removals, and ticking of sub-levels.
  */

@@ -18,10 +18,8 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3fc;
-
 import java.util.HashMap;
 import java.util.Map;
-
 public class DimensionPhysicsData {
     static final Map<ResourceKey<Level>, DimensionPhysics> DIMENSION_PHYSICS_DATA = new HashMap<>();
     static final Map<ResourceKey<Level>, DimensionPhysics> DEFAULT_DIMENSION_PHYSICS_DATA = new HashMap<>();
@@ -110,24 +108,31 @@ public class DimensionPhysicsData {
         return new ClientboundDimensionPhysicsPacket(DIMENSION_PHYSICS_DATA.values().stream().toList());
     }
 
-    public static class ReloadListener extends SimpleJsonResourceReloadListener<DimensionPhysics> {
+    public static class ReloadListener extends SimpleJsonResourceReloadListener {
 
+        private static final Gson GSON = new Gson();
         public static final ReloadListener INSTANCE = new ReloadListener();
 
         public static final String NAME = "dimension_physics";
         public static final Identifier ID = Sable.sablePath(NAME);
 
         public ReloadListener() {
-            super(DimensionPhysics.CODEC, net.minecraft.resources.FileToIdConverter.json(NAME));
+            super(ReloadListener.GSON, NAME);
         }
 
         @Override
-        protected void apply(final Map<Identifier, DimensionPhysics> map, final ResourceManager resourceManager, final ProfilerFiller profiler) {
+        protected void apply(final Map<Identifier, JsonElement> map, final ResourceManager resourceManager, final ProfilerFiller profiler) {
             clearPhysics();
 
-            for (final Map.Entry<Identifier, DimensionPhysics> entry : map.entrySet()) {
+            for (final Map.Entry<Identifier, JsonElement> entry : map.entrySet()) {
                 try {
-                    final DimensionPhysics dimensionPhysics = entry.getValue();
+                    final DataResult<DimensionPhysics> dataResult = DimensionPhysics.CODEC.parse(JsonOps.INSTANCE, entry.getValue());
+
+                    if (dataResult.error().isPresent()) {
+                        Sable.LOGGER.error(String.valueOf(dataResult.error().get()));
+                    }
+
+                    final DimensionPhysics dimensionPhysics = dataResult.getOrThrow();
                     final ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, dimensionPhysics.dimension());
 
                     addPhysicsWithPriority(dimension, dimensionPhysics);

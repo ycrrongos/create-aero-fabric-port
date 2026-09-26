@@ -19,10 +19,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-
 import java.util.*;
 import java.util.stream.IntStream;
-
 public class SableAssembleCommands {
 
     public static final int DEFAULT_CONNECTED_ASSEMBLY_CAPACITY = 256_000;

@@ -6,10 +6,8 @@ import dev.ryanhcode.sable.network.udp.SableUDPServer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.MinecraftServer;
-
 import java.net.InetSocketAddress;
 import java.util.UUID;
-
 public record SableUDPAuthenticationPacket(String token) implements SableUDPPacket {
     public static final StreamCodec<RegistryFriendlyByteBuf, SableUDPAuthenticationPacket> CODEC = StreamCodec.of((buf, value) -> buf.writeUtf(value.token), buf -> new SableUDPAuthenticationPacket(buf.readUtf()));
 

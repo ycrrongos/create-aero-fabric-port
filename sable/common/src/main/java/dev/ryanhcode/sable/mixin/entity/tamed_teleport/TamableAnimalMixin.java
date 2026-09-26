@@ -15,7 +15,6 @@ import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-
 @Mixin(TamableAnimal.class)
 public class TamableAnimalMixin {
 

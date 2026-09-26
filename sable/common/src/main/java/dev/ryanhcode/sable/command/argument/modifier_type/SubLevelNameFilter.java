@@ -5,9 +5,7 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
 import java.util.List;
-
 public class SubLevelNameFilter implements SubLevelSelectorModifierType.Modifier {
     private final String name;
 

@@ -3,9 +3,7 @@ package dev.ryanhcode.sable.network.client;
 import com.google.common.collect.Queues;
 import com.mojang.logging.LogUtils;
 import dev.ryanhcode.sable.Sable;
-
 import java.util.Queue;
-
 public class SableClientNetworkEventLoop {
     private final Queue<Runnable> pendingRunnables = Queues.newConcurrentLinkedQueue();
 

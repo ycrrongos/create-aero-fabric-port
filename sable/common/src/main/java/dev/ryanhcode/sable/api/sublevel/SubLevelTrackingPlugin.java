@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.api.sublevel;
 
 import java.util.UUID;
-
 /**
  * Other mods or projects (looking at you, Simulated!) may want to piggyback off of the snapshot interpolation
  * system so that their content can also abide by it and benefit from its improvements. As such, we expose

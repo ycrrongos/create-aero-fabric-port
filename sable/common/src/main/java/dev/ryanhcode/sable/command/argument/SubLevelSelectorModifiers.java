@@ -7,7 +7,6 @@ import dev.ryanhcode.sable.api.command.SubLevelArgumentType;
 import dev.ryanhcode.sable.command.argument.modifier_type.*;
 import net.minecraft.advancements.criterion.MinMaxBounds;
 import net.minecraft.network.chat.Component;
-
 public class SubLevelSelectorModifiers {
 
     public static final SimpleCommandExceptionType EXPECTED_END_OF_MODIFIER =

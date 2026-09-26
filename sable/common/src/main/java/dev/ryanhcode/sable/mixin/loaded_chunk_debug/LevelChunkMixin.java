@@ -4,7 +4,6 @@ import dev.ryanhcode.sable.mixinterface.loaded_chunk_debug.DebugLevelChunkExtens
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-
 @Mixin(LevelChunk.class)
 public class LevelChunkMixin implements DebugLevelChunkExtension {
 

@@ -1,6 +1,6 @@
 package dev.ryanhcode.sable.command.argument;
 
-import com.mojang.brigadier.Message;
+import net.minecraft.server.jsonrpc.methods.Message;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -10,11 +10,9 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 public class SubLevelSelectorModifierType {
 
     private static final Map<String, SubLevelSelectorModifierType> MODIFIERS_BY_NAME = new Object2ObjectOpenHashMap<>();

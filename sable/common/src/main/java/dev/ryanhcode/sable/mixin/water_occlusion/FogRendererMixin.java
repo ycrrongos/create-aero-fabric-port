@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.fog.FogRenderer;
 import net.minecraft.world.level.material.FogType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
 /**
  * For now, we're okay with water fog in the camera.
  */

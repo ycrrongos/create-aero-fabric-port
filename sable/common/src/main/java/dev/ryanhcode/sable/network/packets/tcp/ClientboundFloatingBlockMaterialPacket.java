@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-
 public record ClientboundFloatingBlockMaterialPacket(Identifier name, FloatingBlockMaterial material) implements SableTCPPacket {
     public static final Type<ClientboundFloatingBlockMaterialPacket> TYPE = new CustomPacketPayload.Type<>(Sable.sablePath("floating_material"));
 

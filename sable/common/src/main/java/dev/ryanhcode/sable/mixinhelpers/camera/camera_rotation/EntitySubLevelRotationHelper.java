@@ -15,10 +15,8 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
-
 import java.util.Optional;
 import java.util.function.Function;
-
 public class EntitySubLevelRotationHelper {
 
     public enum Type {

@@ -5,12 +5,10 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 public class SubLevelSortModifier implements SubLevelSelectorModifierType.Modifier {
 
     private final String filtering;

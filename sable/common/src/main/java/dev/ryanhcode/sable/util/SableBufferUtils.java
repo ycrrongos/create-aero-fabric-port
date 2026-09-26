@@ -8,7 +8,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.joml.*;
-
 public class SableBufferUtils {
 
     public static final StreamCodec<? super RegistryFriendlyByteBuf, Pose3d> POSE3D_STREAM_CODEC = StreamCodec.of(SableBufferUtils::write,

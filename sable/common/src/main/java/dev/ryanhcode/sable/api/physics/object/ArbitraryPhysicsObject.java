@@ -4,7 +4,6 @@ import dev.ryanhcode.sable.companion.math.BoundingBox3d;
 import dev.ryanhcode.sable.sublevel.storage.holding.SubLevelHoldingChunkMap;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import net.minecraft.world.level.ChunkPos;
-
 /**
  * An arbitrary physics object in a {@link dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem}
  */

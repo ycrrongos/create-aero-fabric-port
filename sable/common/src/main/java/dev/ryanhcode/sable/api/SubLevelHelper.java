@@ -17,10 +17,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.Collection;
 import java.util.function.BiFunction;
-
 /**
  * A helper class for handling interactions between sub-levels<->sub-levels and sub-levels<->levels
  */

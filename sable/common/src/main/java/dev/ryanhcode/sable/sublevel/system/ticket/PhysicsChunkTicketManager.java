@@ -29,18 +29,18 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
-
 public class PhysicsChunkTicketManager {
 
     public static final double MAX_PREDICTION_DISTANCE = 20.0;
 
-    /** @deprecated use {@link SableTicketTypes#SUB_LEVEL_LOADED} */
-    public static final TicketType SUB_LEVEL_LOADED_TICKET_TYPE = SableTicketTypes.SUB_LEVEL_LOADED;
+    public static final TicketType<UUID> SUB_LEVEL_LOADED_TICKET_TYPE = TicketType.create(
+            "sable_sub_level_loaded",
+            UUID::compareTo
+    );
 
     /**
      * The physics chunks that are currently loaded.
@@ -80,7 +80,7 @@ public class PhysicsChunkTicketManager {
         }
 
         final DistanceManager distanceManager = level.getChunkSource().chunkMap.getDistanceManager();
-        this.expireForcedInhabitedChunks(level, gameTime);
+        this.expireForcedInhabitedChunks(gameTime, distanceManager);
 
         final LongOpenHashSet unloadedChunks = new LongOpenHashSet();
 
@@ -228,14 +228,12 @@ public class PhysicsChunkTicketManager {
             this.forcedInhabitedChunks.put(chunkLong, set = new ObjectArraySet<>(1));
         }
 
-        final Ticket newChunkTicket = new Ticket(SableTicketTypes.SUB_LEVEL_LOADED, ChunkLevel.byStatus(FullChunkStatus.ENTITY_TICKING));
+        final Ticket<UUID> newChunkTicket = new Ticket<>(PhysicsChunkTicketManager.SUB_LEVEL_LOADED_TICKET_TYPE, ChunkLevel.byStatus(FullChunkStatus.ENTITY_TICKING), subLevelId);
         final InhabitedChunkTicket newSableTicket = new InhabitedChunkTicket(subLevelId, gameTime, newChunkTicket);
 
         if (set.add(newSableTicket)) {
-            // Tickets are keyed by type+level only; add once per chunk while any sub-level inhabits it
-            if (set.size() == 1) {
-                level.getChunkSource().addTicket(newChunkTicket, new ChunkPos(x, z));
-            }
+            distanceManager.addTicket(chunkLong, newChunkTicket);
+            distanceManager.tickingTicketsTracker.addTicket(chunkLong, newChunkTicket);
 
             level.getChunk(x, z, ChunkStatus.FULL, true);
         } else {
@@ -279,7 +277,7 @@ public class PhysicsChunkTicketManager {
         }
     }
 
-    private void expireForcedInhabitedChunks(final ServerLevel level, final long gameTime) {
+    private void expireForcedInhabitedChunks(final long gameTime, final DistanceManager distanceManager) {
         final ObjectIterator<Long2ObjectMap.Entry<ObjectArraySet<InhabitedChunkTicket>>> forcedChunkIter = this.forcedInhabitedChunks.long2ObjectEntrySet().iterator();
 
         while (forcedChunkIter.hasNext()) {
@@ -295,12 +293,11 @@ public class PhysicsChunkTicketManager {
                 final boolean outdated = ticket.lastInhabitedTick() < gameTime - 20;
 
                 if (outdated) {
+                    final Ticket<UUID> chunkTicket = ticket.getTicket();
+
+                    distanceManager.removeTicket(chunkLong, chunkTicket);
+                    distanceManager.tickingTicketsTracker.removeTicket(chunkLong, chunkTicket);
                     setIter.remove();
-                    if (set.isEmpty()) {
-                        ((dev.ryanhcode.sable.mixin.accessor.ServerChunkCacheAccessor) (Object) level.getChunkSource())
-                                .sable$getTicketStorage()
-                                .removeTicket(ticket.getTicket(), new ChunkPos(chunkLong));
-                    }
                 }
             }
 

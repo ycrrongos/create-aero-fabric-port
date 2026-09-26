@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 /**
  * Allows entities to receive plot positions
  */
@@ -55,7 +54,7 @@ public abstract class EntityMixin implements EntityStickExtension {
             } else {
                 this.sable$plotPosition = null;
             }
-        } else if (this.level.isClientSide() && !(self instanceof final Player player && player.isLocalPlayer()) && !(self instanceof ItemEntity)) {
+        } else if (this.level.isClientSide && !(self instanceof final Player player && player.isLocalPlayer()) && !(self instanceof ItemEntity)) {
             // if we're on the client and the plot position doesn't exist, this must mean the entity was recently
             // networked out of the plot, so let's get rid of the tracking sub-level
             ((EntityMovementExtension) this).sable$setTrackingSubLevel(null);

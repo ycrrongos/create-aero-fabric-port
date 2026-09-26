@@ -1,1 +1,0 @@
-- Fix an issue where assembling massless Create contraptions would crash the server

@@ -48,11 +48,9 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
-
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
-
 /**
  * Runs a physics pipeline on sub-levels.
  */

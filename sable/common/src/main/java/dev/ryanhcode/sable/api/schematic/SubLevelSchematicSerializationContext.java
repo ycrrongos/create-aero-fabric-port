@@ -10,10 +10,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniondc;
 import org.joml.Vector3dc;
-
 import java.util.Map;
 import java.util.UUID;
-
 /**
  * A global context for sub-levels being serialized/unserialized to/from schematics.
  * Block-entities and pieces of content that rely on sub-level dependencies are encouraged

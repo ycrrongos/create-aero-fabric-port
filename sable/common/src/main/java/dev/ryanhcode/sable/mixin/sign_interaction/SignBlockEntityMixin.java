@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-
 /**
  * Fixes the method that determines if the player interacts with the front or back of a sign to take sub-levels into account.
  */

@@ -5,7 +5,6 @@ import dev.ryanhcode.sable.api.physics.callback.BlockSubLevelCollisionCallback;
 import dev.ryanhcode.sable.physics.callback.BeehiveBlockCallback;
 import net.minecraft.world.level.block.BeehiveBlock;
 import org.spongepowered.asm.mixin.Mixin;
-
 @Mixin(BeehiveBlock.class)
 public abstract class BeehiveBlockMixin implements BlockWithSubLevelCollisionCallback {
 

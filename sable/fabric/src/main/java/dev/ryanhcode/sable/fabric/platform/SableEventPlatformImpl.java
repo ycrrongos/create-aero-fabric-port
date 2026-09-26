@@ -8,7 +8,6 @@ import dev.ryanhcode.sable.fabric.event.FabricSablePrePhysicsTickEvent;
 import dev.ryanhcode.sable.fabric.event.FabricSableSubLevelContainerReadyEvent;
 import dev.ryanhcode.sable.platform.SableEventPlatform;
 import org.jetbrains.annotations.ApiStatus;
-
 @ApiStatus.Internal
 public class SableEventPlatformImpl implements SableEventPlatform {
 

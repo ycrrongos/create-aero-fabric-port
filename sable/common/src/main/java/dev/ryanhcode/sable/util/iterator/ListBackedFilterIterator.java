@@ -2,12 +2,10 @@ package dev.ryanhcode.sable.util.iterator;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
-
 @ApiStatus.Internal
 public class ListBackedFilterIterator<T> implements Iterator<T> {
 

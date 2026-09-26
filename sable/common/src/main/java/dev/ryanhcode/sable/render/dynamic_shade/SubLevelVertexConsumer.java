@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.render.dynamic_shade;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-
 /**
  * Make all shade-less things have a normal pointing straight up for dynamic shading!
  */
@@ -61,12 +60,6 @@ public class SubLevelVertexConsumer implements VertexConsumer {
         this.verticalNormal = !bakedQuad.isShade();
         VertexConsumer.super.putBulkData(pose, bakedQuad, fs, f, g, h, i, is, j, bl);
         this.verticalNormal = false;
-    }
-
-    @Override
-    public VertexConsumer setLineWidth(final float lineWidth) {
-        this.delegate.setLineWidth(lineWidth);
-        return this;
     }
 
 }

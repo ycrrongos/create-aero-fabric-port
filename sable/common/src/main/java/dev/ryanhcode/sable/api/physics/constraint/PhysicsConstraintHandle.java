@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.api.physics.constraint;
 
 import org.joml.Vector3d;
-
 /**
  * An active constraint tracked by the physics world.
  * Must be kept track of to be removed.

@@ -6,10 +6,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
-
 public record SubLevelLoadingTicketType<T>(Identifier name, Codec<T> codec) {
     private static final Map<Identifier, SubLevelLoadingTicketType<?>> REGISTRY = new HashMap<>();
 

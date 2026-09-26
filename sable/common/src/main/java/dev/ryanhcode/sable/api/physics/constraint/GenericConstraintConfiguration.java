@@ -4,10 +4,8 @@ import dev.ryanhcode.sable.api.physics.PhysicsPipelineBody;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
 import org.joml.Quaterniondc;
 import org.joml.Vector3dc;
-
 import java.util.EnumSet;
 import java.util.Set;
-
 /**
  * A configuration for a generic constraint, with per-axis hard locks and re-anchorable local frames.
  *

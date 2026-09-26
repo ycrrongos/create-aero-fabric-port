@@ -8,7 +8,6 @@ import dev.ryanhcode.sable.platform.SableEventPublishPlatform;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
-
 @ApiStatus.Internal
 public class SableEventPublishPlatformImpl implements SableEventPublishPlatform {
 

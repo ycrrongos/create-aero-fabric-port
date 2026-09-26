@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 /**
  * Changes the distance block damage is rendered from, and transforms block damage rendering for sublevels.
  */
@@ -49,7 +48,7 @@ public abstract class LevelRendererMixin {
         }
 
         final Pose3dc renderPose = subLevel.renderPose();
-        final Vec3 cameraPos = camera.position();
+        final Vec3 cameraPos = camera.getPosition();
         final Vec3 projectedPos = renderPose.transformPosition(plotPos);
 
         ps.popPose();

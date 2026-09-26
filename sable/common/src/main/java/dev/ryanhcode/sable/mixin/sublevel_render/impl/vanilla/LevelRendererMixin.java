@@ -34,9 +34,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.util.Objects;
-
 @Mixin(value = LevelRenderer.class, priority = 1002) // Higher priority to go after Flywheel
 public abstract class LevelRendererMixin {
 
@@ -71,7 +69,7 @@ public abstract class LevelRendererMixin {
         profiler.push("sub_level_section_occlusion_graph");
 
         final Iterable<ClientSubLevel> sublevels = ((ClientSubLevelContainer) ((SubLevelContainerHolder) this.level).sable$getPlotContainer()).getAllSubLevels();
-        final Vec3 cameraPosition = camera.position();
+        final Vec3 cameraPosition = camera.getPosition();
         dispatcher.updateCulling(sublevels, cameraPosition.x, cameraPosition.y, cameraPosition.z, VeilRenderBridge.create(frustum), isSpectator);
 
         profiler.pop();
@@ -101,7 +99,7 @@ public abstract class LevelRendererMixin {
     @Inject(method = "renderSectionLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ShaderInstance;clear()V"))
     public void sable$renderSubLevels(final RenderType renderType, final double x, final double y, final double z, final Matrix4f modelView, final Matrix4f projection, final CallbackInfo ci, @Local ShaderInstance shader) {
         final Iterable<ClientSubLevel> sublevels = ((ClientSubLevelContainer) ((SubLevelContainerHolder) this.level).sable$getPlotContainer()).getAllSubLevels();
-        SubLevelRenderDispatcher.get().renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        SubLevelRenderDispatcher.get().renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
     }
 
     @Inject(method = "renderSectionLayer", at = @At("TAIL"))
@@ -123,7 +121,7 @@ public abstract class LevelRendererMixin {
             shader.setDefaultUniforms(VertexFormat.Mode.QUADS, modelView, projection, this.minecraft.getWindow());
             shader.apply();
 
-            renderDispatcher.renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
+            renderDispatcher.renderSectionLayer(sublevels, renderType, shader, x, y, z, modelView, projection, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
 
             shader.clear();
             layer.clearRenderState();

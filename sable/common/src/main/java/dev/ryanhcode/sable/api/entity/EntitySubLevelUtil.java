@@ -14,7 +14,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
-
 /**
  * Utility for operations regarding entities and sub-levels
  */
@@ -71,7 +70,7 @@ public class EntitySubLevelUtil {
             anchor = new Vec3(0.0, entity.getBbHeight() / 2.0, 0.0);
         }
 
-        entity.snapTo(subLevel.logicalPose().transformPosition(pos.add(anchor)).subtract(anchor));
+        entity.moveTo(subLevel.logicalPose().transformPosition(pos.add(anchor)).subtract(anchor));
         entity.setDeltaMovement(subLevel.logicalPose().transformNormal(entity.getDeltaMovement()).add(subLevelGainedVelo.x, subLevelGainedVelo.y, subLevelGainedVelo.z));
         entity.lookAt(EntityAnchorArgument.Anchor.FEET, subLevel.logicalPose().transformNormal(entity.getLookAngle()).add(entity.position()));
 

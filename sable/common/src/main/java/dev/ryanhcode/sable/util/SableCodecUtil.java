@@ -2,9 +2,7 @@ package dev.ryanhcode.sable.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-
 import java.util.function.Function;
-
 public class SableCodecUtil {
 
     public static <N extends Number> Function<N, DataResult<N>> checkPositive(final boolean includeZero) {

@@ -14,10 +14,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.commands.data.DataAccessor;
 import net.minecraft.server.commands.data.DataCommands;
-
 import java.util.Locale;
 import java.util.function.Function;
-
 public class SubLevelDataAccessor implements DataAccessor {
     public static final Function<String, DataCommands.DataProvider> PROVIDER = string -> new DataCommands.DataProvider() {
         @Override

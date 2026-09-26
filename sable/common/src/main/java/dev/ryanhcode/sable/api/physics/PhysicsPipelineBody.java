@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.api.physics;
 
 import dev.ryanhcode.sable.api.physics.mass.MassData;
-
 /**
  * A rigid-body tracked by a {@link PhysicsPipeline}
  */

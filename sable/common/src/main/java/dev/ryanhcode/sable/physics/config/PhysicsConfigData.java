@@ -2,7 +2,6 @@ package dev.ryanhcode.sable.physics.config;
 
 import dev.ryanhcode.sable.SableConfig;
 import dev.ryanhcode.sable.SableServerConfig;
-
 public class PhysicsConfigData {
     /**
      * The number of solver iterations run by the constraints solver for calculating forces.

@@ -9,7 +9,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
 /**
  * Adds a hook to disable the directional shading on sub-level AO block faces.
  */

@@ -8,19 +8,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.SectionBufferBuilderPack;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
-import net.minecraft.client.renderer.chunk.RenderSectionRegion;
+import net.minecraft.client.renderer.chunk.RenderChunkRegion;
 import net.minecraft.client.renderer.chunk.SectionCompiler;
 import net.minecraft.core.SectionPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 @Mixin(SectionCompiler.class)
 public class SectionCompilerMixin {
 
     @Inject(method = "compile", at = @At(value = "HEAD"))
-    private void sable$preCompile(final SectionPos sectionPos, final RenderSectionRegion renderSectionRegion, final VertexSorting vertexSorting, final SectionBufferBuilderPack sectionBufferBuilderPack, final CallbackInfoReturnable<SectionCompiler.Results> cir) {
+    private void sable$preCompile(final SectionPos sectionPos, final RenderChunkRegion renderChunkRegion, final VertexSorting vertexSorting, final SectionBufferBuilderPack sectionBufferBuilderPack, final CallbackInfoReturnable<SectionCompiler.Results> cir) {
         final ClientLevel level = Minecraft.getInstance().level;
         final SubLevelContainer container = SubLevelContainer.getContainer(level);
 
@@ -30,7 +29,7 @@ public class SectionCompilerMixin {
     }
 
     @Inject(method = "compile", at = @At("TAIL"))
-    private void sable$postCompile(final SectionPos sectionPos, final RenderSectionRegion renderSectionRegion, final VertexSorting vertexSorting, final SectionBufferBuilderPack sectionBufferBuilderPack, final CallbackInfoReturnable<SectionCompiler.Results> cir) {
+    private void sable$postCompile(final SectionPos sectionPos, final RenderChunkRegion renderChunkRegion, final VertexSorting vertexSorting, final SectionBufferBuilderPack sectionBufferBuilderPack, final CallbackInfoReturnable<SectionCompiler.Results> cir) {
         ((ModelBlockRendererCacheExtension) ModelBlockRenderer.CACHE.get()).sable$setOnSubLevel(false);
     }
 

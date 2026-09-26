@@ -7,7 +7,6 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SuspendedParticle;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
-
 @Mixin(SuspendedParticle.class)
 public abstract class SuspendedParticleMixin extends Particle implements ParticleSubLevelKickable {
 

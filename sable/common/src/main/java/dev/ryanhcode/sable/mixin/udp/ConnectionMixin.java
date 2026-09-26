@@ -21,10 +21,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-
 @Mixin(Connection.class)
 public abstract class ConnectionMixin implements ConnectionExtension {
 

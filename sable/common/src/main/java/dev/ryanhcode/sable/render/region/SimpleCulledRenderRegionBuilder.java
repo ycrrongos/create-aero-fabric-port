@@ -4,12 +4,10 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-
 import java.util.BitSet;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-
 /**
  * <p>Constructs a voxel-based shadow mesh for chunks.
  * Voxels are added with {@link #add(int, int, int)} and inserted into "grids".</p>

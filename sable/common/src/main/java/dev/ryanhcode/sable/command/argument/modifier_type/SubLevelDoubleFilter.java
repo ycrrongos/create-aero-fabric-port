@@ -6,9 +6,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.List;
-
 public class SubLevelDoubleFilter implements SubLevelSelectorModifierType.Modifier {
     private final double value;
     private final DoublePredicate valuePredicate;

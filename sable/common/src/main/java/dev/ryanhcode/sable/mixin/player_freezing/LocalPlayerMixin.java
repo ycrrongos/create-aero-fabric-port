@@ -11,14 +11,12 @@ import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
 import java.util.UUID;
-
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends Player implements PlayerFreezeExtension {
 
-    public LocalPlayerMixin(final Level level, final GameProfile gameProfile) {
-        super(level, gameProfile);
+    public LocalPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile) {
+        super(level, blockPos, f, gameProfile);
     }
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;hasChunkAt(II)Z"))

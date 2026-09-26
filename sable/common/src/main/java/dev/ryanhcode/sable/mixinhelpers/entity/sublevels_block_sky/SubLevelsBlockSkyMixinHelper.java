@@ -8,7 +8,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.ApiStatus;
-
 @ApiStatus.Internal
 public class SubLevelsBlockSkyMixinHelper {
 
@@ -18,7 +17,7 @@ public class SubLevelsBlockSkyMixinHelper {
 
         final ClipContext context = new ClipContext(
                 start,
-                new Vec3(start.x, level.getMaxY(), start.z),
+                new Vec3(start.x, level.getMaxBuildHeight(), start.z),
                 ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.ANY,
                 CollisionContext.empty()

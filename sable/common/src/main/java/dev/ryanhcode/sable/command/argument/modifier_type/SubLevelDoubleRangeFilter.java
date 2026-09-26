@@ -7,9 +7,7 @@ import net.minecraft.advancements.criterion.MinMaxBounds;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.List;
-
 public class SubLevelDoubleRangeFilter implements SubLevelSelectorModifierType.Modifier {
     private final MinMaxBounds.Doubles range;
     private final DoubleGetter valueGetter;

@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.api.sublevel.ticket;
 
 import java.util.UUID;
-
 public record SubLevelLoadingTicket<T>(SubLevelLoadingTicketType<T> type, UUID subLevelId, T key) {
 
     public String toCompactString() {

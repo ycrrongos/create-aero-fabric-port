@@ -7,11 +7,9 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
 /**
  * The definition of the physics block properties for a block
  */

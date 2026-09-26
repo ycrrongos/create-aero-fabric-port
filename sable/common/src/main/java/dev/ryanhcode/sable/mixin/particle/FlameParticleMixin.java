@@ -12,7 +12,6 @@ import net.minecraft.client.particle.Particle;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.spongepowered.asm.mixin.Mixin;
-
 @Mixin(FlameParticle.class)
 public abstract class FlameParticleMixin extends Particle implements ParticleExtension {
 

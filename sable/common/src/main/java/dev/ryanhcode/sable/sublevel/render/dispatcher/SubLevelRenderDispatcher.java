@@ -7,16 +7,15 @@ import dev.ryanhcode.sable.sublevel.render.SubLevelRenderer;
 import foundry.veil.api.client.render.CullFrustum;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 import org.lwjgl.system.NativeResource;
-
 import java.util.Collection;
 import java.util.function.Consumer;
-
 /**
  * Renders sub-levels into the world.
  */
@@ -75,7 +74,7 @@ public interface SubLevelRenderDispatcher extends NativeResource, ResourceManage
      *
      * @param sublevels    The sub-levels to render
      * @param renderType   The render type being rendered
-     * @param shader       The currently bound shader (Object until RenderPipeline port)
+     * @param shader       The currently bound shader
      * @param cameraX      The x position of the camera
      * @param cameraY      The y position of the camera
      * @param cameraZ      The z position of the camera
@@ -83,7 +82,7 @@ public interface SubLevelRenderDispatcher extends NativeResource, ResourceManage
      * @param projection   The projection matrix
      * @param partialTicks The percentage from last tick to this tick
      */
-    void renderSectionLayer(final Iterable<ClientSubLevel> sublevels, final RenderType renderType, final Object shader, final double cameraX, final double cameraY, final double cameraZ, final Matrix4f modelView, final Matrix4f projection, final float partialTicks);
+    void renderSectionLayer(final Iterable<ClientSubLevel> sublevels, final RenderType renderType, final ShaderInstance shader, final double cameraX, final double cameraY, final double cameraZ, final Matrix4f modelView, final Matrix4f projection, final float partialTicks);
 
     /**
      * Renders all sub-levels after the section layers have been rendered.

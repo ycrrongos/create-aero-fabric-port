@@ -12,7 +12,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
-
 @Mixin(VibrationSystem.Listener.class)
 public class VibrationSystemListenerMixin {
 

@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.fabric.event;
 import dev.ryanhcode.sable.api.event.SablePostPhysicsTickEvent;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-
 /**
  * Fired when Sable's {@link dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem} is complete with a physics tick.
  * </br>

@@ -24,9 +24,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
 import java.util.List;
-
 @Mixin(ExecuteCommand.class)
 public class ExecuteCommandMixin {
 

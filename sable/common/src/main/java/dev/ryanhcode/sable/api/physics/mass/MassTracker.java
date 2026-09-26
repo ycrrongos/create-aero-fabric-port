@@ -18,9 +18,7 @@ import org.joml.Matrix3d;
 import org.joml.Matrix3dc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.function.BiFunction;
-
 /**
  * Tracks the mass / inertia tensor of a structure
  */

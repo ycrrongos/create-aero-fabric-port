@@ -5,7 +5,6 @@ import dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertyT
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-
 public interface BlockStateExtension {
     void sable$loadProperties(final StateDefinition<Block, BlockState> stateDefinition,  PhysicsBlockPropertiesDefinition definition);
 

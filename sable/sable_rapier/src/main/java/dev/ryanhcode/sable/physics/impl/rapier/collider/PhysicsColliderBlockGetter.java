@@ -11,7 +11,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
-
 /**
  * Physics data is specific for each block regardless of where it's placed or what possible block entity state may exist.
  * This class makes sure any blocks that attempt to change state based on their neighbors will not cause crashes.
@@ -52,7 +51,7 @@ public final class PhysicsColliderBlockGetter implements BlockGetter {
     }
 
     @Override
-    public int getMinY() {
-        return this.level.getMinY();
+    public int getMinBuildHeight() {
+        return this.level.getMinBuildHeight();
     }
 }

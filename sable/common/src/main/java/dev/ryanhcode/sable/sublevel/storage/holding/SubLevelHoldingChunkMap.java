@@ -32,11 +32,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-
 public class SubLevelHoldingChunkMap implements AutoCloseable {
     private final ServerLevel level;
     private final ServerSubLevelContainer container;
@@ -84,16 +82,12 @@ public class SubLevelHoldingChunkMap implements AutoCloseable {
         this.level = level;
         this.container = container;
 
-        final java.nio.file.Path worldFolder = level.getServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT);
-        final java.nio.file.Path subLevelsFolder = worldFolder.resolve("sublevels");
+        final File worldFolder = level.getChunkSource().getDataStorage().dataFolder.getParentFile();
+        final File subLevelsFolder = new File(worldFolder, "sublevels");
 
-        try {
-            java.nio.file.Files.createDirectories(subLevelsFolder);
-        } catch (final java.io.IOException e) {
-            throw new RuntimeException("Failed to create sublevels folder", e);
-        }
+        subLevelsFolder.mkdirs();
 
-        this.storage = new SubLevelStorage(subLevelsFolder);
+        this.storage = new SubLevelStorage(subLevelsFolder.toPath());
     }
 
     public void updateChunkStatus(final ChunkPos chunkPos, final boolean loaded) {
@@ -115,7 +109,7 @@ public class SubLevelHoldingChunkMap implements AutoCloseable {
 
         if (this.queuedUnloads.contains(chunkPos)) {
             if (this.verboseLogging) {
-                Sable.LOGGER.info("Removing chunk at {} from queued unloads");
+                Sable.LOGGER.info("Removing chunk at {} from queued unloads", chunkPos);
             }
             this.queuedUnloads.remove(chunkPos);
         }
@@ -185,7 +179,7 @@ public class SubLevelHoldingChunkMap implements AutoCloseable {
                 final GlobalSavedSubLevelPointer pointer = chainedSubLevel.getLastSerializationPointer();
 
                 if (this.verboseLogging) {
-                    Sable.LOGGER.info("Unloading sub-level {} with pointer {} to chunk {} as holding sub-level");
+                    Sable.LOGGER.info("Unloading sub-level {} with pointer {} to chunk {} as holding sub-level", chainedSubLevel, pointer, chunkPos);
                 }
 
                 final SubLevelData data = SubLevelSerializer.toData(chainedSubLevel, uuids);
@@ -203,7 +197,7 @@ public class SubLevelHoldingChunkMap implements AutoCloseable {
      */
     public void saveAll() {
         if (SableConfig.SUB_LEVEL_SAVING_LOG_MESSAGE.get()) {
-            Sable.LOGGER.info("Saving sub-levels for level '{}'/{}", this.level, this.level.dimension().identifier());
+            Sable.LOGGER.info("Saving sub-levels for level '{}'/{}", this.level, this.level.dimension().location());
         }
 
         if (this.verboseLogging) {

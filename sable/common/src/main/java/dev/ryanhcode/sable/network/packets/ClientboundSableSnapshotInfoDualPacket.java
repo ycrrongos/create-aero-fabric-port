@@ -13,7 +13,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.Level;
-
 public final class ClientboundSableSnapshotInfoDualPacket implements SableUDPPacket, SableTCPPacket {
     public static final Type<ClientboundSableSnapshotInfoDualPacket> TYPE = new Type<>(Sable.sablePath("snapshot_info_packet"));
     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundSableSnapshotInfoDualPacket> CODEC = StreamCodec.of((buf, value) -> value.encode(buf), ClientboundSableSnapshotInfoDualPacket::new);

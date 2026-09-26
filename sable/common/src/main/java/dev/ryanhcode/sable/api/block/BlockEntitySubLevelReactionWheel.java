@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.api.block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3d;
 import dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertyTypes;
-
 /**
  * An interface for sub-classes of {@link net.minecraft.world.level.block.entity.BlockEntity} to provide angular momentum
  * when mounted on a sub-level.

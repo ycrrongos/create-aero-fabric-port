@@ -6,9 +6,7 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.List;
-
 @ApiStatus.Internal
 public record RapierRopeHandle(long sceneHandle, long handle) implements RopeHandle {
 

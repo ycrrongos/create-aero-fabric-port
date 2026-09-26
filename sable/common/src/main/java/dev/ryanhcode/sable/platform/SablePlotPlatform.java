@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.platform;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.chunk.LevelChunk;
-
 public interface SablePlotPlatform {
     SablePlotPlatform INSTANCE = SablePlatformUtil.load(SablePlotPlatform.class);
 

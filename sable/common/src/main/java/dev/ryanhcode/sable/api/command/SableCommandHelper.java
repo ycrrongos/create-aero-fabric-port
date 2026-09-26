@@ -12,9 +12,7 @@ import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-
 import java.util.Collection;
-
 public class SableCommandHelper {
 
     private static final SimpleCommandExceptionType MISSING_SUBLEVEL_CONTAINER

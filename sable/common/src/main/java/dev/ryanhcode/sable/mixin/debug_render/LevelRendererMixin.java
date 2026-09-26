@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
 
@@ -44,9 +43,9 @@ public class LevelRendererMixin {
         final MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
         final VertexConsumer consumer = bufferSource.getBuffer(RenderType.LINES);
 
-        final double cx = camera.position().x;
-        final double cy = camera.position().y;
-        final double cz = camera.position().z;
+        final double cx = camera.getPosition().x;
+        final double cy = camera.getPosition().y;
+        final double cz = camera.getPosition().z;
 
         final PoseStack ps = new PoseStack();
         ps.mulPose(matrix4f);

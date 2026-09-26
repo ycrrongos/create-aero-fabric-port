@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import org.joml.Quaterniondc;
 import org.joml.Vector3dc;
-
 /**
  * A physics engine that does nothing, and keeps every sub-level static.
  */

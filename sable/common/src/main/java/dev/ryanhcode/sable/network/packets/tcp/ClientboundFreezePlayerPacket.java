@@ -12,9 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.UUID;
-
 public record ClientboundFreezePlayerPacket(UUID subLevelID, Vector3dc localPosition) implements SableTCPPacket {
 
     public static final Type<ClientboundFreezePlayerPacket> TYPE = new Type<>(Sable.sablePath("freeze_player"));

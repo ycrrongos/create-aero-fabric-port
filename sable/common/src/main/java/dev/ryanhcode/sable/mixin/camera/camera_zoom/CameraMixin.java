@@ -29,9 +29,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.util.Collection;
-
 @Mixin(Camera.class)
 public abstract class CameraMixin implements CameraZoomExtension {
 
@@ -66,7 +64,7 @@ public abstract class CameraMixin implements CameraZoomExtension {
         final Minecraft minecraft = Minecraft.getInstance();
 
         if (minecraft.options.getCameraType() == SableCameraTypes.SUB_LEVEL_VIEW || minecraft.options.getCameraType() == SableCameraTypes.SUB_LEVEL_VIEW_UNLOCKED) {
-            final Entity cameraEntity = minecraft.getCameraEntity();
+            final Entity cameraEntity = minecraft.cameraEntity;
             final Entity vehicle = cameraEntity.getVehicle();
 
             if (vehicle != null) {
@@ -84,7 +82,7 @@ public abstract class CameraMixin implements CameraZoomExtension {
     private float sable$clampZoom(final float maxZoom, final SubLevel ignoredSubLevel) {
         float zoom = maxZoom;
 
-        final float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+        final float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
 
         final Level level = this.entity.level();
         final LevelPoseProviderExtension extension = ((LevelPoseProviderExtension) this.level);
@@ -124,7 +122,7 @@ public abstract class CameraMixin implements CameraZoomExtension {
         final Minecraft minecraft = Minecraft.getInstance();
 
         if (minecraft.options.getCameraType() == SableCameraTypes.SUB_LEVEL_VIEW || minecraft.options.getCameraType() == SableCameraTypes.SUB_LEVEL_VIEW_UNLOCKED) {
-            final Entity cameraEntity = minecraft.getCameraEntity();
+            final Entity cameraEntity = minecraft.cameraEntity;
             final Entity vehicle = cameraEntity.getVehicle();
 
             final boolean isTypeValid = vehicle != null;
@@ -132,7 +130,7 @@ public abstract class CameraMixin implements CameraZoomExtension {
                 final SubLevel subLevel = Sable.HELPER.getContaining(minecraft.level, vehicle.position());
 
                 if (subLevel != null) {
-                    final float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
+                    final float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
                     final float zoomAmount = Mth.lerp(partialTick, this.sable$lastInterpolatedZoom, this.sable$interpolatedZoom);
 
                     final BoundingBox3ic boundingBox = subLevel.getPlot().getBoundingBox();
@@ -148,7 +146,7 @@ public abstract class CameraMixin implements CameraZoomExtension {
 
         final LevelPoseProviderExtension extension = ((LevelPoseProviderExtension) minecraft.level);
         assert extension != null;
-        extension.sable$pushPoseSupplier((subLevel) -> ((ClientSubLevel) subLevel).renderPose(minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false)));
+        extension.sable$pushPoseSupplier((subLevel) -> ((ClientSubLevel) subLevel).renderPose(minecraft.getTimer().getGameTimeDeltaPartialTick(false)));
         this.sable$pushed = true;
     }
 

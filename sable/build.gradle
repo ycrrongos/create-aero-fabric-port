@@ -1,25 +1,61 @@
-plugins {
-    // see https://fabricmc.net/develop/ for new versions
-    id 'net.fabricmc.fabric-loom-remap' version '1.16-SNAPSHOT' apply false
-    // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
-    id 'net.neoforged.moddev' version '2.0.140' apply false
-    // see // https://github.com/modmuss50/mod-publish-plugin for new versions
-    id "me.modmuss50.mod-publish-plugin" version "1.1.0" apply false
+version = '2.0.5+mc1.21.11'
+group = 'dev.ryanhcode.sable'
 
-    id 'com.diffplug.spotless' version '7.2.1'
-    id "checkstyle"
+base {
+    archivesName = 'sable-fabric-1.21.11'
 }
 
-allprojects {
-    apply plugin: 'com.diffplug.spotless'
-
-    spotless {
-        format 'misc', {
-            target '*.gradle', '.gitattributes', '.gitignore'
-
-            trimTrailingWhitespace()
-            leadingTabsToSpaces()
-            endWithNewline()
+sourceSets {
+    main {
+        java {
+            srcDirs = ['common/src/main/java', 'fabric/src/main/java']
+        }
+        resources {
+            srcDirs = ['common/src/main/resources', 'fabric/src/main/resources']
         }
     }
+}
+
+repositories {
+    maven { url = 'https://maven.blamejared.com' }
+}
+
+dependencies {
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+
+    api project(path: ':veil', configuration: 'namedElements')
+    include project(':veil')
+    api project(path: ':sable-companion', configuration: 'namedElements')
+    include project(':sable-companion')
+
+    include(implementation("org.apache.maven:maven-artifact:3.8.5"))
+
+    modApi("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${rootProject.forgeconfigapiport_version}")
+    include("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${rootProject.forgeconfigapiport_version}")
+
+    include project(':sable:sable_rapier')
+    runtimeOnly project(path: ':sable:sable_rapier', configuration: 'namedElements')
+
+    compileOnly "io.github.llamalad7:mixinextras-common:0.5.3"
+}
+
+loom {
+    accessWidenerPath = file('common/src/main/resources/sable.accesswidener')
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version, 'mod_id': 'sable', 'mod_name': 'Sable', 'mod_author': 'RyanHCode',
+                'description': 'Interactive moving block structures with physics.', 'issues': 'https://github.com/ryanhcode/sable/issues',
+                'license': 'PolyForm Shield License 1.0.0', 'fabric_loader_version': rootProject.fabric_loader_version,
+                'minecraft_version': rootProject.minecraft_version, 'java_version': rootProject.java_version, 'veil_version': '4.5.1',
+                'fabric_version': rootProject.fabric_version, 'sodium_version': '0.8.0', 'sable_companion_version': '1.6.0'
+    }
+    filesMatching('*.mixins.json') {
+        expand 'mod_id': 'sable'
+    }
+    exclude 'META-INF/accesstransformer.cfg'
+    exclude 'META-INF/neoforge.mods.toml'
+    exclude 'architectury.common.json'
 }

@@ -6,7 +6,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-
 public class SableTags {
     public static final TagKey<EntityType<?>> RETAIN_IN_SUB_LEVEL = TagKey.create(
             Registries.ENTITY_TYPE,

@@ -6,10 +6,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 import org.jetbrains.annotations.ApiStatus;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 @ApiStatus.Internal
 public class FastVoxelShapeIterator implements Iterator<BoundingBox3dc> {
 

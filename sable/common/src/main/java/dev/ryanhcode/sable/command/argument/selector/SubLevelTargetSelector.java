@@ -16,9 +16,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
-
 import java.util.*;
-
 public class SubLevelTargetSelector extends SubLevelTarget {
 
     private final SubLevelSelectorType type;

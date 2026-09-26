@@ -10,11 +10,9 @@ import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 public class SubLevelTrackingPointObserver implements SubLevelObserver {
     private final ServerLevel serverLevel;
 

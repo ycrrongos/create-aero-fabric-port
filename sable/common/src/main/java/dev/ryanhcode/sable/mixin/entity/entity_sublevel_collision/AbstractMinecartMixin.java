@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 @Mixin(AbstractMinecart.class)
 public abstract class AbstractMinecartMixin extends Entity {
 
@@ -30,7 +29,7 @@ public abstract class AbstractMinecartMixin extends Entity {
 
         // Destroy us if we're in #sable:destroy_when_leaving_plot and we've left the plot
         if (containingSubLevel != null && !this.getBoundingBox().intersects(containingSubLevel.getPlot().getBoundingBox().toAABB().inflate(0.5))) {
-            this.kill((net.minecraft.server.level.ServerLevel) this.level());
+            this.kill();
         }
     }
 }

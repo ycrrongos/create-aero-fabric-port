@@ -23,10 +23,8 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
-
 import java.util.Collection;
 import java.util.function.Function;
-
 public class SablePhysicsCommands {
 
     /**

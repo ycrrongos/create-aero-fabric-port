@@ -5,10 +5,8 @@ import dev.ryanhcode.sable.sublevel.storage.holding.SubLevelHoldingChunk;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.Nullable;
-
 import java.io.IOException;
 import java.nio.file.Path;
-
 /**
  * A sub-level region file, mapping local chunk positions
  * to collections of sub-level file pointers.

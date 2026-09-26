@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 @Mixin(EntityRenderDispatcher.class)
 public class EntityRenderDispatcherMixin {
 
@@ -53,7 +52,7 @@ public class EntityRenderDispatcherMixin {
         if (plotPosition != null) {
             final ClientSubLevel subLevel = (ClientSubLevel) Sable.HELPER.getContaining(entity.level(), plotPosition);
             if (subLevel != null) {
-                final Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().position();
+                final Vec3 cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
                 final Vec3 projectedPos = subLevel.renderPose().transformPosition(plotPosition);
 
                 poseStack.popPose();

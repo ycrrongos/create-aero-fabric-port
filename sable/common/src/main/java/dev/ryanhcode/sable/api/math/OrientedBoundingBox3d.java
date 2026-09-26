@@ -2,10 +2,8 @@ package dev.ryanhcode.sable.api.math;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
-
 import java.lang.Math;
 import java.util.Objects;
-
 /**
  * Represents an oriented bounding box with extents, orientation, and positioning.
  * The box is expected to be centered on the position.

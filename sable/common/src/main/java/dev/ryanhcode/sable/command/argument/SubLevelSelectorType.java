@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable.command.argument;
 
 import net.minecraft.network.chat.Component;
-
 public enum SubLevelSelectorType {
     ALL('e', Component.translatable("argument.sable.body.selector.all"), false),
     NEAREST('n', Component.translatable("argument.sable.body.selector.nearest"), true),

@@ -13,10 +13,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-
 import java.util.ArrayList;
 import java.util.List;
-
 public record ClientboundDimensionPhysicsPacket(List<DimensionPhysics> dimensionPhysics) implements SableTCPPacket {
     public static final CustomPacketPayload.Type<ClientboundDimensionPhysicsPacket> TYPE = new CustomPacketPayload.Type<>(Sable.sablePath("dimension_physics"));
 

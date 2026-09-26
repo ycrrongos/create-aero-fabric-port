@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.api.block;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
 /**
  * Interface for sub-classes of {@link net.minecraft.world.level.block.Block} to implement to specify a separate
  * collision shape for sub-level physics.

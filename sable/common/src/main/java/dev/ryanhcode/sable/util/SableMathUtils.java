@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 import org.joml.Math;
-
 public class SableMathUtils {
     private static final Vector3d temp = new Vector3d();
     private static final Quaterniondc[] ALL_QUATS = new Quaterniondc[]{

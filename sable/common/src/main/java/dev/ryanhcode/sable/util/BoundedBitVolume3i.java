@@ -3,9 +3,7 @@ package dev.ryanhcode.sable.util;
 import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
-
 import java.util.BitSet;
-
 /**
  * Bounded 3D bit-set, with a single bit per block in the bounds.
  */

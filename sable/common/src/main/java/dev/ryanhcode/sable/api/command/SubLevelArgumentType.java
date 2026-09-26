@@ -1,9 +1,7 @@
 package dev.ryanhcode.sable.api.command;
 
-import net.minecraft.core.UUIDUtil;
-
 import com.google.gson.JsonObject;
-import com.mojang.brigadier.Message;
+import net.minecraft.server.jsonrpc.methods.Message;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -30,11 +28,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-
 public class SubLevelArgumentType implements ArgumentType<SubLevelTarget> {
 
     public static final Function<SuggestionsBuilder, SuggestionsBuilder> NO_SUGGESTIONS = b -> b;

@@ -17,9 +17,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import java.util.UUID;
-
 @Mixin(Player.class)
 public abstract class PlayerMixin extends Entity implements PlayerFreezeExtension {
 

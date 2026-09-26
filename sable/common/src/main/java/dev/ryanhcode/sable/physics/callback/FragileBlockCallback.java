@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
 public class FragileBlockCallback implements BlockSubLevelCollisionCallback {
 
     public static final FragileBlockCallback INSTANCE = new FragileBlockCallback();

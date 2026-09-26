@@ -4,9 +4,7 @@ import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
-
 import java.util.UUID;
-
 public interface ServerPlayerRespawnExtension {
     @Nullable UUID sable$getRespawnPoint();
 

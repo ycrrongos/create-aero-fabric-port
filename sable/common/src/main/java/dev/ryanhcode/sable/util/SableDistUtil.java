@@ -3,7 +3,6 @@ package dev.ryanhcode.sable.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.Level;
-
 public class SableDistUtil {
 
     /**

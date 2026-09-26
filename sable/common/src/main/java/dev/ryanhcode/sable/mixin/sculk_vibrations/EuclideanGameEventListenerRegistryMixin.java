@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.gameevent.EuclideanGameEventListenerRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
 @Mixin(EuclideanGameEventListenerRegistry.class)
 public class EuclideanGameEventListenerRegistryMixin {
 

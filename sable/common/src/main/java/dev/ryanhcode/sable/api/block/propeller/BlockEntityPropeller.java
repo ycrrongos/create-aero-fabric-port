@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3d;
-
 /**
  * Spinny spin spin, woosh woosh!
  */
@@ -62,7 +61,7 @@ public interface BlockEntityPropeller {
         }
 
         final Vector3d velocity = Sable.HELPER.getVelocity(level, subLevel, pos, new Vector3d());
-        final Vector3d thrustDirection = subLevel.logicalPose().transformNormal(JOMLConversion.atLowerCornerOf(this.getBlockDirection().getUnitVec3i()));
+        final Vector3d thrustDirection = subLevel.logicalPose().transformNormal(JOMLConversion.atLowerCornerOf(this.getBlockDirection().getNormal()));
 
         return Math.clamp((airflow + velocity.dot(thrustDirection.x, thrustDirection.y, thrustDirection.z)) / airflow, 0, 1);
     }

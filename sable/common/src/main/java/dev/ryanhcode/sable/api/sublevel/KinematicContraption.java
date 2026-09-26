@@ -10,9 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import org.joml.Quaterniond;
 import org.joml.Vector3dc;
-
 import java.util.Map;
-
 public interface KinematicContraption {
 
     void sable$getLocalBounds(final BoundingBox3i bounds);

@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 /**
  * Fixes the delta movement that arrows get & the direction they face when they hit blocks
  */
@@ -53,7 +52,7 @@ public abstract class AbstractArrowMixin extends Entity {
         final Vec3 localPosition = subLevel.logicalPose().transformPositionInverse(this.position());
         final Vec3 diff = blockHitResult.getLocation().subtract(localPosition);
 
-        if (!this.level().isClientSide() && !this.inGround) {
+        if (!this.level().isClientSide && !this.inGround) {
             final Vec3 localImpulse = subLevel.logicalPose().transformNormalInverse(this.getDeltaMovement());
             RigidBodyHandle.of((ServerSubLevel) subLevel).applyImpulseAtPoint(localPosition, localImpulse);
         }

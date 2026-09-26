@@ -16,7 +16,6 @@ import net.minecraft.world.level.storage.WritableLevelData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import java.util.function.Supplier;
-
 /**
  * Prevents lightning or skeleton traps from spawning inside plots to avoid inflating spawn rates
  */
@@ -28,11 +27,12 @@ public abstract class ServerLevelMixin extends Level {
             final ResourceKey<Level> dimension,
             final RegistryAccess registryAccess,
             final Holder<DimensionType> dimensionTypeRegistration,
+            final Supplier<ProfilerFiller> profiler,
             final boolean isClientSide,
             final boolean isDebug,
             final long biomeZoomSeed,
             final int maxChainedNeighborUpdates) {
-        super(levelData, dimension, registryAccess, dimensionTypeRegistration, isClientSide, isDebug, biomeZoomSeed, maxChainedNeighborUpdates);
+        super(levelData, dimension, registryAccess, dimensionTypeRegistration, profiler, isClientSide, isDebug, biomeZoomSeed, maxChainedNeighborUpdates);
     }
 
     @WrapOperation(method = "tickChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;isThundering()Z"))

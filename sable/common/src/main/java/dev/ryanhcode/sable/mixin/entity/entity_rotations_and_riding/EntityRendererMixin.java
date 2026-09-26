@@ -13,7 +13,6 @@ import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
 @Mixin(EntityRenderer.class)
 public class EntityRendererMixin {
 
@@ -23,7 +22,7 @@ public class EntityRendererMixin {
             return instance.cameraOrientation();
         }
 
-        final float pt = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
+        final float pt = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
         final Quaterniond orientation = EntitySubLevelRotationHelper.getEntityOrientation(entity, x -> ((ClientSubLevel) x).renderPose(), pt, EntitySubLevelRotationHelper.Type.ENTITY);
         if (orientation == null) {
             return instance.cameraOrientation();
