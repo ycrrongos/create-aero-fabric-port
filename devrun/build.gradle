@@ -1,0 +1,38 @@
+// Development launcher: runs a client/server with every mod of this workspace plus Create Fly and the
+// MTR Test Control mod (agent-driven test API). Not a mod itself.
+
+dependencies {
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+    modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${rootProject.forgeconfigapiport_version}"
+
+    implementation project(path: ':veil', configuration: 'namedElements')
+    implementation "io.github.ocelot:glsl-processor:0.2.3"
+    implementation project(path: ':sable-companion', configuration: 'namedElements')
+    implementation project(path: ':sable', configuration: 'namedElements')
+    implementation project(path: ':sable:sable_rapier', configuration: 'namedElements')
+    implementation "org.apache.maven:maven-artifact:3.8.5"
+
+    modLocalRuntime files("${rootDir}/libs/create-fly-1.21.11-6.0.9-5.jar")
+
+    def testControl = file(findProperty('mtrTestControlJar') ?: 'libs/mtr-test-control-1.0.0.jar')
+    if (testControl.exists()) {
+        modLocalRuntime files(testControl)
+    }
+}
+
+loom {
+    runs {
+        client {
+            client()
+            configName = 'Workspace Client'
+            runDir 'run/client'
+            vmArgs '-Xmx4G', '-Dmixin.debug.countInjections=true', '-Dmixin.checks.interfaces=true'
+        }
+        server {
+            server()
+            configName = 'Workspace Server'
+            runDir 'run/server'
+            vmArgs '-Xmx4G', '-Dmixin.debug.countInjections=true', '-Dmixin.checks.interfaces=true'
+        }
+    }
+}
