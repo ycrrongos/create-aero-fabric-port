@@ -1,5 +1,9 @@
 package dev.ryanhcode.sable.mixin.entity.entity_rotations_and_riding;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.authlib.GameProfile;
 import dev.ryanhcode.sable.ActiveSableCompanion;
 import dev.ryanhcode.sable.Sable;
@@ -13,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -43,6 +48,27 @@ public abstract class LocalPlayerMixin extends Player {
         return instance.add(dir.x, dir.y, dir.z);
     }
 
+    @Inject(method = "move", at = @At("HEAD"))
+    private void sable$storeWalkStart(final MoverType moverType, final Vec3 movement, final CallbackInfo ci, @Share("walkStart") final LocalRef<Vec3> walkStart) {
+        walkStart.set(this.position());
+    }
+
+    /**
+     * Makes the walked distance (used for view bobbing) relative to the custom orientation of the player
+     */
+    @WrapOperation(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;addWalkedDistance(F)V"))
+    private void sable$fixWalkDistance(final LocalPlayer instance, final float walkDistance, final Operation<Void> original, @Share("walkStart") final LocalRef<Vec3> walkStart) {
+        final Quaterniondc orientation = EntitySubLevelUtil.getCustomEntityOrientation(this, 1.0f);
+        if (orientation == null || walkStart.get() == null) {
+            original.call(instance, walkDistance);
+            return;
+        }
+
+        final Vec3 movement = this.position().subtract(walkStart.get());
+        final Vec3 localMovement = JOMLConversion.toMojang(orientation.transformInverse(JOMLConversion.toJOML(movement)));
+        original.call(instance, (float) localMovement.horizontalDistance() * 0.6F);
+    }
+
     @Unique
     public final Vec3 sable$calculateViewVector2(final float f, final float g) {
         final float h = f * (float) (Math.PI / 180.0);
@@ -54,8 +80,8 @@ public abstract class LocalPlayerMixin extends Player {
         return new Vec3(k * l, -m, j * l);
     }
 
-    @Inject(method = "startRiding(Lnet/minecraft/world/entity/Entity;Z)Z", at = @At("RETURN"))
-    private void sable$onStartRiding(final Entity entity, final boolean bl, final CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "startRiding(Lnet/minecraft/world/entity/Entity;ZZ)Z", at = @At("RETURN"))
+    private void sable$onStartRiding(final Entity entity, final boolean force, final boolean sendGameEvent, final CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue() || !EntitySubLevelUtil.shouldKick(this)) {
             return;
         }

@@ -26,6 +26,9 @@ public class EntityRenderStateMixin implements EntityRenderStateExtension {
     @Unique
     private float @Nullable [] sable$subLevelShadow;
 
+    @Unique
+    private @Nullable Quaternionf sable$sleepingOrientation;
+
     @Override
     public @Nullable Quaternionf sable$getSubLevelOrientation() {
         return this.sable$subLevelOrientation;
@@ -66,5 +69,15 @@ public class EntityRenderStateMixin implements EntityRenderStateExtension {
     @Override
     public void sable$setSubLevelShadow(final float @Nullable [] vertices) {
         this.sable$subLevelShadow = vertices;
+    }
+
+    @Override
+    public @Nullable Quaternionf sable$getSleepingOrientation() {
+        return this.sable$sleepingOrientation;
+    }
+
+    @Override
+    public void sable$setSleepingOrientation(@Nullable final Quaternionf orientation) {
+        this.sable$sleepingOrientation = orientation;
     }
 }

@@ -15,12 +15,16 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 
     @Shadow @Final private Minecraft minecraft;
 
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
+    /**
+     * In 1.21.11 the camera is set up in {@code updateCamera} instead of {@code renderLevel}.
+     */
+    @Inject(method = "updateCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.BEFORE))
     public void sable$setupCamera(final DeltaTracker deltaTracker, final CallbackInfo ci) {
         final CameraType cameraType = this.minecraft.options.getCameraType();
 

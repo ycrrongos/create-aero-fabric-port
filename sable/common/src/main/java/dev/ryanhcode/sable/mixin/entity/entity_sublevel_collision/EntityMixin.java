@@ -14,6 +14,7 @@ import dev.ryanhcode.sable.mixinterface.entity.entity_sublevel_collision.LivingE
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.entity_collision.SubLevelEntityCollision;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -87,17 +88,34 @@ public abstract class EntityMixin implements EntityMovementExtension {
     @Shadow
     public abstract Level level();
 
-    @WrapOperation(method = "move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setOnGroundWithMovement(ZLnet/minecraft/world/phys/Vec3;)V"))
-    public void sable$moveInject(final Entity instance, final boolean bl, final Vec3 arg, final Operation<Void> original) {
+    @WrapOperation(method = "move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setOnGroundWithMovement(ZZLnet/minecraft/world/phys/Vec3;)V"))
+    public void sable$moveInject(final Entity instance, final boolean bl, final boolean horizontalCollision, final Vec3 arg, final Operation<Void> original) {
+        this.sable$applyCollisionInfo();
+
+        original.call(instance, this.verticalCollisionBelow, this.horizontalCollision, arg);
+    }
+
+    /**
+     * Vanilla re-computes {@link Entity#minorHorizontalCollision} after landing, and skips the ground check entirely
+     * for entities that aren't simulated locally without vertical movement.
+     * Re-apply the sub-level aware collision flags once vanilla is done with them.
+     */
+    @Inject(method = "move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getOnPosLegacy()Lnet/minecraft/core/BlockPos;"))
+    public void sable$reapplyCollisionInfo(final MoverType moverType, final Vec3 vec3, final CallbackInfo ci) {
+        if (this.sable$collisionInfo != null) {
+            this.sable$applyCollisionInfo();
+        }
+    }
+
+    @Unique
+    private void sable$applyCollisionInfo() {
         this.horizontalCollision = this.sable$collisionInfo.horizontalCollision;
         this.verticalCollision = this.sable$collisionInfo.verticalCollision;
         this.verticalCollisionBelow = this.sable$collisionInfo.verticalCollisionBelow;
         this.minorHorizontalCollision = this.sable$collisionInfo.minorHorizontalCollision;
-
-        original.call(instance, this.verticalCollisionBelow, arg);
     }
 
-    @WrapOperation(method = "move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;updateEntityAfterFallOn(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;)V"))
+    @WrapOperation(method = "move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;updateEntityMovementAfterFallOn(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;)V"))
     public void updateEntityAfterFallOn(final Block instance, final BlockGetter arg, final Entity arg2, final Operation<Void> original) {
         if (this.verticalCollision) {
             original.call(instance, arg, arg2);
@@ -212,7 +230,7 @@ public abstract class EntityMixin implements EntityMovementExtension {
     public abstract EntityType<?> getType();
 
     @Shadow
-    public abstract void kill();
+    public abstract void kill(ServerLevel level);
 
     @Inject(method = "tick", at = @At("TAIL"))
     public void sable$tickInject(final CallbackInfo ci) {
@@ -241,7 +259,9 @@ public abstract class EntityMixin implements EntityMovementExtension {
         // Destroy us if we're in #sable:destroy_when_leaving_plot and we've left the plot
         if (containingSubLevel != null) {
             if (!this.getBoundingBox().intersects(containingSubLevel.getPlot().getBoundingBox().toAABB().inflate(1.0)) && this.getType().is(SableTags.DESTROY_WHEN_LEAVING_PLOT)) {
-                this.kill();
+                if (this.level instanceof final ServerLevel serverLevel) {
+                    this.kill(serverLevel);
+                }
             }
         }
     }

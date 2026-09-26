@@ -1,5 +1,7 @@
 package dev.ryanhcode.sable.mixin.entity.entity_rotations_and_riding;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.ryanhcode.sable.Sable;
@@ -49,15 +51,14 @@ public abstract class PlayerMixin extends LivingEntity {
         upDeltaMovement.set(dir.mul(dir.dot(deltaMovement.x, deltaMovement.y, deltaMovement.z)));
     }
 
-    @Redirect(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setDeltaMovement(DDD)V"))
+    @WrapOperation(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V", ordinal = 1))
     private void sable$modifyTravelSetDeltaMovement(final Player instance,
-                                                    final double x,
-                                                    final double y,
-                                                    final double z,
+                                                    final Vec3 newDeltaMovement,
+                                                    final Operation<Void> original,
                                                     @Share("upDir") final LocalRef<Vector3d> upDir,
                                                     @Share("upDeltaMovement") final LocalRef<Vector3d> upDeltaMovement) {
         if (upDeltaMovement.get() == null) {
-            instance.setDeltaMovement(x, y, z);
+            original.call(instance, newDeltaMovement);
             return;
         }
 
@@ -65,7 +66,7 @@ public abstract class PlayerMixin extends LivingEntity {
         final double dot = upDir.get().dot(deltaMovement.x, deltaMovement.y, deltaMovement.z);
 
         final double scalar = 0.6;
-        this.setDeltaMovement(deltaMovement
+        original.call(instance, deltaMovement
                 .subtract(dot * upDir.get().x, dot * upDir.get().y, dot * upDir.get().z)
                 .add(upDeltaMovement.get().x * scalar, upDeltaMovement.get().y * scalar, upDeltaMovement.get().z * scalar));
     }

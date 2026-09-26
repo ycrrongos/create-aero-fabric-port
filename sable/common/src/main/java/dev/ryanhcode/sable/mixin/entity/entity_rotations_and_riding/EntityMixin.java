@@ -1,11 +1,10 @@
 package dev.ryanhcode.sable.mixin.entity.entity_rotations_and_riding;
 
-import net.minecraft.core.UUIDUtil;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.serialization.Codec;
 import dev.ryanhcode.sable.ActiveSableCompanion;
 import dev.ryanhcode.sable.Sable;
-import dev.ryanhcode.sable.api.SubLevelHelper;
 import dev.ryanhcode.sable.api.entity.EntitySubLevelUtil;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.mixinhelpers.entity.entity_riding_sub_level_vehicle.EntityRidingSubLevelVehicleHelper;
@@ -13,13 +12,12 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.tracking_points.SubLevelTrackingPointSavedData;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniondc;
@@ -27,9 +25,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import java.util.UUID;
+
 @Mixin(Entity.class)
 public abstract class EntityMixin {
 
@@ -51,9 +50,6 @@ public abstract class EntityMixin {
 
     @Shadow
     public abstract Vec3 position();
-
-    @Shadow
-    protected abstract ListTag newDoubleList(double... ds);
 
     @Shadow
     public abstract double getX();
@@ -84,14 +80,6 @@ public abstract class EntityMixin {
     @Shadow public abstract void setDeltaMovement(Vec3 vec3);
 
     @Shadow public abstract Vec3 getDeltaMovement();
-
-    @WrapOperation(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;horizontalDistance()D"))
-    private double sable$fixWalkDistance(final Vec3 vec, final Operation<Double> original) {
-        final Quaterniondc orientation = EntitySubLevelUtil.getCustomEntityOrientation((Entity) (Object) this, 1.0f);
-        if (orientation == null) return original.call(vec);
-
-        return original.call(JOMLConversion.toMojang(orientation.transformInverse(JOMLConversion.toJOML(vec))));
-    }
 
     @Inject(method = "moveRelative", at = @At("HEAD"), cancellable = true)
     public void moveRelative(final float f, final Vec3 vec3, final CallbackInfo ci) {
@@ -128,15 +116,19 @@ public abstract class EntityMixin {
         entity.setPos(pos);
     }
 
-    @Redirect(method = "saveWithoutId", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;put(Ljava/lang/String;Lnet/minecraft/nbt/Tag;)Lnet/minecraft/nbt/Tag;", ordinal = 0))
-    public Tag sable$fixPassengerSaving(final CompoundTag instance, final String string, final Tag tag) {
+    /**
+     * Passengers of vehicles inside sub-levels are saved at their own (global) position instead of the plot position of the vehicle
+     */
+    @WrapOperation(method = "saveWithoutId", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/ValueOutput;store(Ljava/lang/String;Lcom/mojang/serialization/Codec;Ljava/lang/Object;)V", ordinal = 0))
+    public void sable$fixPassengerSaving(final ValueOutput instance, final String key, final Codec<?> codec, final Object value, final Operation<Void> original) {
         if (!EntitySubLevelUtil.shouldKick((Entity) (Object) this)) {
-            return instance.put(string, tag);
+            original.call(instance, key, codec, value);
+            return;
         }
 
         final SubLevel subLevel = Sable.HELPER.getContaining(this.vehicle);
         if (subLevel != null) {
-            final Tag newPositionTag = this.newDoubleList(
+            final Vec3 newPosition = new Vec3(
                     this.getX(),
                     this.getY(),
                     this.getZ()
@@ -150,9 +142,10 @@ public abstract class EntityMixin {
                 }
             }
 
-            return instance.put(string, newPositionTag);
+            original.call(instance, key, codec, newPosition);
+            return;
         }
 
-        return instance.put(string, tag);
+        original.call(instance, key, codec, value);
     }
 }

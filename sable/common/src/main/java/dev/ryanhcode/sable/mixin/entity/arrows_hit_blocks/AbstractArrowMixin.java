@@ -1,8 +1,8 @@
 package dev.ryanhcode.sable.mixin.entity.arrows_hit_blocks;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.entity.EntitySubLevelUtil;
 import dev.ryanhcode.sable.api.physics.handle.RigidBodyHandle;
@@ -17,75 +17,92 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 /**
  * Fixes the delta movement that arrows get & the direction they face when they hit blocks
  */
 @Mixin(AbstractArrow.class)
 public abstract class AbstractArrowMixin extends Entity {
 
+    /**
+     * The position of the arrow before it stepped to its hit location.
+     * Stepping onto a sub-level block moves the arrow straight into the plot before {@link AbstractArrow#onHitBlock} runs,
+     * so this is what the arrow's position was when it hit the block.
+     */
+    @Unique
+    private @Nullable Vec3 sable$preStepPosition = null;
+
     @Shadow
-    protected boolean inGround;
+    protected abstract boolean isInGround();
 
     public AbstractArrowMixin(final EntityType<?> entityType, final Level level) {
         super(entityType, level);
     }
 
-    @Redirect(method = "onHitBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/AbstractArrow;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"))
-    private void sable$setDeltaMovement(final AbstractArrow arrow,
-                                        final Vec3 difference,
-                                        @Local(argsOnly = true) final BlockHitResult blockHitResult,
-                                        @Share("difference") final LocalRef<Vec3> differenceRef,
-                                        @Share("subLevel") final LocalRef<SubLevel> subLevelRef) {
-        final SubLevel subLevel = Sable.HELPER.getContaining(this.level(), blockHitResult.getLocation());
+    @WrapOperation(method = "stepMoveAndHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/arrow/AbstractArrow;setPos(Lnet/minecraft/world/phys/Vec3;)V"))
+    private void sable$rememberPreStepPosition(final AbstractArrow instance, final Vec3 pos, final Operation<Void> original) {
+        this.sable$preStepPosition = instance.position();
+        original.call(instance, pos);
+    }
 
-        if (subLevel == null) {
-            arrow.setDeltaMovement(difference);
+    /**
+     * When the arrow steps into a sub-level, apply the effects of the blocks it passed through in the sub-level's local space
+     */
+    @WrapOperation(method = "stepMoveAndHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/arrow/AbstractArrow;applyEffectsFromBlocks(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;)V"))
+    private void sable$applyEffectsFromBlocks(final AbstractArrow instance, final Vec3 from, final Vec3 to, final Operation<Void> original) {
+        final SubLevel subLevel = Sable.HELPER.getContaining(this.level(), to);
+
+        if (subLevel != null && Sable.HELPER.getContaining(this.level(), from) != subLevel) {
+            original.call(instance, subLevel.logicalPose().transformPositionInverse(from), to);
             return;
         }
 
-        final Vec3 localPosition = subLevel.logicalPose().transformPositionInverse(this.position());
-        final Vec3 diff = blockHitResult.getLocation().subtract(localPosition);
+        original.call(instance, from, to);
+    }
 
-        if (!this.level().isClientSide() && !this.inGround) {
+    @Inject(method = "stepMoveAndHit", at = @At("RETURN"))
+    private void sable$forgetPreStepPosition(final BlockHitResult hitResult, final CallbackInfo ci) {
+        this.sable$preStepPosition = null;
+    }
+
+    @WrapOperation(method = "onHitBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/arrow/AbstractArrow;setPos(Lnet/minecraft/world/phys/Vec3;)V"))
+    private void sable$setPos(final AbstractArrow instance,
+                              final Vec3 pos,
+                              final Operation<Void> original,
+                              @Local(argsOnly = true) final BlockHitResult blockHitResult) {
+        final SubLevel subLevel = Sable.HELPER.getContaining(this.level(), blockHitResult.getLocation());
+
+        if (subLevel == null) {
+            original.call(instance, pos);
+            return;
+        }
+
+        final Vec3 preHitPosition = this.sable$preStepPosition != null ? this.sable$preStepPosition : this.position();
+        this.sable$preStepPosition = null;
+
+        final Vec3 localPosition = subLevel.logicalPose().transformPositionInverse(preHitPosition);
+        final Vec3 difference = blockHitResult.getLocation().subtract(localPosition);
+
+        if (!this.level().isClientSide() && !this.isInGround()) {
             final Vec3 localImpulse = subLevel.logicalPose().transformNormalInverse(this.getDeltaMovement());
             RigidBodyHandle.of((ServerSubLevel) subLevel).applyImpulseAtPoint(localPosition, localImpulse);
         }
 
-        arrow.setDeltaMovement(diff.x, diff.y, diff.z);
-        differenceRef.set(diff);
-        subLevelRef.set(subLevel);
-    }
+        // back the arrow out of the block it hit like vanilla does, but in the local space of the sub-level
+        final Vec3 nudge = new Vec3(Math.signum(difference.x), Math.signum(difference.y), Math.signum(difference.z)).scale(0.05F);
+        original.call(instance, blockHitResult.getLocation().subtract(nudge));
 
-    @Redirect(method = "onHitBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/AbstractArrow;setPosRaw(DDD)V"))
-    private void sable$setPosRaw(final AbstractArrow instance,
-                                 final double x,
-                                 final double y,
-                                 final double z,
-                                 @Share("subLevel") final LocalRef<SubLevel> subLevelRef,
-                                 @Share("difference") final LocalRef<Vec3> differenceRef) {
-        final Vec3 difference = differenceRef.get();
-
-        if (difference == null) {
-            instance.setPosRaw(x, y, z);
-            return;
-        }
-
-        final Vec3 nudge = difference.normalize().scale(0.05F);
-        final SubLevel subLevel = subLevelRef.get();
-        final Vec3 localPosition = subLevel.logicalPose().transformPositionInverse(this.position());
-
-        instance.setPosRaw(localPosition.x - nudge.x, localPosition.y - nudge.y, localPosition.z - nudge.z);
-
-        final Vec3 vec3 = this.getDeltaMovement();
-        final double d = vec3.horizontalDistance();
-        this.setXRot((float) (Mth.atan2(vec3.y, d) * 57.2957763671875));
-        this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * 57.2957763671875));
+        final double d = difference.horizontalDistance();
+        this.setXRot((float) (Mth.atan2(difference.y, d) * 57.2957763671875));
+        this.setYRot((float) (Mth.atan2(difference.x, difference.z) * 57.2957763671875));
 
         this.yRotO = this.getYRot();
         this.xRotO = this.getXRot();
@@ -94,7 +111,7 @@ public abstract class AbstractArrowMixin extends Entity {
     @Inject(method = "startFalling", at = @At("TAIL"))
     private void sable$startFalling(final CallbackInfo ci) {
         final SubLevel subLevel = Sable.HELPER.getContaining(this);
-        
+
         if (subLevel != null) {
             EntitySubLevelUtil.kickEntity(subLevel, this);
         }

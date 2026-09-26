@@ -40,4 +40,11 @@ public interface EntityRenderStateExtension {
     float @Nullable [] sable$getSubLevelShadow();
 
     void sable$setSubLevelShadow(float @Nullable [] vertices);
+
+    /**
+     * @return The orientation of the sub-level holding the bed the entity is sleeping in, applied to the entity model when submitting
+     */
+    @Nullable Quaternionf sable$getSleepingOrientation();
+
+    void sable$setSleepingOrientation(@Nullable Quaternionf orientation);
 }

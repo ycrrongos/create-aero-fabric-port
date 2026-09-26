@@ -1,33 +1,47 @@
 package dev.ryanhcode.sable.mixin.debug_render;
 
-import dev.ryanhcode.sable.api.sublevel.ClientSubLevelContainer;
-import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
-import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelRenderDispatcher;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.DebugScreenOverlay;
-import net.minecraft.world.level.Level;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import dev.ryanhcode.sable.mixinhelpers.debug_render.SableDebugScreenEntry;
+import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import net.minecraft.client.gui.components.debug.DebugScreenEntry;
+import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import java.util.List;
-@Mixin(DebugScreenOverlay.class)
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Adds the Sable information to the F3 debug screen.
+ * <p>
+ * In 1.21.11 the lines of the debug screen are no longer built by {@code DebugScreenOverlay#getSystemInformation}, but by
+ * the {@link DebugScreenEntry debug screen entries} enabled in the current debug profile. The Sable lines are provided by
+ * the {@link SableDebugScreenEntry}, which is shown in the debug overlay of the default profile.
+ */
+@Mixin(DebugScreenEntries.class)
 public abstract class DebugScreenOverlayMixin {
 
-    @Shadow protected abstract Level getLevel();
+    @Shadow
+    private static Identifier register(final Identifier name, final DebugScreenEntry entry) {
+        throw new AssertionError();
+    }
 
-    @ModifyVariable(method = "getSystemInformation", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;showOnlyReducedInfo()Z", shift = At.Shift.BEFORE), ordinal = 0)
-    public List<String> sable$addDebugInfo(final List<String> value) {
-        final SubLevelContainer container = SubLevelContainer.getContainer(Minecraft.getInstance().level);
+    @Inject(method = "<clinit>", at = @At("TAIL"))
+    private static void sable$registerDebugEntry(final CallbackInfo ci) {
+        register(SableDebugScreenEntry.ID, new SableDebugScreenEntry());
+    }
 
-        value.add("");
-        value.add(ChatFormatting.UNDERLINE + "Sable");
-        if (container instanceof final ClientSubLevelContainer clientContainer) {
-            clientContainer.addDebugInfo(value::add);
-        }
-        SubLevelRenderDispatcher.get().addDebugInfo(value::add);
-
-        return value;
+    /**
+     * Shows the Sable entry in the debug overlay of the default debug profile.
+     */
+    @ModifyExpressionValue(method = "<clinit>", at = @At(value = "INVOKE", target = "Ljava/util/Map;of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;", remap = false))
+    private static Map<Identifier, DebugScreenEntryStatus> sable$showInDefaultProfile(final Map<Identifier, DebugScreenEntryStatus> original) {
+        final Map<Identifier, DebugScreenEntryStatus> defaultProfile = new HashMap<>(original);
+        defaultProfile.put(SableDebugScreenEntry.ID, DebugScreenEntryStatus.IN_OVERLAY);
+        return Map.copyOf(defaultProfile);
     }
 }

@@ -1,39 +1,51 @@
 package dev.ryanhcode.sable.mixin.entity.entity_leashing;
 
-import dev.ryanhcode.sable.ActiveSableCompanion;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.ryanhcode.sable.Sable;
-import dev.ryanhcode.sable.api.SubLevelHelper;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Leashable;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+
+/**
+ * Makes leash physics take into account sub-levels
+ */
 @Mixin(Leashable.class)
 public interface LeashableMixin {
 
     /**
-     * @author Ryan H
-     * @reason Take into account sub-levels
+     * Take into account sub-levels for the distance between a leashed entity and its holder, which decides if the leash
+     * is slack, pulling or snaps
      */
-    @Overwrite
-    private static <E extends Entity & Leashable> void legacyElasticRangeLeashBehaviour(final E leashedEntity, final Entity handlerEntity, final float f) {
-        final ActiveSableCompanion helper = Sable.HELPER;
-        final Level level = handlerEntity.level();
-        final Vec3 handlerPos = helper.projectOutOfSubLevel(level, handlerEntity.position());
-        final Vec3 leashedPos = helper.projectOutOfSubLevel(level, leashedEntity.position());
-        final double d = (handlerPos.x - leashedPos.x) / (double)f;
-        final double e = (handlerPos.y - leashedPos.y) / (double)f;
-        final double g = (handlerPos.z - leashedPos.z) / (double)f;
+    @WrapOperation(method = "leashDistanceTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;distanceTo(Lnet/minecraft/world/phys/Vec3;)D"))
+    private double sable$leashDistanceTo(final Vec3 holderCenter, final Vec3 leashedCenter, final Operation<Double> original, @Local(argsOnly = true) final Entity holder) {
+        return Math.sqrt(Sable.HELPER.distanceSquaredWithSubLevels(holder.level(), holderCenter, leashedCenter));
+    }
 
-        Vec3 impulse = leashedEntity.getDeltaMovement().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g));
-        final SubLevel leashedSubLevel = helper.getContaining(leashedEntity);
+    /**
+     * Take into account sub-levels for the attachment points of the leash on the leashed entity and its holder
+     */
+    @WrapOperation(method = "computeElasticInteraction", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;"))
+    private static Vec3 sable$projectAttachmentPoint(final Vec3 position, final Vec3 offset, final Operation<Vec3> original, @Local(argsOnly = true, ordinal = 0) final Entity leashedEntity) {
+        return Sable.HELPER.projectOutOfSubLevel(leashedEntity.level(), original.call(position, offset));
+    }
+
+    /**
+     * The elastic impulse is computed globally, bring it into the local space of the leashed entity if it's inside a sub-level
+     */
+    @WrapOperation(method = "checkElasticInteractions", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;addDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"))
+    private void sable$addElasticImpulse(final Entity leashedEntity, final Vec3 impulse, final Operation<Void> original) {
+        final SubLevel leashedSubLevel = Sable.HELPER.getContaining(leashedEntity);
 
         if (leashedSubLevel != null) {
-            impulse = leashedSubLevel.logicalPose().transformNormalInverse(impulse);
+            original.call(leashedEntity, leashedSubLevel.logicalPose().transformNormalInverse(impulse));
+            return;
         }
 
-        leashedEntity.setDeltaMovement(impulse);
+        original.call(leashedEntity, impulse);
     }
 }

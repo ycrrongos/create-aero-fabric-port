@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.mixin.sublevel_sounds;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelHelper;
 import dev.ryanhcode.sable.sound.MovingSoundInstanceDelegate;
@@ -11,14 +12,13 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.resources.sounds.TickableSoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.SoundEngine;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import java.util.Iterator;
+
 @Mixin(SoundEngine.class)
 public class SoundEngineMixin {
 
@@ -48,9 +48,11 @@ public class SoundEngineMixin {
         return instance;
     }
 
-    @Inject(method = "tickNonPaused", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V", shift = At.Shift.AFTER, ordinal = 0), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-    private void sable$tick(final CallbackInfo ci, final Iterator<TickableSoundInstance> sounds, final TickableSoundInstance sound,
-                            final float volume, final float pitch, final Vec3 pos, final ChannelAccess.ChannelHandle access) {
+    /**
+     * 1.21.11 renamed {@code tickNonPaused} to {@code tickInGameSound}.
+     */
+    @Inject(method = "tickInGameSound", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V", shift = At.Shift.AFTER, ordinal = 0))
+    private void sable$tick(final CallbackInfo ci, @Local final TickableSoundInstance sound, @Local final ChannelAccess.ChannelHandle access) {
         if (sound instanceof final MovingSoundInstanceDelegate delegated) {
             access.execute(delegated::tickWithChannel);
         }
