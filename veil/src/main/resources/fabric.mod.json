@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "veil",
+  "version": "${version}",
+  "name": "Veil",
+  "description": "Veil rendering library, ported to Minecraft 1.21.11 (Fabric). Provides the shader, framebuffer, post-processing and render stage APIs used by Sable, Create Simulated and Create Aeronautics.",
+  "icon": "icon.png",
+  "authors": [
+    "Ocelot",
+    "FoundryMC"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/project/veil",
+    "issues": "https://github.com/FoundryMC/Veil/issues",
+    "sources": "https://github.com/FoundryMC/Veil"
+  },
+  "license": "LGPL-3.0-only",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "foundry.veil.fabric.VeilFabric"
+    ]
+  },
+  "mixins": [
+    "veil.mixins.json",
+    {
+      "config": "veil.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "accessWidener": "veil.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "fabric-api": "*",
+    "minecraft": "~1.21.11",
+    "java": ">=21"
+  },
+  "breaks": {
+    "imguimc": "*"
+  }
+}

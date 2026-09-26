@@ -1,0 +1,27 @@
+pluginManagement {
+    repositories {
+        exclusiveContent {
+            forRepository {
+                maven { name = 'Fabric'; url = uri('https://maven.fabricmc.net') }
+            }
+            filter {
+                includeGroup('net.fabricmc')
+                includeGroup('net.fabricmc.unpick')
+                includeGroup('net.fabricmc.fabric-loom-remap')
+                includeGroupAndSubgroups('net.fabricmc')
+            }
+        }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'create-aeronautics-fabric'
+
+include 'veil'
+include 'sable-companion'
+//include 'sable:sable_rapier'
+//include 'sable'
+//include 'simulated'
+//include 'aeronautics'
+//include 'offroad'

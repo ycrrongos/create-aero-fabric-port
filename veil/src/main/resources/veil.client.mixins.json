@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "foundry.veil.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "BufferSourceAccessor",
+    "CachedOrthoProjectionMatrixBufferMixin",
+    "CachedPerspectiveProjectionMatrixBufferMixin",
+    "CompiledSectionMeshMixin",
+    "FogRendererMixin",
+    "GlCommandEncoderAccessor",
+    "GlDeviceMixin",
+    "LevelRendererAccessor",
+    "LevelRendererStageMixin",
+    "MinecraftMixin",
+    "ProjectionMatrixBufferMixin",
+    "RenderSystemMixin",
+    "SectionCompilerMixin",
+    "SectionCompilerResultsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

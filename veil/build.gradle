@@ -1,0 +1,22 @@
+version = '4.5.1+mc1.21.11-port'
+group = 'foundry.veil'
+
+base {
+    archivesName = 'veil-fabric-1.21.11'
+}
+
+dependencies {
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+    include(api("io.github.ocelot:glsl-processor:0.2.3"))
+}
+
+loom {
+    accessWidenerPath = file('src/main/resources/veil.accesswidener')
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}

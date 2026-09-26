@@ -1,0 +1,13 @@
+version = '1.6.0+mc1.21.11'
+group = 'dev.ryanhcode.sable-companion'
+
+base {
+    archivesName = 'sable-companion-fabric-1.21.11'
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}

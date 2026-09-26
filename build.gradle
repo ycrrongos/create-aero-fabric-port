@@ -1,0 +1,55 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap' version '1.16-SNAPSHOT' apply false
+}
+
+// Shared configuration for every Fabric 1.21.11 module in this workspace.
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'net.fabricmc.fabric-loom-remap'
+
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(Integer.parseInt(rootProject.java_version))
+        withSourcesJar()
+    }
+
+    repositories {
+        mavenCentral()
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        exclusiveContent {
+            forRepository { maven { name = 'ParchmentMC'; url = 'https://maven.parchmentmc.org/' } }
+            filter { includeGroup('org.parchmentmc.data') }
+        }
+        exclusiveContent {
+            forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+            filter { includeGroup('maven.modrinth') }
+        }
+        exclusiveContent {
+            forRepository { maven { name = 'Fuzss'; url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/' } }
+            filter { includeGroupAndSubgroups('fuzs') }
+        }
+        maven { name = 'ryanhcode'; url = 'https://maven.ryanhcode.dev/releases' }
+        maven { name = 'BlameJared'; url = 'https://maven.blamejared.com' }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        mappings loom.layered {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-${rootProject.parchment_minecraft}:${rootProject.parchment_version}@zip")
+        }
+        modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+        compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+        compileOnly 'org.jetbrains:annotations:26.0.2'
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = Integer.parseInt(rootProject.java_version)
+        options.compilerArgs += ['-Xmaxerrs', '10000']
+    }
+
+    tasks.withType(ProcessResources).configureEach {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}

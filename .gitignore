@@ -8,3 +8,5 @@ run/
 .idea/
 *.iml
 .DS_Store
+runs/
+/testing/instance/
