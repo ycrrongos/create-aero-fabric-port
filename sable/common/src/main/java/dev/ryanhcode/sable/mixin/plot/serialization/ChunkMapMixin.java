@@ -7,7 +7,7 @@ import dev.ryanhcode.sable.sublevel.storage.holding.SubLevelHoldingChunkMap;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.progress.ChunkProgressListener;
+import net.minecraft.world.level.TicketStorage;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -15,6 +15,7 @@ import net.minecraft.world.level.chunk.LightChunkGetter;
 import net.minecraft.world.level.entity.ChunkStatusUpdateListener;
 import net.minecraft.world.level.entity.Visibility;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,7 +41,7 @@ public class ChunkMapMixin {
     private ServerLevel level;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void sable$init(final ServerLevel serverLevel, final LevelStorageSource.LevelStorageAccess levelStorageAccess, final DataFixer dataFixer, final StructureTemplateManager structureTemplateManager, final Executor executor, final BlockableEventLoop blockableEventLoop, final LightChunkGetter lightChunkGetter, final ChunkGenerator chunkGenerator, final ChunkProgressListener chunkProgressListener, final ChunkStatusUpdateListener chunkStatusUpdateListener, final Supplier supplier, final int i, final boolean bl, final CallbackInfo ci) {
+    private void sable$init(final ServerLevel serverLevel, final LevelStorageSource.LevelStorageAccess levelStorageAccess, final DataFixer dataFixer, final StructureTemplateManager structureTemplateManager, final Executor executor, final BlockableEventLoop blockableEventLoop, final LightChunkGetter lightChunkGetter, final ChunkGenerator chunkGenerator, final ChunkStatusUpdateListener chunkStatusUpdateListener, final Supplier<DimensionDataStorage> overworldDataStorage, final TicketStorage ticketStorage, final int serverViewDistance, final boolean sync, final CallbackInfo ci) {
         this.unloadQueue = new ConcurrentLinkedDeque<>();
     }
 

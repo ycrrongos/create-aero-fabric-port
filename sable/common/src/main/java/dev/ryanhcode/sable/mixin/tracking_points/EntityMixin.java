@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.mixin.tracking_points;
 
+import net.minecraft.core.UUIDUtil;
 import dev.ryanhcode.sable.mixinterface.player_freezing.PlayerFreezeExtension;
 import dev.ryanhcode.sable.sublevel.tracking_points.SubLevelTrackingPointSavedData;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +24,7 @@ public abstract class EntityMixin {
     private void sable$load(final CompoundTag compoundTag, final CallbackInfo ci) {
         if (compoundTag.contains("LoginPoint")) {
             final SubLevelTrackingPointSavedData data = SubLevelTrackingPointSavedData.getOrLoad((ServerLevel) this.level);
-            final SubLevelTrackingPointSavedData.TakenLoginPoint point = data.take(compoundTag.getUUID("LoginPoint"), true);
+            final SubLevelTrackingPointSavedData.TakenLoginPoint point = data.take(compoundTag.read("LoginPoint", UUIDUtil.CODEC).orElseThrow(), true);
 
             if (point != null) {
                 final Vector3dc position = point.position();

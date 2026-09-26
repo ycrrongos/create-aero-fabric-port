@@ -105,7 +105,7 @@ public abstract class ClientChunkCacheMixin implements DebugChunkProviderAttachm
     }
 
     @Inject(method = "replaceWithPacketData", at = @At("HEAD"), cancellable = true)
-    private void replaceWithPacketData(final int x, final int z, final FriendlyByteBuf friendlyByteBuf, final CompoundTag compoundTag,
+    private void replaceWithPacketData(final int x, final int z, final FriendlyByteBuf friendlyByteBuf, final java.util.Map<net.minecraft.world.level.levelgen.Heightmap.Types, long[]> heightmaps,
                                        final Consumer<ClientboundLevelChunkPacketData.BlockEntityTagOutput> consumer, final CallbackInfoReturnable<LevelChunk> cir) {
         final SubLevelContainer container = this.sable$getPlotContainer();
 
@@ -118,10 +118,10 @@ public abstract class ClientChunkCacheMixin implements DebugChunkProviderAttachm
                     this.level.unload(levelChunk);
                 }
                 levelChunk = new LevelChunk(this.level, chunkPos);
-                levelChunk.replaceWithPacketData(friendlyByteBuf, compoundTag, consumer);
+                levelChunk.replaceWithPacketData(friendlyByteBuf, heightmaps, consumer);
                 container.newPopulatedChunk(chunkPos, levelChunk);
             } else {
-                levelChunk.replaceWithPacketData(friendlyByteBuf, compoundTag, consumer);
+                levelChunk.replaceWithPacketData(friendlyByteBuf, heightmaps, consumer);
             }
 
             this.level.onChunkLoaded(chunkPos);

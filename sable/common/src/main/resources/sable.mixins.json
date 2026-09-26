@@ -87,6 +87,7 @@
     "water_occlusion.GameRendererMixin"
   ],
   "mixins": [
+    "accessor.ServerChunkCacheAccessor",
     "assembly.AbstractFurnaceBlockEntityMixin",
     "block_decal_render.ServerLevelMixin",
     "block_placement.BlockPlaceContextMixin",

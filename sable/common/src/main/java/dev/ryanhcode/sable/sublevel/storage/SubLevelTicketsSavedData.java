@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.sublevel.storage;
 
+import net.minecraft.core.UUIDUtil;
 import com.mojang.serialization.Codec;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
@@ -30,21 +31,16 @@ import java.util.UUID;
  * Stores the force loading tickets for sub-levels
  */
 public class SubLevelTicketsSavedData extends SavedData {
+    private static final java.util.Map<ServerLevel, SubLevelTicketsSavedData> CACHE = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
     public static final String FILE_ID = "sable_sub_level_force_load_tickets";
     private final ServerLevel level;
 
-    private SubLevelTicketsSavedData(final ServerLevel level) {
+    SubLevelTicketsSavedData(final ServerLevel level) {
         this.level = level;
     }
 
     public static SubLevelTicketsSavedData getOrLoad(final ServerLevel level) {
-        return level.getChunkSource().getDataStorage().computeIfAbsent(
-                new Factory<>(
-                        () -> new SubLevelTicketsSavedData(level),
-                        (tag, provider) -> SubLevelTicketsSavedData.load(level, tag),
-                        DataFixTypes.LEVEL
-                ),
-                SubLevelTicketsSavedData.FILE_ID);
+        return CACHE.computeIfAbsent(level, SubLevelTicketsSavedData::new);
     }
 
     private static SubLevelTicketsSavedData load(final ServerLevel level, final CompoundTag tag) {
@@ -53,17 +49,17 @@ public class SubLevelTicketsSavedData extends SavedData {
         if (container == null) return data;
 
         final Object2ObjectMap<UUID, SubLevelTicketInfo> newTickets = new Object2ObjectOpenHashMap<>();
-        final ListTag ticketInfos = tag.getList("tickets", Tag.TAG_COMPOUND);
+        final ListTag ticketInfos = tag.getListOrEmpty("tickets");
 
         for (int i = 0; i < ticketInfos.size(); i++) {
-            final CompoundTag infoTag = ticketInfos.getCompound(i);
-            final UUID subLevelId = infoTag.getUUID("uuid");
+            final CompoundTag infoTag = ticketInfos.getCompoundOrEmpty(i);
+            final UUID subLevelId = infoTag.read("uuid", UUIDUtil.CODEC).orElseThrow();
 
-            final ListTag entriesTag = infoTag.getList("entries", Tag.TAG_COMPOUND);
+            final ListTag entriesTag = infoTag.getListOrEmpty("entries");
             final ObjectSet<SubLevelLoadingTicket<?>> tickets = new ObjectArraySet<>();
 
             for (int j = 0; j < entriesTag.size(); j++) {
-                final CompoundTag entryTag = entriesTag.getCompound(j);
+                final CompoundTag entryTag = entriesTag.getCompoundOrEmpty(j);
                 final SubLevelLoadingTicket<?> ticket = deserializeTicket(subLevelId, entryTag);
 
                 if (ticket != null) {
@@ -86,7 +82,7 @@ public class SubLevelTicketsSavedData extends SavedData {
     }
 
     private static <T> SubLevelLoadingTicket<T> deserializeTicket(final UUID subLevelId, final CompoundTag tag) {
-        final Identifier typeName = Identifier.parse(tag.getString("type"));
+        final Identifier typeName = Identifier.parse(tag.getStringOr("type", ""));
         @SuppressWarnings("unchecked") final SubLevelLoadingTicketType<T> type = (SubLevelLoadingTicketType<T>) SubLevelLoadingTicketType.byName(typeName);
 
         if (type == null) {
@@ -121,7 +117,6 @@ public class SubLevelTicketsSavedData extends SavedData {
                 .orElse(null);
     }
 
-    @Override
     public @NotNull CompoundTag save(final CompoundTag compoundTag, final HolderLookup.Provider provider) {
         final ServerSubLevelContainer container = SubLevelContainer.getContainer(this.level);
         assert container != null : "Sub-level container is null";
@@ -145,7 +140,7 @@ public class SubLevelTicketsSavedData extends SavedData {
             }
 
             final CompoundTag infoTag = new CompoundTag();
-            infoTag.putUUID("uuid", uuid);
+            infoTag.store("uuid", UUIDUtil.CODEC, uuid);
             final ListTag entriesTag = new ListTag();
 
             for (final SubLevelLoadingTicket<?> ticket : info.tickets()) {

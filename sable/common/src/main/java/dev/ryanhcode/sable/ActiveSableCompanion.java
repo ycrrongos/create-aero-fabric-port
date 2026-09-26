@@ -430,12 +430,18 @@ public class ActiveSableCompanion implements SableCompanion {
 
     @Override
     public @Nullable SubLevel getTrackingSubLevel(final Entity entity) {
-        return ((EntityMovementExtension) entity).sable$getTrackingSubLevel();
+        if (!(entity instanceof final EntityMovementExtension extension)) {
+            return null;
+        }
+        return extension.sable$getTrackingSubLevel();
     }
 
     @Override
     public @Nullable SubLevel getLastTrackingSubLevel(final Entity entity) {
-        final UUID uuid = ((EntityMovementExtension) entity).sable$getLastTrackingSubLevelID();
+        if (!(entity instanceof final EntityMovementExtension extension)) {
+            return null;
+        }
+        final UUID uuid = extension.sable$getLastTrackingSubLevelID();
         if (uuid != null) {
             final SubLevelContainer container = SubLevelContainer.getContainer(entity.level());
             return container.getSubLevel(uuid);

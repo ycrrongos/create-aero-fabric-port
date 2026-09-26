@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.sublevel.tracking_points;
 
+import net.minecraft.core.UUIDUtil;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
@@ -31,49 +32,44 @@ import org.joml.Vector3dc;
 import java.util.Map;
 import java.util.UUID;
 public class SubLevelTrackingPointSavedData extends SavedData implements SubLevelObserver {
+    private static final java.util.Map<ServerLevel, SubLevelTrackingPointSavedData> CACHE = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
     public static final String FILE_ID = "sable_tracking_points";
     private final ServerLevel level;
     private final Map<UUID, TrackingPoint> trackingPoints = new Object2ObjectOpenHashMap<>();
 
-    private SubLevelTrackingPointSavedData(final ServerLevel level) {
+    SubLevelTrackingPointSavedData(final ServerLevel level) {
         this.level = level;
     }
 
     public static SubLevelTrackingPointSavedData getOrLoad(final ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(
-                new Factory<>(
-                        () -> new SubLevelTrackingPointSavedData(level),
-                        (tag, provider) -> SubLevelTrackingPointSavedData.load(level, tag),
-                        null
-                ),
-                SubLevelTrackingPointSavedData.FILE_ID);
+        return CACHE.computeIfAbsent(level, SubLevelTrackingPointSavedData::new);
     }
 
     private static SubLevelTrackingPointSavedData load(final ServerLevel level, final CompoundTag tag) {
         final SubLevelTrackingPointSavedData data = new SubLevelTrackingPointSavedData(level);
 
-        final CompoundTag trackingPointsTag = tag.getCompound("tracking_points");
+        final CompoundTag trackingPointsTag = tag.getCompoundOrEmpty("tracking_points");
 
-        for (final String key : trackingPointsTag.getAllKeys()) {
+        for (final String key : trackingPointsTag.keySet()) {
             final UUID uuid = UUID.fromString(key);
-            final CompoundTag pointTag = trackingPointsTag.getCompound(key);
+            final CompoundTag pointTag = trackingPointsTag.getCompoundOrEmpty(key);
 
-            final boolean inSubLevel = pointTag.getBoolean("InSubLevel");
+            final boolean inSubLevel = pointTag.getBooleanOr("InSubLevel", false);
             final GlobalSavedSubLevelPointer pointer = pointTag.contains("SubLevelPointer") ?
-                    GlobalSavedSubLevelPointer.CODEC.parse(NbtOps.INSTANCE, pointTag.getCompound("SubLevelPointer")).getOrThrow() :
+                    GlobalSavedSubLevelPointer.CODEC.parse(NbtOps.INSTANCE, pointTag.getCompoundOrEmpty("SubLevelPointer")).getOrThrow() :
                     null;
-            final Vector3d point = SableNBTUtils.readVector3d(pointTag.getCompound("Point"));
+            final Vector3d point = SableNBTUtils.readVector3d(pointTag.getCompoundOrEmpty("Point"));
 
             Vector3d globalPlaceholder = null;
 
             if (pointTag.contains("GlobalPlaceholder")) {
-                globalPlaceholder = SableNBTUtils.readVector3d(pointTag.getCompound("GlobalPlaceholder"));
+                globalPlaceholder = SableNBTUtils.readVector3d(pointTag.getCompoundOrEmpty("GlobalPlaceholder"));
             }
 
             UUID subLevelID = null;
 
             if (pointTag.contains("SubLevelID")) {
-                subLevelID = pointTag.getUUID("SubLevelID");
+                subLevelID = pointTag.read("SubLevelID", UUIDUtil.CODEC).orElseThrow();
             }
 
             final TrackingPoint trackingPoint = new TrackingPoint(inSubLevel, subLevelID, pointer, point, globalPlaceholder);
@@ -83,7 +79,6 @@ public class SubLevelTrackingPointSavedData extends SavedData implements SubLeve
         return data;
     }
 
-    @Override
     public @NotNull CompoundTag save(final @NotNull CompoundTag compoundTag, final HolderLookup.@NotNull Provider provider) {
         final SubLevelContainer container = SubLevelContainer.getContainer(this.level);
         assert container != null : "Sub-level container is null";
@@ -105,7 +100,7 @@ public class SubLevelTrackingPointSavedData extends SavedData implements SubLeve
             }
 
             if (trackingPoint.subLevelID() != null) {
-                pointTag.putUUID("SubLevelID", trackingPoint.subLevelID());
+                pointTag.store("SubLevelID", UUIDUtil.CODEC, trackingPoint.subLevelID());
             }
 
             loginPointsTag.put(entry.getKey().toString(), pointTag);

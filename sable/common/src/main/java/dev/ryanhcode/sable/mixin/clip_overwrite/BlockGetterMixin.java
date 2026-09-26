@@ -89,7 +89,7 @@ public interface BlockGetterMixin {
 
         if (clipContext instanceof final ClipContextExtension extension && extension.sable$isIgnoreMainLevel()) {
             final Vec3 diff = clipContext.getFrom().subtract(clipContext.getTo());
-            minResult = BlockHitResult.miss(clipContext.getTo(), Direction.getNearest(diff.x, diff.y, diff.z), BlockPos.containing(clipContext.getTo()));
+            minResult = BlockHitResult.miss(clipContext.getTo(), Direction.getNearest(net.minecraft.util.Mth.floor(diff.x * 1000.0), net.minecraft.util.Mth.floor(diff.y * 1000.0), net.minecraft.util.Mth.floor(diff.z * 1000.0), Direction.NORTH), BlockPos.containing(clipContext.getTo()));
         } else {
             minResult = originalClip(self, clipContext);
             minDistance = minResult.getLocation().distanceTo(clipContext.getFrom());
@@ -147,7 +147,7 @@ public interface BlockGetterMixin {
             return d <= e ? blockHitResult : blockHitResult2;
         }, clipContextx -> {
             final Vec3 vec3 = clipContextx.getFrom().subtract(clipContextx.getTo());
-            return BlockHitResult.miss(clipContextx.getTo(), Direction.getNearest(vec3.x, vec3.y, vec3.z), BlockPos.containing(clipContextx.getTo()));
+            return BlockHitResult.miss(clipContextx.getTo(), Direction.getNearest(net.minecraft.util.Mth.floor(vec3.x * 1000.0), net.minecraft.util.Mth.floor(vec3.y * 1000.0), net.minecraft.util.Mth.floor(vec3.z * 1000.0), Direction.NORTH), BlockPos.containing(clipContextx.getTo()));
         });
     }
 

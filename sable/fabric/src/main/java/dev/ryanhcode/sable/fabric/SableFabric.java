@@ -10,7 +10,7 @@ import dev.ryanhcode.sable.index.SableAttributes;
 import dev.ryanhcode.sable.physics.config.FloatingBlockMaterialDataHandler;
 import dev.ryanhcode.sable.physics.config.block_properties.PhysicsBlockPropertiesDefinitionLoader;
 import dev.ryanhcode.sable.physics.config.dimension_physics.DimensionPhysicsData;
-import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
+import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -42,7 +42,7 @@ public final class SableFabric implements ModInitializer {
 
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> SableCommonEvents.syncDataPacket(packet -> player.connection.send(packet)));
 
-        NeoForgeConfigRegistry.INSTANCE.register(Sable.MOD_ID, ModConfig.Type.COMMON, SableConfig.SPEC);
-        NeoForgeConfigRegistry.INSTANCE.register(Sable.MOD_ID, ModConfig.Type.SERVER, SableServerConfig.SPEC);
+        ConfigRegistry.INSTANCE.register(Sable.MOD_ID, ModConfig.Type.COMMON, SableConfig.SPEC);
+        ConfigRegistry.INSTANCE.register(Sable.MOD_ID, ModConfig.Type.SERVER, SableServerConfig.SPEC);
     }
 }

@@ -30,9 +30,9 @@ public class GuiMixin {
     @Inject(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;getModelViewStack()Lorg/joml/Matrix4fStack;"))
     private void sable$onRenderCrosshair(final CallbackInfo ci, @Share("mountedOrientation") final LocalRef<Quaterniond> mountedOrientation) {
         final Camera camera = this.minecraft.gameRenderer.getMainCamera();
-        final Entity entity = camera.getEntity();
+        final Entity entity = camera.entity();
 
-        final float pt = this.minecraft.getTimer().getGameTimeDeltaPartialTick(true);
+        final float pt = this.minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(true);
         final Quaterniond ridingOrientation = EntitySubLevelRotationHelper.getEntityOrientation(entity, (x) -> ((ClientSubLevel) x).renderPose(), pt, EntitySubLevelRotationHelper.Type.CAMERA);
         mountedOrientation.set(ridingOrientation);
     }
@@ -40,9 +40,9 @@ public class GuiMixin {
     @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4fStack;rotateX(F)Lorg/joml/Matrix4f;"))
     private Matrix4f sable$redirectRotateX(final Matrix4fStack stack, final float angle, @Share("mountedOrientation") final LocalRef<Quaterniond> mountedOrientation) {
         if (mountedOrientation.get() != null) {
-            final float pt = this.minecraft.getTimer().getGameTimeDeltaPartialTick(true);
+            final float pt = this.minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(true);
             final Camera camera = this.minecraft.gameRenderer.getMainCamera();
-            final Entity entity = camera.getEntity();
+            final Entity entity = camera.entity();
 
             return stack.rotateX(-entity.getViewXRot(pt) * (float) (Math.PI / 180.0));
         }
@@ -53,9 +53,9 @@ public class GuiMixin {
     @Redirect(method = "renderCrosshair", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4fStack;rotateY(F)Lorg/joml/Matrix4f;"))
     private Matrix4f sable$redirectRotateY(final Matrix4fStack stack, final float angle, @Share("mountedOrientation") final LocalRef<Quaterniond> mountedOrientation) {
         if (mountedOrientation.get() != null) {
-            final float pt = this.minecraft.getTimer().getGameTimeDeltaPartialTick(true);
+            final float pt = this.minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(true);
             final Camera camera = this.minecraft.gameRenderer.getMainCamera();
-            final Entity entity = camera.getEntity();
+            final Entity entity = camera.entity();
 
             stack.rotateY(entity.getViewYRot(pt) * (float) (Math.PI / 180.0));
 

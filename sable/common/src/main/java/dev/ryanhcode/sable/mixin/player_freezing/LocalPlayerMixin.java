@@ -15,8 +15,8 @@ import java.util.UUID;
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends Player implements PlayerFreezeExtension {
 
-    public LocalPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile) {
-        super(level, blockPos, f, gameProfile);
+    public LocalPlayerMixin(final Level level, final GameProfile gameProfile) {
+        super(level, gameProfile);
     }
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;hasChunkAt(II)Z"))

@@ -122,3 +122,6 @@ accessible method net/minecraft/server/level/Ticket <init> (Lnet/minecraft/serve
 accessible field net/minecraft/server/level/DistanceManager tickingTicketsTracker Lnet/minecraft/server/level/TickingTracker;
 accessible method net/minecraft/server/level/DistanceManager addTicket (JLnet/minecraft/server/level/Ticket;)V
 accessible method net/minecraft/server/level/DistanceManager removeTicket (JLnet/minecraft/server/level/Ticket;)V
+# Respawning on sub-levels (1.21.11)
+accessible class net/minecraft/server/level/ServerPlayer$RespawnPosAngle
+accessible method net/minecraft/server/level/ServerPlayer$RespawnPosAngle <init> (Lnet/minecraft/world/phys/Vec3;FF)V

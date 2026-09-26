@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.command.argument.selector;
 
+import net.minecraft.core.UUIDUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.ryanhcode.sable.api.command.SubLevelArgumentType;
 import dev.ryanhcode.sable.api.sublevel.ServerSubLevelContainer;

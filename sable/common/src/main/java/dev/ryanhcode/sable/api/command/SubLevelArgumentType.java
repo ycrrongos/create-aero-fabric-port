@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.api.command;
 
+import net.minecraft.core.UUIDUtil;
 import com.google.gson.JsonObject;
 import net.minecraft.server.jsonrpc.methods.Message;
 import com.mojang.brigadier.StringReader;

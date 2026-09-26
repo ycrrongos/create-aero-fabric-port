@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.mixin.entity.entity_rotations_and_riding;
 
+import net.minecraft.core.UUIDUtil;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.ryanhcode.sable.ActiveSableCompanion;
@@ -145,7 +146,7 @@ public abstract class EntityMixin {
                 final SubLevelTrackingPointSavedData data = SubLevelTrackingPointSavedData.getOrLoad((ServerLevel) this.level());
                 final UUID loginPointUUID = data.generateTrackingPoint(serverPlayer, (ServerSubLevel) subLevel);
                 if (loginPointUUID != null) {
-                    instance.putUUID("LoginPoint", loginPointUUID);
+                    instance.store("LoginPoint", UUIDUtil.CODEC, loginPointUUID);
                 }
             }
 

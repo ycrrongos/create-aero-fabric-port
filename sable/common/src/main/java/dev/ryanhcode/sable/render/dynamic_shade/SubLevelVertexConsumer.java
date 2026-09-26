@@ -62,4 +62,10 @@ public class SubLevelVertexConsumer implements VertexConsumer {
         this.verticalNormal = false;
     }
 
+    @Override
+    public VertexConsumer setLineWidth(final float lineWidth) {
+        this.delegate.setLineWidth(lineWidth);
+        return this;
+    }
+
 }

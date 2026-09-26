@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.mixin.respawn_point;
 
+import net.minecraft.core.UUIDUtil;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelHelper;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
@@ -39,13 +40,7 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
     @Shadow
     public ServerGamePacketListenerImpl connection;
     @Shadow
-    private @Nullable BlockPos respawnPosition;
-    @Shadow
-    private ResourceKey<Level> respawnDimension;
-    @Shadow
-    private float respawnAngle;
-    @Shadow
-    private boolean respawnForced;
+    private ServerPlayer.RespawnConfig respawnConfig;
     @Unique
     @Nullable
     private UUID sable$respawnPoint = null;
@@ -53,12 +48,12 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
     private Pair<UUID, Vector3d> sable$queuedFreeze = null;
 
     @Shadow
-    public static Optional<ServerPlayer.RespawnPosAngle> findRespawnAndUseSpawnBlock(final ServerLevel serverLevel, final BlockPos blockPos, final float f, final boolean bl, final boolean bl2) {
+    private static Optional<ServerPlayer.RespawnPosAngle> findRespawnAndUseSpawnBlock(final ServerLevel level, final ServerPlayer.RespawnConfig respawnConfig, final boolean useCharge) {
         return null;
     }
 
     @Shadow
-    public abstract ServerLevel serverLevel();
+    public abstract ServerLevel level();
 
     @Shadow
     public abstract void sendSystemMessage(Component component);
@@ -69,8 +64,8 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
     }
 
     @Inject(method = "setRespawnPosition", at = @At("HEAD"), cancellable = true)
-    private void sable$setRespawnPosition(final ResourceKey<Level> resourceKey, @Nullable final BlockPos blockPos, final float f, final boolean bl, final boolean sendMessage, final CallbackInfo ci) {
-        final ServerLevel level = this.serverLevel();
+    private void sable$setRespawnPosition(@Nullable final ServerPlayer.RespawnConfig config, final boolean displayInChat, final CallbackInfo ci) {
+        final ServerLevel level = this.level();
         final SubLevelTrackingPointSavedData data = SubLevelTrackingPointSavedData.getOrLoad(level);
 
         if (this.sable$respawnPoint != null) {
@@ -78,22 +73,21 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
             this.sable$respawnPoint = null;
         }
 
-        if (blockPos != null) {
-            final SubLevel trackingSubLevel = Sable.HELPER.getContaining(level, blockPos);
+        if (config != null) {
+            final BlockPos blockPos = config.respawnData().pos();
+            final ServerLevel respawnLevel = this.server.getLevel(config.respawnData().dimension());
+            final SubLevel trackingSubLevel = respawnLevel != null ? Sable.HELPER.getContaining(respawnLevel, blockPos) : null;
 
             if (trackingSubLevel instanceof final ServerSubLevel serverSubLevel) {
-                this.sable$respawnPoint = data.generateTrackingPoint(Vec3.atCenterOf(blockPos), serverSubLevel);
+                final SubLevelTrackingPointSavedData respawnData = SubLevelTrackingPointSavedData.getOrLoad(respawnLevel);
+                this.sable$respawnPoint = respawnData.generateTrackingPoint(Vec3.atCenterOf(blockPos), serverSubLevel);
 
                 if (this.sable$respawnPoint != null) {
-                    final boolean theSame = blockPos.equals(this.respawnPosition) && resourceKey.equals(this.respawnDimension);
-                    if (sendMessage && !theSame) {
+                    if (displayInChat && !config.isSamePosition(this.respawnConfig)) {
                         this.sendSystemMessage(Component.translatable("block.minecraft.set_spawn"));
                     }
 
-                    this.respawnPosition = blockPos;
-                    this.respawnDimension = resourceKey;
-                    this.respawnAngle = f;
-                    this.respawnForced = bl;
+                    this.respawnConfig = config;
                     ci.cancel();
                 }
             }
@@ -103,14 +97,14 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
     private void sable$addRespawnPoint(final CompoundTag compoundTag, final CallbackInfo ci) {
         if (this.sable$respawnPoint != null) {
-            compoundTag.putUUID("RespawnPoint", this.sable$respawnPoint);
+            compoundTag.store("RespawnPoint", UUIDUtil.CODEC, this.sable$respawnPoint);
         }
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void sable$readRespawnPoint(final CompoundTag compoundTag, final CallbackInfo ci) {
-        if (compoundTag.hasUUID("RespawnPoint")) {
-            this.sable$respawnPoint = compoundTag.getUUID("RespawnPoint");
+        if (compoundTag.read("RespawnPoint", UUIDUtil.CODEC).isPresent()) {
+            this.sable$respawnPoint = compoundTag.read("RespawnPoint", UUIDUtil.CODEC).orElseThrow();
         }
     }
 
@@ -120,19 +114,9 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
      */
     @Overwrite
     public void copyRespawnPosition(final ServerPlayer serverPlayer) {
-        if (serverPlayer.getRespawnPosition() != null) {
-            this.sable$respawnPoint = ((ServerPlayerRespawnExtension) serverPlayer).sable$getRespawnPoint();
-            this.respawnPosition = serverPlayer.getRespawnPosition();
-            this.respawnDimension = serverPlayer.getRespawnDimension();
-            this.respawnAngle = serverPlayer.getRespawnAngle();
-            this.respawnForced = serverPlayer.isRespawnForced();
-        } else {
-            this.sable$respawnPoint = null;
-            this.respawnPosition = null;
-            this.respawnDimension = Level.OVERWORLD;
-            this.respawnAngle = 0.0F;
-            this.respawnForced = false;
-        }
+        final ServerPlayer.RespawnConfig config = serverPlayer.getRespawnConfig();
+        this.sable$respawnPoint = config != null ? ((ServerPlayerRespawnExtension) serverPlayer).sable$getRespawnPoint() : null;
+        this.respawnConfig = config;
     }
 
     @Override
@@ -155,8 +139,8 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
      * @author RyanH
      * @reason Respawning on sub-levels
      */
-    @Redirect(method = "findRespawnPositionAndUseSpawnBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;findRespawnAndUseSpawnBlock(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;FZZ)Ljava/util/Optional;"))
-    private Optional<ServerPlayer.RespawnPosAngle> sable$findRespawnPosition(final ServerLevel level, final BlockPos blockPos, final float f1, final boolean b1, final boolean b2) {
+    @Redirect(method = "findRespawnPositionAndUseSpawnBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;findRespawnAndUseSpawnBlock(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer$RespawnConfig;Z)Ljava/util/Optional;"))
+    private Optional<ServerPlayer.RespawnPosAngle> sable$findRespawnPosition(final ServerLevel level, final ServerPlayer.RespawnConfig respawnConfig, final boolean useCharge) {
         final SubLevelTrackingPointSavedData data = SubLevelTrackingPointSavedData.getOrLoad(level);
 
         if (this.sable$respawnPoint != null) {
@@ -173,9 +157,9 @@ public abstract class ServerPlayerMixin implements ServerPlayerRespawnExtension 
                 this.sable$queuedFreeze = Pair.of(point.subLevelId(), point.localAnchor());
             }
 
-            return Optional.of(new ServerPlayer.RespawnPosAngle(JOMLConversion.toMojang(point.position()), f1));
+            return Optional.of(new ServerPlayer.RespawnPosAngle(JOMLConversion.toMojang(point.position()), respawnConfig.respawnData().yaw(), respawnConfig.respawnData().pitch()));
         }
 
-        return findRespawnAndUseSpawnBlock(level, blockPos, f1, b1, b2);
+        return findRespawnAndUseSpawnBlock(level, respawnConfig, useCharge);
     }
 }

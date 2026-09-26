@@ -11,28 +11,23 @@ import java.util.BitSet;
  * Stores the map for which plots are occupied
  */
 public class SubLevelOccupancySavedData extends SavedData {
+    private static final java.util.Map<ServerLevel, SubLevelOccupancySavedData> CACHE = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
     public static final String FILE_ID = "sable_sub_level_occupancy";
     private final ServerLevel level;
 
-    private SubLevelOccupancySavedData(final ServerLevel level) {
+    SubLevelOccupancySavedData(final ServerLevel level) {
         this.level = level;
     }
 
     public static SubLevelOccupancySavedData getOrLoad(final ServerLevel level) {
-        return level.getChunkSource().getDataStorage().computeIfAbsent(
-                new Factory<>(
-                        () -> new SubLevelOccupancySavedData(level),
-                        (tag, provider) -> SubLevelOccupancySavedData.load(level, tag),
-                        DataFixTypes.LEVEL
-                ),
-                SubLevelOccupancySavedData.FILE_ID);
+        return CACHE.computeIfAbsent(level, SubLevelOccupancySavedData::new);
     }
 
 
     private static SubLevelOccupancySavedData load(final ServerLevel level, final CompoundTag tag) {
         final SubLevelOccupancySavedData data = new SubLevelOccupancySavedData(level);
 
-        final long[] longArray = tag.getLongArray("sub_level_occupancy");
+        final long[] longArray = tag.getLongArray("sub_level_occupancy").orElseGet(() -> new long[0]);
 
         if (longArray.length > 0) {
             final BitSet occupancyData = BitSet.valueOf(longArray);
@@ -48,7 +43,6 @@ public class SubLevelOccupancySavedData extends SavedData {
         return data;
     }
 
-    @Override
     public CompoundTag save(final CompoundTag compoundTag, final HolderLookup.Provider provider) {
         final SubLevelContainer container = SubLevelContainer.getContainer(this.level);
         assert container != null : "Sub-level container is null";

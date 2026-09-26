@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.Strategy;
 import net.minecraft.world.level.chunk.UpgradeData;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.phys.Vec3;
@@ -133,7 +134,7 @@ public abstract class LevelPlot {
         final ChunkPos centerChunk = this.getCenterChunk();
         final Level level = this.subLevel.getLevel();
         
-        return new BlockPos(centerChunk.getMinBlockX() + 8, (level.getMinBuildHeight() + level.getMaxBuildHeight()) / 2, centerChunk.getMinBlockZ() + 8);
+        return new BlockPos(centerChunk.getMinBlockX() + 8, (level.getMinY() + level.getMaxY()) / 2, centerChunk.getMinBlockZ() + 8);
     }
 
     /**
@@ -169,9 +170,9 @@ public abstract class LevelPlot {
         final LevelChunkSection[] sections = new LevelChunkSection[sectionCount];
 
         for (int i = 0; i < sectionCount; ++i) {
-            final Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
-            final PalettedContainer<BlockState> states = new PalettedContainer(Block.BLOCK_STATE_REGISTRY, Blocks.AIR.defaultBlockState(), PalettedContainer.Strategy.SECTION_STATES);
-            final PalettedContainer<Holder<Biome>> biomes = new PalettedContainer(biomeRegistry.asHolderIdMap(), biomeRegistry.getHolderOrThrow(this.biome), PalettedContainer.Strategy.SECTION_BIOMES);
+            final Registry<Biome> biomeRegistry = level.registryAccess().lookupOrThrow(Registries.BIOME);
+            final PalettedContainer<BlockState> states = new PalettedContainer<>(Blocks.AIR.defaultBlockState(), Strategy.createForBlockStates(Block.BLOCK_STATE_REGISTRY));
+            final PalettedContainer<Holder<Biome>> biomes = new PalettedContainer<>(biomeRegistry.getOrThrow(this.biome), Strategy.createForBiomes(biomeRegistry.asHolderIdMap()));
 
             sections[i] = new LevelChunkSection(states, biomes);
         }
@@ -301,7 +302,7 @@ public abstract class LevelPlot {
      * Updates & rebuilds the block bounding box of this plot.
      */
     public void updateBoundingBox() {
-        if (this.subLevel.getLevel().isClientSide) {
+        if (this.subLevel.getLevel().isClientSide()) {
             return;
         }
 

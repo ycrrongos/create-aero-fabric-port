@@ -39,6 +39,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BellAttachType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -243,7 +245,7 @@ public class SubLevelAssemblyHelper {
                             continue;
                         }
 
-                        final Direction direction = absTotal == 1 ? Direction.fromDelta(x, y, z) : null;
+                        final Direction direction = absTotal == 1 ? Direction.getNearest(x, y, z, null) : null;
                         final BlockState candidateState = accelerator.getBlockState(candidate);
 
                         if (candidateState.isAir()) {
@@ -399,25 +401,25 @@ public class SubLevelAssemblyHelper {
                     if (blockEntity instanceof final RandomizableContainer container) {
                         container.setLootTable(null);
                     }
-                    Clearable.tryClear(blockEntity);
+                    if (blockEntity instanceof Clearable clearable) { clearable.clearContent(); }
                 }
 
                 final LevelChunk chunk = resultingAccelerator.getChunk(SectionPos.blockToSectionCoord(newPos.getX()), SectionPos.blockToSectionCoord(newPos.getZ()));
 
-                chunk.setBlockState(newPos, subLevelState, true);
+                chunk.setBlockState(newPos, subLevelState, Block.UPDATE_ALL);
                 states.add(subLevelState);
 
                 final BlockEntity newBlockEntity = resultingLevel.getBlockEntity(newPos);
 
                 if (newBlockEntity != null && tag != null) {
-                    newBlockEntity.loadWithComponents(tag, level.registryAccess());
+                    newBlockEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), tag));
                 }
 
                 if (state.getBlock() instanceof final BlockSubLevelAssemblyListener listener) {
                     listener.afterMove(level, resultingLevel, state, block, newPos);
                 }
 
-                level.onBlockStateChange(newPos, airState, state);
+                level.setBlocksDirty(newPos, airState, state);
             } catch (final Exception e) {
                 Sable.LOGGER.error("Failed to move block {} at {} to {}", state, block, newPos, e);
             }
@@ -446,8 +448,8 @@ public class SubLevelAssemblyHelper {
                 final LevelChunk chunk = accelerator.getChunk(SectionPos.blockToSectionCoord(block.getX()),
                         SectionPos.blockToSectionCoord(block.getZ()));
 
-                level.onBlockStateChange(block, chunk.getBlockState(block), airState);
-                chunk.setBlockState(block, airState, true);
+                level.setBlocksDirty(block, chunk.getBlockState(block), airState);
+                chunk.setBlockState(block, airState, Block.UPDATE_ALL);
             } catch (final Exception e) {
                 Sable.LOGGER.error("Failed to destroy old block during assembly {}", block, e);
             }
@@ -473,7 +475,7 @@ public class SubLevelAssemblyHelper {
             }
 
             if ((pFlags & 1) != 0) {
-                level.blockUpdated(pPos, oldState.getBlock());
+                level.updateNeighborsAt(pPos, oldState.getBlock(), null);
                 if (newState.hasAnalogOutputSignal()) {
                     level.updateNeighbourForOutputSignal(pPos, block);
                 }
@@ -486,7 +488,7 @@ public class SubLevelAssemblyHelper {
                 newState.updateIndirectNeighbourShapes(level, pPos, i, pRecursionLeft - 1);
             }
 
-            level.onBlockStateChange(pPos, oldState, worldState);
+            level.setBlocksDirty(pPos, oldState, worldState);
         }
     }
 

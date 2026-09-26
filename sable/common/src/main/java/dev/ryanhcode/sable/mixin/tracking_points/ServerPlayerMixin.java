@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.mixin.tracking_points;
 
+import net.minecraft.core.UUIDUtil;
 import dev.ryanhcode.sable.sublevel.tracking_points.SubLevelTrackingPointSavedData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +21,7 @@ public abstract class ServerPlayerMixin {
         final SubLevelTrackingPointSavedData data = SubLevelTrackingPointSavedData.getOrLoad(this.serverLevel());
         final UUID loginPointUUID = data.generateTrackingPoint((ServerPlayer) (Object) this);
         if (loginPointUUID != null) {
-            compoundTag.putUUID("LoginPoint", loginPointUUID);
+            compoundTag.store("LoginPoint", UUIDUtil.CODEC, loginPointUUID);
         }
     }
 

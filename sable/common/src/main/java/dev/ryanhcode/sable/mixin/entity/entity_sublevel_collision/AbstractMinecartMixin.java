@@ -29,7 +29,7 @@ public abstract class AbstractMinecartMixin extends Entity {
 
         // Destroy us if we're in #sable:destroy_when_leaving_plot and we've left the plot
         if (containingSubLevel != null && !this.getBoundingBox().intersects(containingSubLevel.getPlot().getBoundingBox().toAABB().inflate(0.5))) {
-            this.kill();
+            this.kill((net.minecraft.server.level.ServerLevel) this.level());
         }
     }
 }

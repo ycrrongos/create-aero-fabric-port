@@ -18,8 +18,8 @@ import java.util.UUID;
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player implements PlayerFreezeExtension {
 
-    public ServerPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile) {
-        super(level, blockPos, f, gameProfile);
+    public ServerPlayerMixin(final Level level, final GameProfile gameProfile) {
+        super(level, gameProfile);
     }
 
     @Inject(method = "tick", at = @At("HEAD"))

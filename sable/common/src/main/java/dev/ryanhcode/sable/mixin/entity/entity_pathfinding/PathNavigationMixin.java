@@ -81,7 +81,7 @@ public abstract class PathNavigationMixin {
                 final Set<BlockPos> localSet = new ObjectOpenHashSet<>();
 
                 for (final BlockPos globalPos : globalSet) {
-                    if (Sable.HELPER.getContaining(this.level, globalPos) == trackingSubLevel) {
+                    if (Sable.HELPER.getContaining(this.level) == trackingSubLevel) {
                         localSet.add(globalPos);
                         continue;
                     }

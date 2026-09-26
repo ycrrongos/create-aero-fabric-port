@@ -59,7 +59,7 @@ public final class SingleBlockSubLevelWrapper implements BlockAndTintGetter {
 
     @Override
     public boolean canSeeSky(final BlockPos pos) {
-        return this.getBrightness(LightLayer.SKY, this.globalPos) >= this.getMaxLightLevel();
+        return this.getBrightness(LightLayer.SKY, this.globalPos) >= net.minecraft.world.level.lighting.LightEngine.MAX_LEVEL;
     }
 
     @Override
@@ -96,8 +96,8 @@ public final class SingleBlockSubLevelWrapper implements BlockAndTintGetter {
     }
 
     @Override
-    public int getMinBuildHeight() {
-        return this.level.getMinBuildHeight();
+    public int getMinY() {
+        return this.level.getMinY();
     }
 
     public ClientLevel getLevel() {

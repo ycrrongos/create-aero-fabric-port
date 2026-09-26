@@ -10,10 +10,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import java.util.Optional;
 public record DimensionPhysics(Identifier dimension, int priority, Optional<Float> universalDrag,
-                               Optional<Vector3f> baseGravity, Optional<Double> basePressure,
-                               Optional<BezierResourceFunction> pressureFunction, Optional<Vector3f> magneticNorth,
+                               Optional<Vector3fc> baseGravity, Optional<Double> basePressure,
+                               Optional<BezierResourceFunction> pressureFunction, Optional<Vector3fc> magneticNorth,
                                boolean ignoreChunks) {
     public static final Vector3f DEFAULT_GRAVITY = new Vector3f(0.0f, -11.0f, 0.0f);
     public static final Vector3f DEFAULT_MAGNETIC_NORTH = new Vector3f(0, 0, 0);
@@ -55,20 +56,33 @@ public record DimensionPhysics(Identifier dimension, int priority, Optional<Floa
     );
 
     public static DimensionPhysics createDefault(final Level level) {
-        // constructs a bezier air pressure curve approximating an exponential decay, centered around sea level
-        // clamped to at most 1.5 pressure underground, and with a 40-meter smooth drop-off at the build limit
-        final double seaLevel = level.getSeaLevel();
+        // Avoid Level#getSeaLevel() — it needs chunkSource, null during ServerLevel construction.
+        double seaLevel = 63.0;
+        try {
+            if (level.getChunkSource() != null) {
+                seaLevel = level.getSeaLevel();
+            }
+        } catch (final Throwable ignored) {
+            seaLevel = 63.0;
+        }
+        final boolean hasSkyLight = level.dimensionType().hasSkyLight();
+        final double minY = level.dimensionType().minY();
+        final double maxAltitude = minY + level.dimensionType().logicalHeight();
+        return createDefaultCurve(level.dimension().identifier(), minY, maxAltitude, seaLevel, hasSkyLight);
+    }
 
-        double currentAltitude = level.dimensionType().minY();
-        final double maxAltitude = currentAltitude + level.dimensionType().logicalHeight();
-
+    private static DimensionPhysics createDefaultCurve(
+            final Identifier dimension,
+            double currentAltitude,
+            final double maxAltitude,
+            final double seaLevel,
+            final boolean hasSkyLight
+    ) {
         final double baseSlope = -0.004;
         final double maxPressure = 1.5;
         final double maxStep = 200;
-
         final double smoothingAltitude = maxAltitude - 40;
 
-        // clamps the bottom most point to have a pressure of 1.5 or less
         currentAltitude = Math.max(currentAltitude, Math.log(maxPressure) / baseSlope + seaLevel);
 
         final BezierResourceFunction pressureFunction = new BezierResourceFunction();
@@ -93,15 +107,17 @@ public record DimensionPhysics(Identifier dimension, int priority, Optional<Floa
         final double finalSlope = -2 * smoothingPressure / (maxAltitude - smoothingAltitude);
         pressureFunction.addPoint(new BezierResourceFunction.BezierPoint(maxAltitude, 0, finalSlope));
 
-        final Vector3f north = level.dimensionType().natural() ? DEFAULT_MAGNETIC_NORTH : new Vector3f(0, 0, 0);
+        final Vector3f north = hasSkyLight ? DEFAULT_MAGNETIC_NORTH : new Vector3f(0, 0, 0);
 
-        return new DimensionPhysics(level.dimension().location(),
+        return new DimensionPhysics(
+                dimension,
                 0,
                 Optional.of(DEFAULT_UNIVERSAL_DRAG),
                 Optional.of(DEFAULT_GRAVITY),
                 Optional.of(DEFAULT_PRESSURE),
                 Optional.of(pressureFunction),
                 Optional.of(north),
-                false);
+                false
+        );
     }
 }

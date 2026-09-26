@@ -1,7 +1,6 @@
 package dev.ryanhcode.sable;
 
 import dev.ryanhcode.sable.api.sublevel.SubLevelContainer;
-import dev.ryanhcode.sable.mixin.config.GameRendererAccessor;
 import dev.ryanhcode.sable.mixinterface.plot.SubLevelContainerHolder;
 import dev.ryanhcode.sable.render.dynamic_shade.SableDynamicDirectionalShading;
 import dev.ryanhcode.sable.render.sky_light_shadow.SableSkyLightShadows;
@@ -87,8 +86,9 @@ public final class SableClientConfig {
         Minecraft.getInstance().execute(() -> SubLevelRenderer.setImpl(SableClientConfig.SELECTED_RENDERER.get()));
 
         if (notify) {
+            // ShaderInstance map removed in 1.21.11 — full reload deferred to RenderPipeline port
             if (reloadShaders) {
-                VeilRenderSystem.renderer().getVanillaShaderCompiler().reload(((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getShaders().values());
+                reloadChunks = true;
             }
 
             if (reloadChunks) {

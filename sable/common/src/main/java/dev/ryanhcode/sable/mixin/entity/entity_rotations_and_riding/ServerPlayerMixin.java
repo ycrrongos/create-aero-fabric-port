@@ -23,8 +23,8 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Shadow public ServerGamePacketListenerImpl connection;
 
-    public ServerPlayerMixin(final Level level, final BlockPos blockPos, final float f, final GameProfile gameProfile) {
-        super(level, blockPos, f, gameProfile);
+    public ServerPlayerMixin(final Level level, final GameProfile gameProfile) {
+        super(level, gameProfile);
     }
 
     @WrapOperation(method = "startRiding", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;teleport(DDDFF)V"))
@@ -43,8 +43,12 @@ public abstract class ServerPlayerMixin extends Player {
             return;
         }
 
-        this.absMoveTo(x, y, z, rot1, rot2);
+        this.snapTo(x, y, z, rot1, rot2);
         final Vec3 pos = containingSubLevel.logicalPose().transformPositionInverse(this.position());
-        this.connection.send(new ClientboundPlayerPositionPacket(pos.x, pos.y, pos.z, rot1, rot2, Set.of(), -1));
+        this.connection.send(ClientboundPlayerPositionPacket.of(
+                this.getId(),
+                new net.minecraft.world.entity.PositionMoveRotation(pos, net.minecraft.world.phys.Vec3.ZERO, rot1, rot2),
+                Set.of()
+        ));
     }
 }

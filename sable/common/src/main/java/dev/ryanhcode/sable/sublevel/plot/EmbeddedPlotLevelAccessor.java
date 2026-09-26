@@ -13,6 +13,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.attribute.EnvironmentAttributeReader;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.CommonLevelAccessor;
@@ -150,7 +151,11 @@ public class EmbeddedPlotLevelAccessor implements CommonLevelAccessor, ServerLev
 
     @Override
     public DifficultyInstance getCurrentDifficultyAt(final BlockPos blockPos) {
-        return this.level.getCurrentDifficultyAt(blockPos.offset(this.center));
+        final BlockPos global = blockPos.offset(this.center);
+        if (this.level instanceof final net.minecraft.server.level.ServerLevel serverLevel) {
+            return serverLevel.getCurrentDifficultyAt(global);
+        }
+        return new DifficultyInstance(this.level.getDifficulty(), this.level.getDayTime(), 0L, 0.0F);
     }
 
     @Override
@@ -174,7 +179,7 @@ public class EmbeddedPlotLevelAccessor implements CommonLevelAccessor, ServerLev
     }
 
     @Override
-    public void playSound(@Nullable final Player player, final BlockPos blockPos, final SoundEvent soundEvent, final SoundSource soundSource, final float f, final float g) {
+    public void playSound(@Nullable final Entity player, final BlockPos blockPos, final SoundEvent soundEvent, final SoundSource soundSource, final float f, final float g) {
         this.level.playSound(player, blockPos.offset(this.center), soundEvent, soundSource, f, g);
     }
 
@@ -184,8 +189,13 @@ public class EmbeddedPlotLevelAccessor implements CommonLevelAccessor, ServerLev
     }
 
     @Override
-    public void levelEvent(@Nullable final Player player, final int i, final BlockPos blockPos, final int j) {
+    public void levelEvent(@Nullable final Entity player, final int i, final BlockPos blockPos, final int j) {
         this.level.levelEvent(player, i, blockPos.offset(this.center), j);
+    }
+
+    @Override
+    public EnvironmentAttributeReader environmentAttributes() {
+        return this.level.environmentAttributes();
     }
 
     @Override

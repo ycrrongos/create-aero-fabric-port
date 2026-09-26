@@ -33,7 +33,7 @@ public class BellBlockCallback extends FragileBlockCallback {
             zMul = 1;
         }
 
-        final Direction direction = Direction.getNearest(hitDir.x * xMul, 0.0, hitDir.z * zMul);
+        final Direction direction = Direction.getNearest(net.minecraft.util.Mth.floor(hitDir.x * xMul * 1000.0), 0, net.minecraft.util.Mth.floor(hitDir.z * zMul * 1000.0), Direction.NORTH);
         ((BellBlock) state.getBlock()).attemptToRing(level, pos, direction.getOpposite());
 
         return new CollisionResult(JOMLConversion.ZERO, false);
