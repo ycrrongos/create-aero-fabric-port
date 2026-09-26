@@ -1,0 +1,51 @@
+version = '0.1.0+mc1.21.11'
+group = 'dev.simulated_team.simulated'
+
+base {
+    archivesName = 'simulated-fabric-1.21.11'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['common/src/main/java', 'fabric/src/main/java']
+        }
+        resources {
+            srcDirs = ['common/src/main/resources', 'fabric/src/main/resources']
+        }
+    }
+}
+
+dependencies {
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+    modApi("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${rootProject.forgeconfigapiport_version}")
+
+    // Sable is already named. Create Fly ships intermediary and must be remapped.
+    compileOnly project(path: ':sable', configuration: 'namedElements')
+    modCompileOnly files("${rootDir}/libs/create-fly-1.21.11-6.0.9-5.jar")
+    compileOnly files("${rootDir}/libs/create-fly-helpers-shim.jar")
+    compileOnly files("${rootDir}/libs/create-fly-registrate-shim.jar")
+}
+
+loom {
+    accessWidenerPath = file('common/src/main/resources/simulated.accesswidener')
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version,
+                'fabric_loader_version': rootProject.fabric_loader_version,
+                'minecraft_version': rootProject.minecraft_version,
+                'java_version': rootProject.java_version
+    }
+    filesMatching('*.mixins.json') {
+        expand 'mod_id': 'simulated'
+    }
+    exclude 'META-INF/accesstransformer.cfg'
+    exclude 'META-INF/neoforge.mods.toml'
+}
+
+tasks.named('compileJava', JavaCompile).configure {
+    options.compilerArgs += ['-Xmaxerrs', '10000']
+}

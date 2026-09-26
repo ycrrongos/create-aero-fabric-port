@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "simulated",
+  "version": "${version}",
+  "name": "Create Simulated",
+  "description": "Fabric 1.21.11 + Create Fly port of Create Simulated (WIP).",
+  "authors": ["Simulated team", "RongMC port"],
+  "license": "ARR",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["dev.simulated_team.simulated.fabric.SimulatedFabric"],
+    "client": ["dev.simulated_team.simulated.fabric.SimulatedFabricClient"]
+  },
+  "mixins": ["simulated.mixins.json"],
+  "accessWidener": "simulated.accesswidener",
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": "${minecraft_version}",
+    "java": ">=${java_version}",
+    "fabric-api": "*",
+    "create": "*",
+    "sable": "*"
+  }
+}
