@@ -6,6 +6,7 @@ import dev.ryanhcode.sable.companion.math.BoundingBox3d;
 import dev.ryanhcode.sable.mixinterface.clip_overwrite.LevelPoseProviderExtension;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Position;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +33,7 @@ public class SableRaycastHelper {
         RaycastHelper.PredicateTraceResult closestRay = RaycastHelper.rayTraceUntil(start, end, predicate);
         double closestDistance = closestRay != null && !closestRay.missed() ? Vec3.atCenterOf(closestRay.getPos()).distanceToSqr(start) : Double.MAX_VALUE;
 
-        final Iterable<SubLevel> sublevels = Sable.HELPER.getAllIntersecting(level, new BoundingBox3d(start, end));
+        final Iterable<SubLevel> sublevels = Sable.HELPER.getAllIntersecting(level, new BoundingBox3d((Position) start, end));
 
         for (final SubLevel subLevel : sublevels) {
             final Vec3 plotStart;

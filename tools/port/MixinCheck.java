@@ -53,7 +53,7 @@ public class MixinCheck {
                 }
             }
         }
-        System.out.println("checked " + checkedMixins + " mixins, " + checkedInjectors + " injectors, " + checkedPoints + " injection points, " + checkedShadows + " shadows/accessors");
+        System.out.println("checked " + checkedMixins + " mixins, " + checkedInjectors + " injectors, " + checkedPoints + " injection points, " + checkedShadows + " shadows/accessors, " + checkedSignatures + " handler signatures");
         System.out.println(problems + " problem(s)");
         System.exit(problems == 0 ? 0 : 1);
     }
@@ -287,6 +287,9 @@ public class MixinCheck {
 
         List<AnnotationNode> ats = new ArrayList<>();
         for (Object at : list(a, "at")) ats.add((AnnotationNode) at);
+        for (MethodNode method : methods) {
+            if (containsInjectionPoint(method, ats)) checkSignature(m, handler, a, method, ats);
+        }
         for (AnnotationNode at : ats) {
             String value = (String) value(at, "value");
             String tgt = (String) value(at, "target");
@@ -391,16 +394,287 @@ public class MixinCheck {
 
     static int countNews(MethodNode method, String target) {
         String type = target.trim();
-        if (type.startsWith("L") && type.endsWith(";")) type = type.substring(1, type.length() - 1);
-        if (type.contains("(")) {
-            // <init> descriptor style target: Lowner;<init>(...)V
-            type = parseMember(target)[0];
+        if (type.startsWith("(")) {
+            // Mixin constructor descriptor form: (args)Lowner; - matches NEW owner followed by owner.<init>(args)V
+            final Type ctor = Type.getMethodType(type);
+            final String owner = ctor.getReturnType().getInternalName();
+            final String initDesc = Type.getMethodDescriptor(Type.VOID_TYPE, ctor.getArgumentTypes());
+            int c = 0;
+            for (AbstractInsnNode insn : method.instructions) {
+                if (insn.getOpcode() == Opcodes.INVOKESPECIAL && insn instanceof MethodInsnNode m
+                        && m.owner.equals(owner) && m.name.equals("<init>") && m.desc.equals(initDesc)) c++;
+            }
+            return c;
         }
+        if (type.contains("(")) {
+            // "Lowner;<init>(...)V" is NOT a valid NEW target for Mixin 0.8 (MemberInfo.toCtorType resolves it to "V"),
+            // so report it as never matching.
+            return 0;
+        }
+        if (type.startsWith("L") && type.endsWith(";")) type = type.substring(1, type.length() - 1);
         int c = 0;
         for (AbstractInsnNode insn : method.instructions) {
             if (insn.getOpcode() == Opcodes.NEW && ((TypeInsnNode) insn).desc.equals(type)) c++;
         }
         return c;
+    }
+
+    /** Whether the first injection point exists in the method, so wildcard selectors only check methods they apply to */
+    static boolean containsInjectionPoint(MethodNode method, List<AnnotationNode> ats) {
+        if (ats.isEmpty()) return true;
+        AnnotationNode at = ats.get(0);
+        String value = (String) value(at, "value");
+        String tgt = (String) value(at, "target");
+        if (value == null || tgt == null || tgt.isEmpty()) return true;
+        String kind = value.contains(":") ? value.substring(0, value.indexOf(':')) : value;
+        return switch (kind) {
+            case "INVOKE", "INVOKE_ASSIGN", "INVOKE_STRING" -> countInvokes(method, tgt) > 0;
+            case "FIELD" -> countFields(method, tgt) > 0;
+            case "NEW" -> countNews(method, tgt) > 0;
+            default -> true;
+        };
+    }
+
+    // ---- handler signature checks ----
+
+    static final String CI = "Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;";
+    static final String CIR = "Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;";
+    static final String OPERATION = "Lcom/llamalad7/mixinextras/injector/wrapoperation/Operation;";
+    static int checkedSignatures = 0;
+
+    /** Parameters of the handler without trailing MixinExtras sugar (@Local, @Share, @Cancellable) parameters */
+    static List<Type> coreParams(MethodNode handler) {
+        Type[] args = Type.getArgumentTypes(handler.desc);
+        int end = args.length;
+        while (end > 0 && isSugar(handler, end - 1)) end--;
+        return new ArrayList<>(Arrays.asList(args).subList(0, end));
+    }
+
+    static boolean isSugar(MethodNode handler, int index) {
+        for (List<AnnotationNode>[] all : List.of(nullSafe(handler.invisibleParameterAnnotations), nullSafe(handler.visibleParameterAnnotations))) {
+            if (index < all.length && all[index] != null) {
+                for (AnnotationNode an : all[index]) if (an.desc.startsWith("Lcom/llamalad7/mixinextras/sugar/")) return true;
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    static List<AnnotationNode>[] nullSafe(List<AnnotationNode>[] a) {
+        return a == null ? new List[0] : a;
+    }
+
+    static boolean isSubtype(String sub, String sup) {
+        if (sub.equals(sup) || sup.equals("java/lang/Object")) return true;
+        Deque<String> queue = new ArrayDeque<>(List.of(sub));
+        Set<String> seen = new HashSet<>();
+        boolean unknown = false;
+        while (!queue.isEmpty()) {
+            String c = queue.poll();
+            if (c == null || !seen.add(c)) continue;
+            if (c.equals(sup)) return true;
+            ClassNode cn = node(c);
+            if (cn == null) {
+                unknown = true;
+                continue;
+            }
+            queue.add(cn.superName);
+            queue.addAll(cn.interfaces);
+        }
+        return unknown;
+    }
+
+    /** Whether a handler may declare type {@code declared} where {@code expected} is passed/returned */
+    static boolean compatible(Type declared, Type expected) {
+        if (declared.equals(expected)) return true;
+        boolean refD = declared.getSort() == Type.OBJECT || declared.getSort() == Type.ARRAY;
+        boolean refE = expected.getSort() == Type.OBJECT || expected.getSort() == Type.ARRAY;
+        if (!refD || !refE) return false;
+        if (declared.getSort() == Type.ARRAY || expected.getSort() == Type.ARRAY) {
+            return declared.getDescriptor().equals("Ljava/lang/Object;") || expected.getDescriptor().equals("Ljava/lang/Object;");
+        }
+        // generics are erased, so accept both directions of the hierarchy
+        return isSubtype(expected.getInternalName(), declared.getInternalName()) || isSubtype(declared.getInternalName(), expected.getInternalName());
+    }
+
+    /** Checks that {@code params} starts with {@code expected} and is optionally followed by (a prefix of) the target's arguments */
+    static String matchParams(List<Type> params, List<Type> expected, Type[] targetArgs) {
+        if (params.size() < expected.size()) return "expected parameters " + expected + " but handler has " + params;
+        for (int i = 0; i < expected.size(); i++) {
+            if (!compatible(params.get(i), expected.get(i))) return "parameter " + i + " is " + params.get(i) + " but expected " + expected.get(i);
+        }
+        List<Type> rest = params.subList(expected.size(), params.size());
+        if (rest.size() > targetArgs.length) return "too many parameters " + params + ", expected " + expected + " + target args " + Arrays.toString(targetArgs);
+        for (int i = 0; i < rest.size(); i++) {
+            if (!compatible(rest.get(i), targetArgs[i])) return "trailing parameter " + (expected.size() + i) + " is " + rest.get(i) + " but target arg is " + targetArgs[i];
+        }
+        return null;
+    }
+
+    static void checkSignature(String m, MethodNode handler, AnnotationNode a, MethodNode target, List<AnnotationNode> ats) {
+        String d = a.desc;
+        Type[] targetArgs = Type.getArgumentTypes(target.desc);
+        Type targetReturn = Type.getReturnType(target.desc);
+        Type handlerReturn = Type.getReturnType(handler.desc);
+        List<Type> params = coreParams(handler);
+        String where = "injector " + handler.name + " -> " + target.name + target.desc + ": ";
+        boolean targetStatic = (target.access & Opcodes.ACC_STATIC) != 0;
+        boolean handlerStatic = (handler.access & Opcodes.ACC_STATIC) != 0;
+        if (targetStatic && !handlerStatic) {
+            report(m, where + "handler must be static for a static target");
+        }
+
+        if (d.equals("Lorg/spongepowered/asm/mixin/injection/Inject;")) {
+            checkedSignatures++;
+            int ci = -1;
+            for (int i = 0; i < params.size(); i++) {
+                String pd = params.get(i).getDescriptor();
+                if (pd.equals(CI) || pd.equals(CIR)) {
+                    ci = i;
+                    break;
+                }
+            }
+            if (ci < 0) {
+                report(m, where + "@Inject handler has no CallbackInfo parameter");
+                return;
+            }
+            if (!handlerReturn.equals(Type.VOID_TYPE)) report(m, where + "@Inject handler must return void");
+            String cid = params.get(ci).getDescriptor();
+            if (!targetReturn.equals(Type.VOID_TYPE) && cid.equals(CI) && !target.name.equals("<init>")) {
+                report(m, where + "target returns " + targetReturn + " so the handler needs CallbackInfoReturnable");
+            }
+            if (targetReturn.equals(Type.VOID_TYPE) && cid.equals(CIR)) {
+                report(m, where + "target returns void so the handler must use CallbackInfo");
+            }
+            if (ci > 0) {
+                if (ci != targetArgs.length) {
+                    report(m, where + "@Inject handler must take all or none of the target args " + Arrays.toString(targetArgs) + ", has " + params.subList(0, ci));
+                } else {
+                    for (int i = 0; i < ci; i++) {
+                        if (!compatible(params.get(i), targetArgs[i])) report(m, where + "arg " + i + " is " + params.get(i) + " but target has " + targetArgs[i]);
+                    }
+                }
+            }
+            return;
+        }
+
+        if (d.equals("Lcom/llamalad7/mixinextras/injector/ModifyReturnValue;")) {
+            checkedSignatures++;
+            String err = matchParams(params, List.of(targetReturn), targetArgs);
+            if (err != null) report(m, where + "@ModifyReturnValue " + err);
+            if (!compatible(handlerReturn, targetReturn)) report(m, where + "@ModifyReturnValue returns " + handlerReturn + " but target returns " + targetReturn);
+            return;
+        }
+
+        if (d.equals("Lcom/llamalad7/mixinextras/injector/wrapmethod/WrapMethod;")) {
+            checkedSignatures++;
+            List<Type> expected = new ArrayList<>(Arrays.asList(targetArgs));
+            expected.add(Type.getType(OPERATION));
+            if (params.size() != expected.size()) {
+                report(m, where + "@WrapMethod expects " + expected + " but handler has " + params);
+            } else {
+                String err = matchParams(params, expected, new Type[0]);
+                if (err != null) report(m, where + "@WrapMethod " + err);
+            }
+            if (!compatible(handlerReturn, targetReturn)) report(m, where + "@WrapMethod returns " + handlerReturn + " but target returns " + targetReturn);
+            return;
+        }
+
+        boolean redirect = d.equals("Lorg/spongepowered/asm/mixin/injection/Redirect;");
+        boolean wrapOp = d.equals("Lcom/llamalad7/mixinextras/injector/wrapoperation/WrapOperation;");
+        boolean wrapCond = d.contains("WrapWithCondition");
+        boolean modExpr = d.equals("Lcom/llamalad7/mixinextras/injector/ModifyExpressionValue;");
+        boolean modRecv = d.equals("Lcom/llamalad7/mixinextras/injector/ModifyReceiver;");
+        if (!(redirect || wrapOp || wrapCond || modExpr || modRecv) || ats.isEmpty()) return;
+
+        AnnotationNode at = ats.get(0);
+        String value = (String) value(at, "value");
+        String tgt = (String) value(at, "target");
+        if (value == null || tgt == null || tgt.isEmpty()) return;
+
+        List<Type> operands;
+        Type result;
+        Type receiver = null;
+        if (value.equals("INVOKE")) {
+            String[] t = parseMember(tgt);
+            if (t[2] == null) return;
+            MethodInsnNode insn = null;
+            for (AbstractInsnNode n : target.instructions) {
+                if (n instanceof MethodInsnNode mi && (t[0] == null || t[0].equals(mi.owner)) && t[1].equals(mi.name) && t[2].equals(mi.desc)) {
+                    insn = mi;
+                    break;
+                }
+            }
+            if (insn == null) return;
+            operands = new ArrayList<>();
+            if (insn.getOpcode() != Opcodes.INVOKESTATIC) {
+                receiver = Type.getObjectType(insn.owner);
+                operands.add(receiver);
+            }
+            operands.addAll(Arrays.asList(Type.getArgumentTypes(insn.desc)));
+            result = Type.getReturnType(insn.desc);
+        } else if (value.equals("FIELD")) {
+            String[] t = parseMember(tgt);
+            if (t[2] == null) return;
+            FieldInsnNode insn = null;
+            for (AbstractInsnNode n : target.instructions) {
+                if (n instanceof FieldInsnNode fi && (t[0] == null || t[0].equals(fi.owner)) && t[1].equals(fi.name) && t[2].equals(fi.desc)) {
+                    insn = fi;
+                    break;
+                }
+            }
+            if (insn == null) return;
+            Type ft = Type.getType(insn.desc);
+            operands = new ArrayList<>();
+            boolean isStatic = insn.getOpcode() == Opcodes.GETSTATIC || insn.getOpcode() == Opcodes.PUTSTATIC;
+            if (!isStatic) {
+                receiver = Type.getObjectType(insn.owner);
+                operands.add(receiver);
+            }
+            if (insn.getOpcode() == Opcodes.PUTFIELD || insn.getOpcode() == Opcodes.PUTSTATIC) {
+                operands.add(ft);
+                result = Type.VOID_TYPE;
+            } else {
+                result = ft;
+            }
+        } else if (value.equals("NEW") && modExpr) {
+            String type = tgt.trim();
+            if (type.startsWith("(")) type = Type.getMethodType(type).getReturnType().getInternalName();
+            else if (type.startsWith("L") && type.endsWith(";")) type = type.substring(1, type.length() - 1);
+            result = Type.getObjectType(type);
+            operands = List.of();
+        } else {
+            return;
+        }
+
+        checkedSignatures++;
+        String err;
+        Type expectedReturn;
+        if (modExpr) {
+            err = matchParams(params, List.of(result), targetArgs);
+            expectedReturn = result;
+        } else if (modRecv) {
+            if (receiver == null) {
+                report(m, where + "@ModifyReceiver on a static call");
+                return;
+            }
+            err = matchParams(params, operands, targetArgs);
+            expectedReturn = receiver;
+        } else if (wrapOp) {
+            List<Type> expected = new ArrayList<>(operands);
+            expected.add(Type.getType(OPERATION));
+            err = matchParams(params, expected, targetArgs);
+            expectedReturn = result;
+        } else if (wrapCond) {
+            err = matchParams(params, operands, targetArgs);
+            expectedReturn = Type.BOOLEAN_TYPE;
+            if (!result.equals(Type.VOID_TYPE)) report(m, where + "@WrapWithCondition needs a void operation, " + tgt + " returns " + result);
+        } else {
+            err = matchParams(params, operands, targetArgs);
+            expectedReturn = result;
+        }
+        if (err != null) report(m, where + err + " (" + value + " " + tgt + ")");
+        if (!compatible(handlerReturn, expectedReturn)) report(m, where + "returns " + handlerReturn + " but expected " + expectedReturn + " (" + value + " " + tgt + ")");
     }
 
     static MethodNode declared(ClassNode cn, String name, String desc) {

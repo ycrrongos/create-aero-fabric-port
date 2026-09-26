@@ -16,6 +16,7 @@ import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -48,8 +49,15 @@ public abstract class AbstractArrowMixin extends Entity {
     }
 
     @WrapOperation(method = "stepMoveAndHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/arrow/AbstractArrow;setPos(Lnet/minecraft/world/phys/Vec3;)V"))
-    private void sable$rememberPreStepPosition(final AbstractArrow instance, final Vec3 pos, final Operation<Void> original) {
+    private void sable$stepToHit(final AbstractArrow instance, final Vec3 pos, final Operation<Void> original, @Local @Nullable final EntityHitResult entityHitResult) {
         this.sable$preStepPosition = instance.position();
+
+        if (entityHitResult != null) {
+            // entities inside sub-levels are hit inside their plot, but the arrow stays in the world when hitting them
+            original.call(instance, Sable.HELPER.projectOutOfSubLevel(this.level(), pos));
+            return;
+        }
+
         original.call(instance, pos);
     }
 
