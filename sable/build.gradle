@@ -37,6 +37,9 @@ dependencies {
     runtimeOnly project(path: ':sable:sable_rapier', configuration: 'namedElements')
 
     compileOnly "io.github.llamalad7:mixinextras-common:0.5.3"
+
+    // Create Fly (Create for Fabric, mod id "create"), used by the optional Create and Flywheel compatibility
+    modCompileOnly files("${rootDir}/libs/create-fly-1.21.11-6.0.9-5.jar")
 }
 
 loom {

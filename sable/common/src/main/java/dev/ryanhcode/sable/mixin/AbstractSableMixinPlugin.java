@@ -56,13 +56,23 @@ public abstract class AbstractSableMixinPlugin implements IMixinConfigPlugin {
                 return true;
             }
 
-            final String modId = parts[3].equals("mixin") ? parts[5] : parts[6];
-            
+            final String modId = this.getProvidingModId(parts[3].equals("mixin") ? parts[5] : parts[6]);
+
             final boolean isModLoaded = this.modLoadedCache.computeIfAbsent(modId, x -> Veil.platform().isModLoaded(modId));
             return isModLoaded && MixinConstraints.handleClassAnnotation(mixinClassName, modId);
         }
 
         return true;
+    }
+
+    /**
+     * Maps the mod a compatibility mixin package is named after to the mod that has to be loaded for it to apply.
+     *
+     * @param modId The mod id the compatibility package is named after
+     * @return The id of the mod providing the targeted classes on this platform
+     */
+    protected String getProvidingModId(final String modId) {
+        return modId;
     }
 
     @Override

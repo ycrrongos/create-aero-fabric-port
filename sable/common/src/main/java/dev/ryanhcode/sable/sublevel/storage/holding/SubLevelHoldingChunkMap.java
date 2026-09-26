@@ -113,7 +113,7 @@ public class SubLevelHoldingChunkMap implements AutoCloseable {
 
         if (this.queuedUnloads.contains(chunkPos)) {
             if (this.verboseLogging) {
-                Sable.LOGGER.info("Removing chunk at {} from queued unloads");
+                Sable.LOGGER.info("Removing chunk at {} from queued unloads", chunkPos);
             }
             this.queuedUnloads.remove(chunkPos);
         }
@@ -183,7 +183,7 @@ public class SubLevelHoldingChunkMap implements AutoCloseable {
                 final GlobalSavedSubLevelPointer pointer = chainedSubLevel.getLastSerializationPointer();
 
                 if (this.verboseLogging) {
-                    Sable.LOGGER.info("Unloading sub-level {} with pointer {} to chunk {} as holding sub-level");
+                    Sable.LOGGER.info("Unloading sub-level {} with pointer {} to chunk {} as holding sub-level", chainedSubLevel, pointer, chunkPos);
                 }
 
                 final SubLevelData data = SubLevelSerializer.toData(chainedSubLevel, uuids);

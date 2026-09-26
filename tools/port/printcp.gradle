@@ -1,0 +1,10 @@
+allprojects {
+    afterEvaluate {
+        if (path == ':sable') {
+            tasks.register('printCompileCp') {
+                def cp = sourceSets.main.compileClasspath
+                doLast { new File(System.getProperty('cpOut')).text = cp.asPath }
+            }
+        }
+    }
+}

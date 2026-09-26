@@ -13,7 +13,9 @@ import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+
 import java.util.Optional;
+
 @Mixin(VibrationSystem.Ticker.class)
 public interface VibrationSystemTickerMixin {
 
@@ -22,7 +24,11 @@ public interface VibrationSystemTickerMixin {
         return Sable.HELPER.projectOutOfSubLevel(level, original.call(instance));
     }
 
-    @WrapOperation(method = {"receiveVibration", "lambda$trySelectAndScheduleVibration$0", "method_51408", "tryReloadVibrationParticle"}, expect = 3, require = 3,
+    /**
+     * {@code method_51408} is the {@code chosenCandidate(...).ifPresent} lambda of {@code trySelectAndScheduleVibration}
+     * (lambdas keep their intermediary names on Fabric).
+     */
+    @WrapOperation(method = {"receiveVibration", "method_51408", "tryReloadVibrationParticle"}, expect = 3, require = 3,
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/gameevent/vibrations/VibrationSystem$User;getPositionSource()Lnet/minecraft/world/level/gameevent/PositionSource;"))
     private static PositionSource sable$useGlobalDestPos(final VibrationSystem.User instance, final Operation<PositionSource> original, @Local(argsOnly = true) final ServerLevel level) {
         final PositionSource origSource = original.call(instance);

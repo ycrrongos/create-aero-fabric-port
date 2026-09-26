@@ -14,7 +14,8 @@
   "mixins": [
     "assembly.LevelChunkMixin",
     "assembly.LevelMixin",
-    "entities_stick_sublevels.effects.LivingEntityMixin"
+    "entities_stick_sublevels.effects.LivingEntityMixin",
+    "entity.entity_swimming.EntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProgressListener;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.TickRateManager;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -26,8 +25,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
+
 /**
  * Ticks the sub-level container stored in the {@link SubLevelContainerHolder} for server levels
  */
@@ -61,7 +61,7 @@ public abstract class ServerLevelMixin extends Level {
     /**
      * high up injection so we're before normal chunk saving
      */
-    @Inject(method = "save", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;saveLevelData()V", shift = At.Shift.BEFORE))
+    @Inject(method = "save", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;saveLevelData(Z)V", shift = At.Shift.BEFORE))
     public void sable$saveSubLevels(final ProgressListener progressListener, final boolean bl, final boolean bl2, final CallbackInfo ci) {
         final ServerLevel self = (ServerLevel) (Object) this;
         if (progressListener != null) {
@@ -100,8 +100,12 @@ public abstract class ServerLevelMixin extends Level {
         return original;
     }
 
-    @ModifyReturnValue(method = "isNaturalSpawningAllowed(Lnet/minecraft/world/level/ChunkPos;)Z", at = @At("RETURN"))
-    private boolean sable$isNaturalSpawningAllowed(boolean original, final ChunkPos chunkPos) {
+    /**
+     * 1.21.11 renamed {@code isNaturalSpawningAllowed(ChunkPos)} to {@code canSpawnEntitiesInChunk(ChunkPos)}
+     * (which now also includes the world border check, and sub-level plots are always within the world border).
+     */
+    @ModifyReturnValue(method = "canSpawnEntitiesInChunk(Lnet/minecraft/world/level/ChunkPos;)Z", at = @At("RETURN"))
+    private boolean sable$isNaturalSpawningAllowed(final boolean original, final ChunkPos chunkPos) {
         final SubLevelContainer plotContainer = SubLevelContainer.getContainer((ServerLevel) (Object) this);
         assert plotContainer != null;
 

@@ -1,27 +1,27 @@
 package dev.ryanhcode.sable.mixin.world_border;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.ryanhcode.sable.mixinterface.world_border.WorldBorderExtension;
-import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.border.WorldBorder;
-import net.minecraft.world.level.storage.WritableLevelData;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import java.util.function.Supplier;
-@Mixin(Level.class)
+
+/**
+ * Gives the world border of server levels access to their level, so that sub-level plots are always considered in bounds.
+ * <p>
+ * In 1.21.11 the world border is no longer a field of {@code Level}. Server levels store it as saved data in their
+ * {@link net.minecraft.world.level.storage.DimensionDataStorage}, lazily created (or migrated from legacy level data) in
+ * {@link ServerLevel#getWorldBorder()}, so the level is attached whenever it is handed out.
+ * The client level counterpart is {@link ClientLevelMixin}.
+ */
+@Mixin(ServerLevel.class)
 public class LevelMixin {
 
-    @Shadow @Final private WorldBorder worldBorder;
-
-    @Inject(method = "<init>", at = @At("TAIL"))
-    private void sable$initializeWorldBorder(final WritableLevelData writableLevelData, final ResourceKey resourceKey, final RegistryAccess registryAccess, final Holder holder, final Supplier supplier, final boolean bl, final boolean bl2, final long l, final int i, final CallbackInfo ci) {
-        ((WorldBorderExtension) this.worldBorder).sable$setLevel((Level) (Object) this);
+    @ModifyReturnValue(method = "getWorldBorder", at = @At("RETURN"))
+    private WorldBorder sable$initializeWorldBorder(final WorldBorder worldBorder) {
+        ((WorldBorderExtension) worldBorder).sable$setLevel((ServerLevel) (Object) this);
+        return worldBorder;
     }
 
 }
