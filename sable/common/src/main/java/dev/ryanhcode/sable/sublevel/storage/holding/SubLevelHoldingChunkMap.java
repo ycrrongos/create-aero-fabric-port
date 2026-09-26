@@ -82,8 +82,10 @@ public class SubLevelHoldingChunkMap implements AutoCloseable {
         this.level = level;
         this.container = container;
 
-        final java.nio.file.Path worldFolder = level.getServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT);
-        final java.nio.file.Path subLevelsFolder = worldFolder.resolve("sublevels");
+        // Every dimension stores its sub-levels next to its own region folder
+        final java.nio.file.Path dimensionFolder = net.minecraft.world.level.dimension.DimensionType.getStorageFolder(level.dimension(),
+                level.getServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT));
+        final java.nio.file.Path subLevelsFolder = dimensionFolder.resolve("sublevels");
 
         try {
             java.nio.file.Files.createDirectories(subLevelsFolder);

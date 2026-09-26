@@ -6,12 +6,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import java.util.BitSet;
 /**
  * Stores the map for which plots are occupied
  */
 public class SubLevelOccupancySavedData extends SavedData {
-    private static final java.util.Map<ServerLevel, SubLevelOccupancySavedData> CACHE = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
     public static final String FILE_ID = "sable_sub_level_occupancy";
     private final ServerLevel level;
 
@@ -19,8 +19,20 @@ public class SubLevelOccupancySavedData extends SavedData {
         this.level = level;
     }
 
+    private static SavedDataType<SubLevelOccupancySavedData> type(final ServerLevel level) {
+        return new SavedDataType<>(
+                SubLevelOccupancySavedData.FILE_ID,
+                () -> new SubLevelOccupancySavedData(level),
+                CompoundTag.CODEC.xmap(
+                        tag -> SubLevelOccupancySavedData.load(level, tag),
+                        data -> data.save(new CompoundTag(), level.registryAccess())
+                ),
+                DataFixTypes.LEVEL
+        );
+    }
+
     public static SubLevelOccupancySavedData getOrLoad(final ServerLevel level) {
-        return CACHE.computeIfAbsent(level, SubLevelOccupancySavedData::new);
+        return level.getDataStorage().computeIfAbsent(type(level));
     }
 
 

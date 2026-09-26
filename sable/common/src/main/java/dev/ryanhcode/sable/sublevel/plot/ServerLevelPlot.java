@@ -166,7 +166,7 @@ public class ServerLevelPlot extends LevelPlot {
             this.lightEngine.queueSectionData(LightLayer.SKY, SectionPos.of(pos, idx), null);
         }
 
-        for (int idx = serverLevel.getMinSectionY(); idx < serverLevel.getMaxSectionY(); idx++) {
+        for (int idx = serverLevel.getMinSectionY(); idx <= serverLevel.getMaxSectionY(); idx++) {
             this.lightEngine.updateSectionStatus(SectionPos.of(pos, idx), true);
         }
 

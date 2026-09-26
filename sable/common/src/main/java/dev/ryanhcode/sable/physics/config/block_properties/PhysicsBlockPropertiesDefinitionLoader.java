@@ -59,12 +59,17 @@ public class PhysicsBlockPropertiesDefinitionLoader extends SimpleJsonResourceRe
         if (selector.tag()) {
             // The selector is a tag, let's pick all blocks
             final TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, selector.id());
-            boolean any = false;
-            for (final Holder<Block> blockHolder : BuiltInRegistries.BLOCK.getTagOrEmpty(tagKey)) {
-                blocks.add(blockHolder.value());
-                any = true;
-            }
-            if (!any) {
+            final Optional<HolderSet.Named<Block>> tagBlocks = BuiltInRegistries.BLOCK.get(tagKey);
+
+            if (tagBlocks.isPresent()) {
+                final HolderSet.Named<Block> blockHolders = tagBlocks.get();
+
+                for (final Holder<Block> blockHolder : blockHolders) {
+                    final Block block = blockHolder.value();
+
+                    blocks.add(block);
+                }
+            } else {
                 Sable.LOGGER.error("Failed to apply tag physics properties. Unknown tag: {}", selector.id());
             }
         } else {

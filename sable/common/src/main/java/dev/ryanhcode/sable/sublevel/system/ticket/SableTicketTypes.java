@@ -20,7 +20,7 @@ public final class SableTicketTypes {
             Sable.sablePath("sub_level_loaded"),
             new TicketType(
                     TicketType.NO_TIMEOUT,
-                    TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION | TicketType.FLAG_KEEP_DIMENSION_ACTIVE
+                    TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION
             )
     );
 

@@ -17,7 +17,7 @@ public class SubLevelsBlockSkyMixinHelper {
 
         final ClipContext context = new ClipContext(
                 start,
-                new Vec3(start.x, level.getMaxY(), start.z),
+                new Vec3(start.x, level.getMaxY() + 1, start.z),
                 ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.ANY,
                 CollisionContext.empty()

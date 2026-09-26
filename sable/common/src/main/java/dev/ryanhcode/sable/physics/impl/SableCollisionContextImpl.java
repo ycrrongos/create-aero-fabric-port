@@ -39,6 +39,6 @@ public enum SableCollisionContextImpl implements SableCollisionContext {
 
     @Override
     public VoxelShape getCollisionShape(final BlockState state, final CollisionGetter collisionGetter, final BlockPos pos) {
-        return state.getCollisionShape(collisionGetter, pos);
+        return state.getCollisionShape(collisionGetter, pos, this);
     }
 }

@@ -406,7 +406,7 @@ public class SubLevelAssemblyHelper {
 
                 final LevelChunk chunk = resultingAccelerator.getChunk(SectionPos.blockToSectionCoord(newPos.getX()), SectionPos.blockToSectionCoord(newPos.getZ()));
 
-                chunk.setBlockState(newPos, subLevelState, Block.UPDATE_ALL);
+                chunk.setBlockState(newPos, subLevelState, Block.UPDATE_MOVE_BY_PISTON);
                 states.add(subLevelState);
 
                 final BlockEntity newBlockEntity = resultingLevel.getBlockEntity(newPos);
@@ -419,7 +419,7 @@ public class SubLevelAssemblyHelper {
                     listener.afterMove(level, resultingLevel, state, block, newPos);
                 }
 
-                level.setBlocksDirty(newPos, airState, state);
+                level.updatePOIOnBlockStateChange(newPos, airState, state);
             } catch (final Exception e) {
                 Sable.LOGGER.error("Failed to move block {} at {} to {}", state, block, newPos, e);
             }
@@ -448,8 +448,8 @@ public class SubLevelAssemblyHelper {
                 final LevelChunk chunk = accelerator.getChunk(SectionPos.blockToSectionCoord(block.getX()),
                         SectionPos.blockToSectionCoord(block.getZ()));
 
-                level.setBlocksDirty(block, chunk.getBlockState(block), airState);
-                chunk.setBlockState(block, airState, Block.UPDATE_ALL);
+                level.updatePOIOnBlockStateChange(block, chunk.getBlockState(block), airState);
+                chunk.setBlockState(block, airState, Block.UPDATE_MOVE_BY_PISTON);
             } catch (final Exception e) {
                 Sable.LOGGER.error("Failed to destroy old block during assembly {}", block, e);
             }
@@ -488,7 +488,7 @@ public class SubLevelAssemblyHelper {
                 newState.updateIndirectNeighbourShapes(level, pPos, i, pRecursionLeft - 1);
             }
 
-            level.setBlocksDirty(pPos, oldState, worldState);
+            level.updatePOIOnBlockStateChange(pPos, oldState, worldState);
         }
     }
 

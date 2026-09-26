@@ -160,4 +160,15 @@ public class ServerChunkCacheMixin {
             cir.setReturnValue(holder);
         }
     }
+
+    /**
+     * Region tickets (portals, ender pearls, ...) at plot coordinates must not reach the vanilla distance manager
+     */
+    @Inject(method = "addTicketWithRadius", at = @At("HEAD"), cancellable = true)
+    private void addTicketWithRadius(final TicketType type, final ChunkPos pos, final int radius, final CallbackInfo ci) {
+        final SubLevelContainer container = this.sable$getPlotContainer();
+        if (container.inBounds(pos)) {
+            ci.cancel();
+        }
+    }
 }

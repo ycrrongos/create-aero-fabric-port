@@ -1,5 +1,6 @@
 package dev.ryanhcode.sable.fabric.client;
 
+import dev.ryanhcode.sable.sublevel.render.dispatcher.SubLevelRenderDispatcher;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.SableClient;
 import dev.ryanhcode.sable.SableClientConfig;
@@ -39,8 +40,7 @@ public final class SableFabricClient implements ClientModInitializer {
                     final PreparationBarrier barrier,
                     final Executor gameExecutor
             ) {
-                // Dispatcher reload deferred with RenderPipeline stub
-                return barrier.wait(null).thenRunAsync(() -> {}, gameExecutor);
+                return SubLevelRenderDispatcher.get().reload(sharedState, backgroundExecutor, barrier, gameExecutor);
             }
         });
 

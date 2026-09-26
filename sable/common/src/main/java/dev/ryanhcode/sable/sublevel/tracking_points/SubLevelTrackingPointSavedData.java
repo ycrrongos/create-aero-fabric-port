@@ -23,7 +23,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +34,6 @@ import org.joml.Vector3dc;
 import java.util.Map;
 import java.util.UUID;
 public class SubLevelTrackingPointSavedData extends SavedData implements SubLevelObserver {
-    private static final java.util.Map<ServerLevel, SubLevelTrackingPointSavedData> CACHE = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
     public static final String FILE_ID = "sable_tracking_points";
     private final ServerLevel level;
     private final Map<UUID, TrackingPoint> trackingPoints = new Object2ObjectOpenHashMap<>();
@@ -41,8 +42,20 @@ public class SubLevelTrackingPointSavedData extends SavedData implements SubLeve
         this.level = level;
     }
 
+    private static SavedDataType<SubLevelTrackingPointSavedData> type(final ServerLevel level) {
+        return new SavedDataType<>(
+                SubLevelTrackingPointSavedData.FILE_ID,
+                () -> new SubLevelTrackingPointSavedData(level),
+                CompoundTag.CODEC.xmap(
+                        tag -> SubLevelTrackingPointSavedData.load(level, tag),
+                        data -> data.save(new CompoundTag(), level.registryAccess())
+                ),
+                DataFixTypes.LEVEL
+        );
+    }
+
     public static SubLevelTrackingPointSavedData getOrLoad(final ServerLevel level) {
-        return CACHE.computeIfAbsent(level, SubLevelTrackingPointSavedData::new);
+        return level.getDataStorage().computeIfAbsent(type(level));
     }
 
     private static SubLevelTrackingPointSavedData load(final ServerLevel level, final CompoundTag tag) {

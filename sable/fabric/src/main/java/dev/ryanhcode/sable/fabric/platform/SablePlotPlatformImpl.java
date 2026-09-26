@@ -1,9 +1,15 @@
 package dev.ryanhcode.sable.fabric.platform;
 
+import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.platform.SablePlotPlatform;
+import net.fabricmc.fabric.impl.attachment.AttachmentTargetImpl;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+
 public class SablePlotPlatformImpl implements SablePlotPlatform {
 
     @Override
@@ -13,7 +19,9 @@ public class SablePlotPlatformImpl implements SablePlotPlatform {
 
     @Override
     public void readChunkAttachments(final CompoundTag tag, final RegistryAccess registryAccess, final LevelChunk chunk) {
-        // AttachmentTargetImpl API changed in Fabric API for 1.21.11 — deferred
+        try (final ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(Sable.LOGGER)) {
+            ((AttachmentTargetImpl) chunk).fabric_readAttachmentsFromNbt(TagValueInput.create(reporter, registryAccess, tag));
+        }
     }
 
     @Override
@@ -28,6 +36,11 @@ public class SablePlotPlatformImpl implements SablePlotPlatform {
 
     @Override
     public void writeChunkAttachments(final CompoundTag tag, final RegistryAccess registryAccess, final LevelChunk chunk) {
-        // deferred
+        try (final ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(Sable.LOGGER)) {
+            final TagValueOutput output = TagValueOutput.createWithContext(reporter, registryAccess);
+            ((AttachmentTargetImpl) chunk).fabric_writeAttachmentsToNbt(output);
+            // The attachments are written under the "fabric:attachments" key, like Fabric's own chunk serialization
+            tag.merge(output.buildResult());
+        }
     }
 }

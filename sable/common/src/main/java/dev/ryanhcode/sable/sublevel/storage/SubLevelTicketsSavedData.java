@@ -24,6 +24,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.UUID;
@@ -31,7 +32,6 @@ import java.util.UUID;
  * Stores the force loading tickets for sub-levels
  */
 public class SubLevelTicketsSavedData extends SavedData {
-    private static final java.util.Map<ServerLevel, SubLevelTicketsSavedData> CACHE = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
     public static final String FILE_ID = "sable_sub_level_force_load_tickets";
     private final ServerLevel level;
 
@@ -39,8 +39,20 @@ public class SubLevelTicketsSavedData extends SavedData {
         this.level = level;
     }
 
+    private static SavedDataType<SubLevelTicketsSavedData> type(final ServerLevel level) {
+        return new SavedDataType<>(
+                SubLevelTicketsSavedData.FILE_ID,
+                () -> new SubLevelTicketsSavedData(level),
+                CompoundTag.CODEC.xmap(
+                        tag -> SubLevelTicketsSavedData.load(level, tag),
+                        data -> data.save(new CompoundTag(), level.registryAccess())
+                ),
+                DataFixTypes.LEVEL
+        );
+    }
+
     public static SubLevelTicketsSavedData getOrLoad(final ServerLevel level) {
-        return CACHE.computeIfAbsent(level, SubLevelTicketsSavedData::new);
+        return level.getDataStorage().computeIfAbsent(type(level));
     }
 
     private static SubLevelTicketsSavedData load(final ServerLevel level, final CompoundTag tag) {

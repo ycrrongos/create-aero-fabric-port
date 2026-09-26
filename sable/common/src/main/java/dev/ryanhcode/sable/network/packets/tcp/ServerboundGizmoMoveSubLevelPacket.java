@@ -8,6 +8,7 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.util.SableBufferUtils;
 import foundry.veil.api.network.handler.PacketContext;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -49,7 +50,7 @@ public record ServerboundGizmoMoveSubLevelPacket(UUID subLevel, Vector3d positio
 
         final ServerSubLevelContainer container = SubLevelContainer.getContainer(level);
 
-        if (false && !context.player().isCreative()) {
+        if (!context.player().permissions().hasPermission(Permissions.COMMANDS_MODERATOR)) {
             Sable.LOGGER.warn("Player {} tried to move a sub-level with gizmo without permission", context.player().getGameProfile().name());
             return;
         }

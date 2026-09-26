@@ -26,7 +26,11 @@ public class ClientSubLevelPunchHelper {
         }
 
         if (player.isCreative() && testCreativeBreaking) {
-            // Item.canAttackBlock removed in 1.21.11; creative punch gate deferred
+            final BlockState blockState = minecraft.level.getBlockState(hitResult.getBlockPos());
+
+            if (player.getMainHandItem().canDestroyBlock(blockState, minecraft.level, hitResult.getBlockPos(), player)) {
+                return;
+            }
         }
 
         final Vector3d hitPosition = JOMLConversion.toJOML(hitResult.getLocation());
