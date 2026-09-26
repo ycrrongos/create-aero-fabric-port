@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -32,6 +33,11 @@ import java.util.function.Supplier;
  */
 @Mixin(ServerChunkCache.class)
 public class ServerChunkCacheMixin {
+
+    @Shadow
+    @Final
+    private Set<ChunkHolder> chunkHoldersToBroadcast;
+
 
     @Shadow
     @Final
@@ -142,7 +148,10 @@ public class ServerChunkCacheMixin {
                 throw new UnsupportedOperationException("Cannot change blocks in nonexistent plot holder");
             }
 
-            holder.blockChanged(blockPos);
+            // Only holders queued for broadcasting send their changes to players
+            if (holder.blockChanged(blockPos)) {
+                this.chunkHoldersToBroadcast.add(holder);
+            }
             ci.cancel();
         }
     }

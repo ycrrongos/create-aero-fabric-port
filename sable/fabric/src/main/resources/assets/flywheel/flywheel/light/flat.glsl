@@ -1,7 +1,7 @@
 void flw_shaderLight() {
     vec2 embeddedLight;
 
-    uint sceneId = 0;
+    uint sceneId = 0u;
     vec4 vertexLightingPos;
     ivec3 renderOrigin;
 
@@ -10,7 +10,7 @@ void flw_shaderLight() {
     sceneId = flw_vertexLightingSceneId;
     vertexLightingPos = flw_vertexLightingPos;
 
-    if (sceneId != 0) {
+    if (sceneId != 0u) {
         renderOrigin = ivec3(0);
     }
     #else

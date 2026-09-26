@@ -2,7 +2,7 @@ void flw_shaderLight() {
     #ifdef FLW_EMBEDDED
     ivec3 renderOrigin = flw_renderOrigin;
 
-    if (flw_vertexLightingSceneId != 0) {
+    if (flw_vertexLightingSceneId != 0u) {
         renderOrigin = ivec3(0);
     }
 

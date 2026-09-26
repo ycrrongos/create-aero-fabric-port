@@ -51,7 +51,7 @@ public abstract class AirFlowParticleMixin extends SimpleAnimatedParticle {
         return instance.contains(x, y, z);
     }
 
-    @Redirect(method = "tick", at = @At(value = "NEW", target = "(DDD)Lnet/minecraft/world/phys/Vec3;", ordinal = 0))
+    @Redirect(method = "tick", at = @At(value = "NEW", target = "net/minecraft/world/phys/Vec3", ordinal = 0))
     public Vec3 sable$reverseProjectPos2(final double x, final double y, final double z) {
         final SubLevel subLevel = Sable.HELPER.getContainingClient(this.source.getAirCurrentPos());
         if (subLevel != null) {
