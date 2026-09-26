@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "aeronautics",
+  "version": "${version}",
+  "name": "Create Aeronautics (Fabric Port)",
+  "description": "Fabric 1.21.11 + Create Fly port of Simulated + Aeronautics (WIP).",
+  "authors": ["Creators of Aeronautics", "RongMC port"],
+  "license": "ARR",
+  "icon": "aeronautics.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.simulated_team.simulated.fabric.SimulatedFabric",
+      "dev.eriksonn.aeronautics.fabric.AeronauticsFabric"
+    ],
+    "client": [
+      "dev.simulated_team.simulated.fabric.SimulatedFabricClient",
+      "dev.eriksonn.aeronautics.fabric.AeronauticsFabricClient"
+    ]
+  },
+  "mixins": [
+    "simulated.mixins.json",
+    "aeronautics.mixins.json"
+  ],
+  "accessWidener": "aeronautics-fabric.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.19.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*",
+    "create": ">=6.0.9",
+    "sable": "*"
+  },
+  "custom": {
+    "modmenu:provides": ["simulated"]
+  }
+}

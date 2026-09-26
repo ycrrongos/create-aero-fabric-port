@@ -1,0 +1,127 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap' version '1.16-SNAPSHOT'
+    id 'maven-publish'
+    id 'java'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(Integer.parseInt(java_version))
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.fabricmc.net/' }
+    maven { url = 'https://maven.parchmentmc.org' }
+    maven { url = 'https://maven.minecraftforge.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
+
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+
+    // Local Create Fly stack
+    modImplementation files("../libs/create-fly-1.21.11-6.0.9-5.jar")
+    modImplementation files("../libs/sable-fabric-1.21.11-2.0.5-port.1.21.11.jar")
+    // Mojmap stub jar — must NOT be remapped by Loom
+    implementation files("../libs/create-fly-registrate-shim.jar")
+    modImplementation files("../libs/forgeconfigapiport-fabric-21.11.1.jar")
+    modImplementation files("../libs/veil-fabric-1.21.1-4.5.0.jar")
+    modImplementation files("../libs/sable-companion-fabric-1.21.1-1.6.0.jar")
+    implementation files("../libs/create-fly-helpers-shim.jar")
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+
+}
+
+loom {
+    accessWidenerPath = file('src/main/resources/aeronautics-fabric.accesswidener')
+    runs {
+        client {
+            client()
+            setConfigName('Aeronautics Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Aeronautics Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/fabric/java'
+            srcDir 'src/stub/java'
+        }
+    }
+}
+
+tasks.named('compileJava', JavaCompile).configure {
+    options.encoding = 'UTF-8'
+    options.release = Integer.parseInt(java_version)
+    options.compilerArgs += ['-Xmaxerrs', '5000', '-Xmaxwarns', '100']
+    // NeoForge-only / optional compat / broken mixins (stubs live under src/stub)
+    exclude '**/data/neoforge/**'
+    exclude '**/compat/**'
+    exclude '**/mixin/render/**'
+    exclude '**/ChunkRenderTypeSetAccessor.java'
+    exclude '**/mixin/creative_tab_sections/**'
+    exclude '**/mixin/lodestone_compat/**'
+    exclude '**/mixin/end_sea/**'
+    exclude '**/mixin/diagram/**'
+    exclude '**/mixin/hold_interaction/**'
+    exclude '**/mixin/accessor/ParrotElementAccessor.java'
+    exclude '**/mixin/levitite/VanillaChunkedSubLevelRenderDataMixin.java'
+    exclude '**/HeatedCulledRenderRegionBuilder.java'
+
+    exclude '**/config/server/**'
+    exclude '**/api/BearingSlowdownController.java'
+    exclude '**/mixin_interface/SpriteContentsExtension.java'
+    exclude '**/client/sections/**'
+    exclude '**/client/SearchAlias.java'
+    exclude '**/command/SimCommand.java'
+    exclude '**/multiloader/inventory/ContainerSlot.java'
+
+    exclude '**/ponder/**'
+    exclude '**/content/entities/diagram/**'
+    exclude '**/content/end_sea/**'
+    exclude '**/content/particle/**'
+    exclude '**/content/particle/**'
+    exclude '**/aeronautics/content/particle/**'
+    exclude '**/multiloader/**'
+    exclude '**/content/blocks/**/*Screen.java'
+    exclude '**/content/blocks/**/*ScreenHandler.java'
+    exclude '**/content/blocks/docking_connector/DockingConnectorPair.java'
+    exclude '**/content/blocks/nameplate/NameplateBlock.java'
+    exclude '**/content/blocks/portable_engine/PortableEngineBlock.java'
+    exclude '**/content/blocks/propeller/**'
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+    // drop NeoForge AT
+    exclude 'META-INF/accesstransformer.cfg'
+    exclude 'META-INF/neoforge.mods.toml'
+    exclude 'META-INF/mods.toml'
+}
+
