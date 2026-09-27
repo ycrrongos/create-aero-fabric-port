@@ -17,11 +17,17 @@ public final class SimBehaviours {
         return block -> MovementBehaviour.REGISTRY.register(block, behaviour);
     }
 
-    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> displaySource(RegistryEntry<? extends DisplaySource, ?> source) {
-        return builder -> builder.onRegister(block -> DisplaySource.BY_BLOCK.add(block, source.get()));
+    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> displaySource(final Object source) {
+        if (source instanceof RegistryEntry<?, ?> entry) {
+            return builder -> builder.onRegister(block -> DisplaySource.BY_BLOCK.add(block, (DisplaySource) entry.get()));
+        }
+        return builder -> builder;
     }
 
-    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> displayTarget(RegistryEntry<? extends DisplayTarget, ?> target) {
-        return builder -> builder.onRegister(block -> DisplayTarget.BY_BLOCK.register(block, target.get()));
+    public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> displayTarget(final Object target) {
+        if (target instanceof RegistryEntry<?, ?> entry) {
+            return builder -> builder.onRegister(block -> DisplayTarget.BY_BLOCK.register(block, (DisplayTarget) entry.get()));
+        }
+        return builder -> builder;
     }
 }

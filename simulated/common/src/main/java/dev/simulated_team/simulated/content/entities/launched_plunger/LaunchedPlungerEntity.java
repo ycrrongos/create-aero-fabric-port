@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.entities.launched_plunger;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -11,4 +13,5 @@ public class LaunchedPlungerEntity extends Entity {
     @Override protected void defineSynchedData(SynchedEntityData.Builder builder) {}
     @Override protected void readAdditionalSaveData(ValueInput input) {}
     @Override protected void addAdditionalSaveData(ValueOutput output) {}
+    @Override public boolean hurtServer(ServerLevel level, DamageSource source, float amount) { return false; }
 }

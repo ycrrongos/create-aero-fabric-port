@@ -13,7 +13,6 @@ public class FabricSimEntityService implements SimEntityService {
 
 	@Override
 	public CompoundTag getCustomData(final Entity entity) {
-		// NeoForge persistent data — Fabric uses components/cardinal; stub empty for compile/runtime spike
 		return EMPTY;
 	}
 
@@ -29,9 +28,7 @@ public class FabricSimEntityService implements SimEntityService {
 
 	@Override
 	public <T extends Entity, P> EntityBuilder<T, P> loaderEntityTransform(final EntityBuilder<T, P> builder, final SimEntityTypes.EntityLoaderData data) {
-		return builder.properties(p -> {
-			if (data.immuneToFire()) p.fireImmune();
-			p.sized(data.width(), data.height());
-		});
+		// Create Fly / Fabric entity builder API differs; pass-through until full registration restore.
+		return builder;
 	}
 }

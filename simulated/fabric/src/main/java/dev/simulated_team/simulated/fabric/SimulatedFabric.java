@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import dev.simulated_team.simulated.index.SimBlocks;
+import net.minecraft.world.item.Items;
 
 public final class SimulatedFabric implements ModInitializer {
     public static CreativeModeTab TAB;
@@ -20,7 +20,7 @@ public final class SimulatedFabric implements ModInitializer {
                 Identifier.fromNamespaceAndPath(Simulated.MOD_ID, "main_tab"),
                 CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
                         .title(Component.translatable("itemGroup." + Simulated.MOD_ID + ".group"))
-                        .icon(() -> new ItemStack(SimBlocks.PHYSICS_ASSEMBLER.get()))
+                        .icon(() -> new ItemStack(Items.STONE))
                         .build()
         );
         Simulated.init();

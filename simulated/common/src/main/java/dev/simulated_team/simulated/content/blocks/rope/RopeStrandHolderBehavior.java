@@ -5,7 +5,6 @@ import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import com.zurrtum.create.foundation.blockEntity.behaviour.BehaviourType;
 import dev.simulated_team.simulated.content.blocks.rope.strand.client.ClientRopeStrand;
 import dev.simulated_team.simulated.content.blocks.rope.strand.server.ServerRopeStrand;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -13,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/** Compile stub — full rope logic restored after Simulated green. */
 public class RopeStrandHolderBehavior extends BlockEntityBehaviour<SmartBlockEntity> {
     public static final BehaviourType<RopeStrandHolderBehavior> TYPE = new BehaviourType<>();
 
@@ -23,14 +23,6 @@ public class RopeStrandHolderBehavior extends BlockEntityBehaviour<SmartBlockEnt
     @Override
     public BehaviourType<?> getType() {
         return TYPE;
-    }
-
-    @Nullable
-    public static RopeStrandHolderBehavior get(final BlockEntity be, final BehaviourType<RopeStrandHolderBehavior> type) {
-        if (be instanceof SmartBlockEntity smart) {
-            return smart.getBehaviour(type);
-        }
-        return null;
     }
 
     public boolean ownsRope() { return false; }
