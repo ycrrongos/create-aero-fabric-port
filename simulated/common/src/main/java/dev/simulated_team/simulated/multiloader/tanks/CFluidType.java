@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.multiloader.tanks;
 
+
+import dev.simulated_team.simulated.util.ValueIO;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import dev.simulated_team.simulated.Simulated;
@@ -39,7 +41,7 @@ public record CFluidType(Fluid fluid, DataComponentPatch data) {
         final Fluid fluid = BuiltInRegistries.FLUID.get(Identifier.parse(tag.getStringOr("Fluid", "")));
         DataComponentPatch data = DataComponentPatch.EMPTY;
         if (tag.contains("data")) {
-            final DataResult<Pair<DataComponentPatch, Tag>> result = DataComponentPatch.CODEC.decode(NbtOps.INSTANCE, tag.getCompoundOrEmpty("data"));
+            final DataResult<Pair<DataComponentPatch, Tag>> result = DataComponentPatch.CODEC.decode(NbtOps.INSTANCE, ValueIO.getCompoundOrEmpty(tag, "data"));
             if (result.isError()) {
                 Simulated.LOGGER.warn(result.error().get().message());
             } else {

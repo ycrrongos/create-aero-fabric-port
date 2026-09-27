@@ -71,7 +71,7 @@ public record TypewriterSaveKeyToItemPacket(InteractionHand hand, LinkedTypewrit
             keys.add(entryTag);
         }
 
-        currentTag.put("Keys", keys);
+        ;
         if (item.is(SimBlocks.LINKED_TYPEWRITER.asItem())) {
             CustomData.set(DataComponents.BLOCK_ENTITY_DATA, item, currentTag);
         }

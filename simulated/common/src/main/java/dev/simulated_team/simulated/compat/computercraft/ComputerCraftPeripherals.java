@@ -2,7 +2,7 @@ package dev.simulated_team.simulated.compat.computercraft;
 
 import dan200.computercraft.api.network.wired.WiredElement;
 import dev.simulated_team.simulated.compat.computercraft.peripherals.*;
-import dev.simulated_team.simulated.compat.computercraft.wired.DockingConnectorWiredElementImpl;
+import dev.simulated_team.simulated.shim.cc.DockingConnectorWiredElementImpl;
 import dev.simulated_team.simulated.content.blocks.docking_connector.DockingConnectorBlock;
 import dev.simulated_team.simulated.index.SimBlockEntityTypes;
 import dev.simulated_team.simulated.service.ServiceUtil;

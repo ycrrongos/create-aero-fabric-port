@@ -10,12 +10,11 @@ import java.util.function.Consumer;
 
 /**
  * Create Fly split scroll values into client UI + server storage.
- * This exposes the old getValue/setValue/between surface used throughout Simulated.
+ * Concrete non-generic surface matching Simulated's old ScrollValueBehaviour usage.
  */
-public class SimScrollValueBehaviour<B extends SmartBlockEntity, T extends ServerScrollValueBehaviour>
-        extends ScrollValueBehaviour<B, T> {
+public class SimScrollValueBehaviour extends ScrollValueBehaviour<SmartBlockEntity, ServerScrollValueBehaviour> {
 
-    public SimScrollValueBehaviour(final Component label, final B be, final ValueBoxTransform slot) {
+    public SimScrollValueBehaviour(final Component label, final SmartBlockEntity be, final ValueBoxTransform slot) {
         super(label, be, slot);
     }
 
@@ -27,12 +26,12 @@ public class SimScrollValueBehaviour<B extends SmartBlockEntity, T extends Serve
         this.behaviour.setValue(value);
     }
 
-    public SimScrollValueBehaviour<B, T> between(final int min, final int max) {
+    public SimScrollValueBehaviour between(final int min, final int max) {
         this.behaviour.between(min, max);
         return this;
     }
 
-    public SimScrollValueBehaviour<B, T> withCallback(final Consumer<Integer> callback) {
+    public SimScrollValueBehaviour withCallback(final Consumer<Integer> callback) {
         this.behaviour.withCallback(callback);
         return this;
     }

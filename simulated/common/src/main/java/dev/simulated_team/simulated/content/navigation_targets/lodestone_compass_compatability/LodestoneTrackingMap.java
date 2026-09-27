@@ -91,7 +91,7 @@ public class LodestoneTrackingMap extends SavedData {
 			lodestoneInformationList.add(info.saveAsCompound());
 		}
 
-		compoundTag.put("TrackerInformation", lodestoneInformationList);
+		;
 		return compoundTag;
 	}
 

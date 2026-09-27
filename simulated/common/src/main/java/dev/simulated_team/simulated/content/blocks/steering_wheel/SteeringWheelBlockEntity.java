@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.steering_wheel;
+
+import dev.simulated_team.simulated.util.ValueIO;
 import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
 import com.zurrtum.create.foundation.blockEntity.behaviour.ValueSettings;
 import net.minecraft.world.level.storage.ValueInput;
@@ -271,7 +273,7 @@ public class SteeringWheelBlockEntity extends GeneratingKineticBlockEntity {
         if (!compound.contains("Material"))
             return;
 
-        this.material = NbtUtils.readBlockState(this.blockHolderGetter(), compound.getCompoundOrEmpty("Material"));
+        this.material = NbtUtils.readBlockState(this.blockHolderGetter(), ValueIO.getCompoundOrEmpty(compound, "Material"));
         if (this.material.isAir())
             this.material = Blocks.SPRUCE_PLANKS.defaultBlockState();
 
@@ -395,8 +397,8 @@ public class SteeringWheelBlockEntity extends GeneratingKineticBlockEntity {
         }
 
         @Override
-        public void rotate(final LevelAccessor level, final BlockPos pos, final BlockState state, final PoseStack ms) {
-            super.rotate(level, pos, state, ms);
+        public void rotate(final BlockState state, final PoseStack ms) {
+            super.rotate(state, ms);
             final Direction facing = state.getValue(HorizontalDirectionalBlock.FACING);
 
             TransformStack.of(ms)

@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.multiloader.tanks;
 
+
+import dev.simulated_team.simulated.util.ValueIO;
 import dev.simulated_team.simulated.service.SimFluidService;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Tuple;
@@ -90,7 +92,7 @@ public class SingleTank {
 
     public void read(final CompoundTag tag) {
         this.amount = tag.getIntOr("Amount", 0);
-        this.type = CFluidType.read(tag.getCompoundOrEmpty("Variant"));
+        this.type = CFluidType.read(ValueIO.getCompoundOrEmpty(tag, "Variant"));
     }
 
     public CompoundTag write() {

@@ -165,8 +165,8 @@ public class LaserSensorBlockEntity extends SmartBlockEntity implements Clearabl
         }
 
         @Override
-        public void rotate(final LevelAccessor level, final BlockPos pos, final BlockState state, final PoseStack ms) {
-            super.rotate(level, pos, state, ms);
+        public void rotate(final BlockState state, final PoseStack ms) {
+            super.rotate(state, ms);
             final Direction facing = state.getValue(LaserSensorBlock.FACING);
 
             if (facing.getAxis() == Direction.Axis.Y)

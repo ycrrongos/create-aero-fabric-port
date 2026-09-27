@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.ponder.scenes;
 
+
+import dev.simulated_team.simulated.util.ValueIO;
 import com.zurrtum.create.AllBlocks;
 import com.zurrtum.create.AllItems;
 import com.zurrtum.create.client.foundation.ponder.CreateSceneBuilder;
@@ -545,7 +547,7 @@ public class SymmetricSailScenes {
     public static void setSymSailKinetics(final CreateSceneBuilder scene, final SceneBuildingUtil util, final float rpm) {
         for (int i = 0; i < 2; i++) {
             scene.world().modifyBlockEntityNBT(util.select().position(93, 2, 3 + (2 * i)), AnalogTransmissionBlockEntity.class, nbt -> {
-                nbt.getCompoundOrEmpty("ExtraCogwheel").putFloat("Speed", rpm);
+                ValueIO.getCompoundOrEmpty(nbt, "ExtraCogwheel").putFloat("Speed", rpm);
             });
         }
 

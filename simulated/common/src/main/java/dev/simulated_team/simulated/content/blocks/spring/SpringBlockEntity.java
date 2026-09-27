@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.spring;
+
+import dev.simulated_team.simulated.util.ValueIO;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -392,7 +394,7 @@ public class SpringBlockEntity extends SmartBlockEntity implements BlockEntitySu
         // we can avoid all that logic if there is no schematic context, or we're placing into a schematic level (just carry over the nbt into it)
         if (schematicContext == null || schematicContext.getType() == SubLevelSchematicSerializationContext.Type.PLACE) {
             if (this.partnerSubLevel != null) {
-                tag.putUUID("GoalSubLevel", this.partnerSubLevel);
+                ValueIO.putUUID(tag, "GoalSubLevel", this.partnerSubLevel);
             }
 
             BlockPos partnerPos = this.partnerPos;
@@ -437,7 +439,7 @@ public class SpringBlockEntity extends SmartBlockEntity implements BlockEntitySu
         }
 
         if (id != null) {
-            tag.putUUID("GoalSubLevel", id);
+            ValueIO.putUUID(tag, "GoalSubLevel", id);
         }
     }
 
@@ -456,8 +458,8 @@ public class SpringBlockEntity extends SmartBlockEntity implements BlockEntitySu
         final boolean isPlacingFromSchematic = schematicContext != null && schematicContext.getType() == SubLevelSchematicSerializationContext.Type.PLACE;
         SubLevelSchematicSerializationContext.SchematicMapping mapping = null;
 
-        if (tag.hasUUID("GoalSubLevel")) {
-            UUID subLevelID = tag.getUUID("GoalSubLevel");
+        if (ValueIO.hasUUID(tag, "GoalSubLevel")) {
+            UUID subLevelID = ValueIO.getUUID(tag, "GoalSubLevel");
 
             if (isPlacingFromSchematic) {
                 mapping = schematicContext.getMapping(subLevelID);

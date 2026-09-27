@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.ponder.scenes;
 
+
+import dev.simulated_team.simulated.util.ValueIO;
 import com.zurrtum.create.AllBlocks;
 import com.zurrtum.create.AllItems;
 import com.zurrtum.create.content.kinetics.base.KineticBlockEntity;
@@ -607,9 +609,9 @@ public class SensorScenes {
 
         scene.world().modifyBlockEntityNBT(util.select().position(gimbalLocation), GimbalSensorBlockEntity.class,
             nbt -> {
-                final CompoundTag powers = nbt.getCompoundOrEmpty("Powers");
+                final CompoundTag powers = ValueIO.getCompoundOrEmpty(nbt, "Powers");
                 powers.putInt(directions[index].getName(), power ? 15 : 0);
-                nbt.put("Powers", powers);
+                ;
             });
 
         scene.world().toggleRedstonePower(util.select().position(lampLocations[index]));
@@ -636,9 +638,9 @@ public class SensorScenes {
         );
         scene.world().modifyBlockEntityNBT(util.select().position(gimbalLocation), GimbalSensorBlockEntity.class,
                 nbt -> {
-                    final CompoundTag powers = nbt.getCompoundOrEmpty("Powers");
+                    final CompoundTag powers = ValueIO.getCompoundOrEmpty(nbt, "Powers");
                     powers.putInt(directions[index].getName(), strength == 0 ? 0 : 15);
-                    nbt.put("Powers", powers);
+                    ;
                 });
         if (particles) {
             scene.effects().indicateRedstone(nixieTubeLocations[index]);
@@ -1015,7 +1017,7 @@ public class SensorScenes {
         world.setKineticSpeed(allKinetics, 8);
         world.setKineticSpeed(inverseKinetics, -8);
         world.modifyBlockEntityNBT(util.select().position(swivelBearing), SwivelBearingBlockEntity.class, nbt -> {
-            nbt.getCompoundOrEmpty("SwivelCog").putFloat("Speed", 8f);
+            ValueIO.getCompoundOrEmpty(nbt, "SwivelCog").putFloat("Speed", 8f);
         });
 
         world.rotateSection(platformLink, 0, 360, 0, 160);
@@ -1059,7 +1061,7 @@ public class SensorScenes {
         world.setKineticSpeed(allKinetics, 0);
         world.setKineticSpeed(inverseKinetics, 0);
         world.modifyBlockEntityNBT(util.select().position(swivelBearing), SwivelBearingBlockEntity.class, nbt -> {
-            nbt.getCompoundOrEmpty("SwivelCog").putFloat("Speed", 0f);
+            ValueIO.getCompoundOrEmpty(nbt, "SwivelCog").putFloat("Speed", 0f);
         });
 
         scene.idle(20);
@@ -1077,7 +1079,7 @@ public class SensorScenes {
         world.setKineticSpeed(allKinetics, -8);
         world.setKineticSpeed(inverseKinetics, 8);
         world.modifyBlockEntityNBT(util.select().position(swivelBearing), SwivelBearingBlockEntity.class, nbt -> {
-            nbt.getCompoundOrEmpty("SwivelCog").putFloat("Speed", -8f);
+            ValueIO.getCompoundOrEmpty(nbt, "SwivelCog").putFloat("Speed", -8f);
         });
 
         for (int i = 0; i < 20; i++) {
@@ -1099,7 +1101,7 @@ public class SensorScenes {
         world.setKineticSpeed(allKinetics, 0);
         world.setKineticSpeed(inverseKinetics, 0);
         world.modifyBlockEntityNBT(util.select().position(swivelBearing), SwivelBearingBlockEntity.class, nbt -> {
-            nbt.getCompoundOrEmpty("SwivelCog").putFloat("Speed", 0f);
+            ValueIO.getCompoundOrEmpty(nbt, "SwivelCog").putFloat("Speed", 0f);
         });
 
         scene.overlay().showText(90)
@@ -1197,7 +1199,7 @@ public class SensorScenes {
     private static void modifyKineticSpeed(final SceneBuilder scene, final Selection selection, final UnaryOperator<Float> speedFunc) {
         scene.world().modifyBlockEntityNBT(selection, KineticBlockEntity.class, nbt -> {
             if (nbt.contains("SwivelCog")) {
-                final CompoundTag innerTag = nbt.getCompoundOrEmpty("SwivelCog");
+                final CompoundTag innerTag = ValueIO.getCompoundOrEmpty(nbt, "SwivelCog");
                 innerTag.putFloat("Speed", -speedFunc.apply(innerTag.getFloatOr("Speed", 0f)));
             } else {
                 nbt.putFloat("Speed", speedFunc.apply(nbt.getFloatOr("Speed", 0f)));

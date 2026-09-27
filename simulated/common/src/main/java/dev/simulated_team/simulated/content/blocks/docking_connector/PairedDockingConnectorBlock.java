@@ -63,7 +63,7 @@ public class PairedDockingConnectorBlock extends DirectionalBlock {
             return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
         }
 
-        if (neighborState.is(SimBlocks.DOCKING_CONNECTOR) && neighborState.getValue(BlockStateProperties.FACING) == facing.getOpposite()) {
+        if (neighborState.is(SimBlocks.DOCKING_CONNECTOR.get()) && neighborState.getValue(BlockStateProperties.FACING) == facing.getOpposite()) {
             return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
         }
 
@@ -76,7 +76,7 @@ public class PairedDockingConnectorBlock extends DirectionalBlock {
             if (player.hasInfiniteMaterials()) {
                 final BlockPos connectorPos = pos.relative(state.getValue(FACING));
                 final BlockState connectorState = level.getBlockState(connectorPos);
-                if (connectorState.is(SimBlocks.DOCKING_CONNECTOR)) {
+                if (connectorState.is(SimBlocks.DOCKING_CONNECTOR.get())) {
                     level.setBlock(connectorPos, Blocks.AIR.defaultBlockState(), 3);
                 }
             } else {
@@ -96,7 +96,7 @@ public class PairedDockingConnectorBlock extends DirectionalBlock {
     protected boolean canSurvive(final BlockState state, final LevelReader level, final BlockPos pos) {
         final Direction facing = state.getValue(FACING);
         final BlockState connectorBlock = level.getBlockState(pos.relative(facing));
-        return connectorBlock.is(SimBlocks.DOCKING_CONNECTOR) && connectorBlock.getValue(BlockStateProperties.FACING) == facing.getOpposite() && connectorBlock.getValue(DockingConnectorBlock.POWERED);
+        return connectorBlock.is(SimBlocks.DOCKING_CONNECTOR.get()) && connectorBlock.getValue(BlockStateProperties.FACING) == facing.getOpposite() && connectorBlock.getValue(DockingConnectorBlock.POWERED);
     }
 
     @Override

@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.auger_shaft;
+
+import dev.simulated_team.simulated.util.ValueIO;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -311,8 +313,8 @@ public class AugerShaftBlockEntity extends KineticBlockEntity implements ItemRec
         HolderLookup.Provider registries = compound.lookup();
         super.read(compound, clientPacket);
 
-        this.inventory.read(registries, compound.getCompoundOrEmpty("Inventory"));
-        this.actorInventory.read(registries, compound.getCompoundOrEmpty("ActorInventory"));
+        this.inventory.read(registries, ValueIO.getCompoundOrEmpty(compound, "Inventory"));
+        this.actorInventory.read(registries, ValueIO.getCompoundOrEmpty(compound, "ActorInventory"));
 
         if (!clientPacket) {
             this.updateTracker.setValue(compound.getFloatOr("Progress", 0f));

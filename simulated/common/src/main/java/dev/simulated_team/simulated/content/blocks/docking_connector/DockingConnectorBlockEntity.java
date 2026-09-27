@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.docking_connector;
+
+import dev.simulated_team.simulated.util.ValueIO;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -15,7 +17,7 @@ import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
-import dev.simulated_team.simulated.compat.computercraft.wired.DockingConnectorWiredElement;
+import dev.simulated_team.simulated.shim.cc.DockingConnectorWiredElement;
 import dev.simulated_team.simulated.content.blocks.redstone_magnet.*;
 import dev.simulated_team.simulated.index.SimBlocks;
 import dev.simulated_team.simulated.index.SimSoundEvents;
@@ -448,7 +450,7 @@ public class DockingConnectorBlockEntity extends SmartBlockEntity implements Sim
         }
 
         if (this.otherConnectorSubLevelId != null) {
-            tag.putUUID("OtherConnectorSubLevelId", this.otherConnectorSubLevelId);
+            ValueIO.putUUID(tag, "OtherConnectorSubLevelId", this.otherConnectorSubLevelId);
         }
 
         tag.put("Inventory", this.inventory.write(registries));
@@ -470,18 +472,18 @@ public class DockingConnectorBlockEntity extends SmartBlockEntity implements Sim
         this.feet.setValue(this.feet.getValue());
 
         if (tag.contains("OtherConnector")) {
-            this.otherConnectorPosition = NbtUtils.readBlockPos(tag, "OtherConnector").orElse(null);
+            this.otherConnectorPosition = java.util.Optional.of(ValueIO.readBlockPos(tag, "OtherConnector")).orElse(null);
         } else {
             this.otherConnectorPosition = null;
         }
 
         if (tag.contains("OtherConnectorSubLevelId")) {
-            this.otherConnectorSubLevelId = tag.getUUID("OtherConnectorSubLevelId");
+            this.otherConnectorSubLevelId = ValueIO.getUUID(tag, "OtherConnectorSubLevelId");
         }
 
-        this.inventory.read(registries, tag.getCompoundOrEmpty("Inventory"));
-        this.tank.read(tag.getCompoundOrEmpty("Tank"));
-        this.battery.read(tag.getCompoundOrEmpty("Battery"));
+        this.inventory.read(registries, ValueIO.getCompoundOrEmpty(tag, "Inventory"));
+        this.tank.read(ValueIO.getCompoundOrEmpty(tag, "Tank"));
+        this.battery.read(ValueIO.getCompoundOrEmpty(tag, "Battery"));
         super.read(tag, clientPacket);
     }
 

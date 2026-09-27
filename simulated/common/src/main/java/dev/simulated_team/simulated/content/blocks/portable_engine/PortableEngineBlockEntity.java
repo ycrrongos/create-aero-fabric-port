@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.portable_engine;
+
+import dev.simulated_team.simulated.util.ValueIO;
 import dev.simulated_team.simulated.util.scroll.SimRotationDirectionScrollBehaviour;
 import dev.simulated_team.simulated.util.scroll.SimScrollOptionBehaviour;
 import net.minecraft.world.level.storage.ValueInput;
@@ -112,14 +114,14 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
     private static class PortableEngineValueBoxTransform extends ValueBoxTransform {
 
         @Override
-        public Vec3 getLocalOffset(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState blockState) {
+        public Vec3 getLocalOffset(final BlockState blockState) {
             final Direction facing = blockState.getValue(PortableEngineBlock.HORIZONTAL_FACING);
             final float yRot = AngleHelper.horizontalAngle(facing);
             return VecHelper.rotateCentered(VecHelper.voxelSpace(8, 13.5f, 7.4f), yRot, Direction.Axis.Y);
         }
 
         @Override
-        public void rotate(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState blockState, final PoseStack poseStack) {
+        public void rotate(final BlockState blockState, final PoseStack poseStack) {
             final float yRot = AngleHelper.horizontalAngle(blockState.getValue(BlockStateProperties.HORIZONTAL_FACING));
             TransformStack.of(poseStack)
                     .rotateYDegrees(yRot)
@@ -415,7 +417,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
         super.read(compound, clientPacket);
         this.superHeated = compound.getBooleanOr("SuperHeated", false);
 
-        this.inventory.read(registries, compound.getCompoundOrEmpty("Inventory"));
+        this.inventory.read(registries, ValueIO.getCompoundOrEmpty(compound, "Inventory"));
 
         this.burnTime = compound.getIntOr("BurnTime", 0);
         this.generatedSpeed = compound.getFloatOr("GeneratedSpeed", 0f);

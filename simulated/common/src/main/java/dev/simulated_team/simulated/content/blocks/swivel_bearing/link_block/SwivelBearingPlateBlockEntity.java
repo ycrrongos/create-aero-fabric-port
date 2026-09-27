@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.swivel_bearing.link_block;
+
+import dev.simulated_team.simulated.util.ValueIO;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -51,7 +53,7 @@ public class SwivelBearingPlateBlockEntity extends KineticBlockEntity implements
     }
 
     private void destroyBearing() {
-        if (this.parent != null && this.getLevel().getBlockState(this.parent).is(SimBlocks.SWIVEL_BEARING)) {
+        if (this.parent != null && this.getLevel().getBlockState(this.parent).is(SimBlocks.SWIVEL_BEARING.get())) {
             this.getLevel().destroyBlock(this.parent, false);
         }
     }
@@ -96,7 +98,7 @@ public class SwivelBearingPlateBlockEntity extends KineticBlockEntity implements
         }
 
         if (this.parentSubLevelId != null) {
-            compound.putUUID("ParentSubLevelId", this.parentSubLevelId);
+            ValueIO.putUUID(compound, "ParentSubLevelId", this.parentSubLevelId);
         }
     }
 
@@ -105,16 +107,16 @@ public class SwivelBearingPlateBlockEntity extends KineticBlockEntity implements
         super.read(compound, clientPacket);
 
         if (compound.contains("parent")) {
-            this.parent = NbtUtils.readBlockPos(compound, "parent").get();
+            this.parent = java.util.Optional.of(ValueIO.readBlockPos(compound, "parent")).get();
         }
 
 
         if (compound.contains("ParentPos")) {
-            this.parent = NbtUtils.readBlockPos(compound, "ParentPos").get();
+            this.parent = java.util.Optional.of(ValueIO.readBlockPos(compound, "ParentPos")).get();
         }
 
         if (compound.contains("ParentSubLevelId")) {
-            this.parentSubLevelId = compound.getUUID("ParentSubLevelId");
+            this.parentSubLevelId = ValueIO.getUUID(compound, "ParentSubLevelId");
         }
     }
 

@@ -320,7 +320,7 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
         tag.putDouble("x_angle", this.XAngle);
         tag.putDouble("zz_angle", this.ZAngle);
 
-        tag.put("Powers", powers);
+        ;
     }
 
     @Override
@@ -364,7 +364,7 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
             this.secondaryValue = 0;
         }
 
-        public ScrollValueBehaviour between(final int min, final int max) {
+        public SimScrollValueBehaviour between(final int min, final int max) {
             this.min = min;
             this.max = max;
             return super.between(min, max);
@@ -471,11 +471,10 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
             this.be = be;
         }
 
-        public Sided fromSide(final Direction direction) {
+        public void fromSide(final Direction direction) {
             this.direction = direction;
             this.be.axisBehaviour.lastSide = direction;
-            return this;
-        }
+            }
 
         @Override
         protected boolean isSideActive(final BlockState state, final Direction direction) {
@@ -490,7 +489,7 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
 
         @Override
         public boolean testHit(final LevelAccessor level, final BlockPos pos, final BlockState state, final Vec3 localHit) {
-            final Vec3 offset = this.getLocalOffset(level, pos, state);
+            final Vec3 offset = this.getLocalOffset(state);
 
             if (offset == null)
                 return false;
@@ -509,7 +508,7 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
         }
 
         @Override
-        public Vec3 getLocalOffset(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState state) {
+        public Vec3 getLocalOffset(final BlockState state) {
             Vec3 location = this.getSouthLocation();
             location = VecHelper.rotateCentered(location, AngleHelper.horizontalAngle(this.getSide()), Direction.Axis.Y);
             location = VecHelper.rotateCentered(location, AngleHelper.verticalAngle(this.getSide()), Direction.Axis.X);
@@ -522,7 +521,7 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
         }
 
         @Override
-        public void rotate(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState blockState, final PoseStack poseStack) {
+        public void rotate(final BlockState blockState, final PoseStack poseStack) {
             final float yRot = AngleHelper.horizontalAngle(this.getSide()) + 180;
             final float xRot = this.getSide() == Direction.UP ? 90 : this.getSide() == Direction.DOWN ? 270 : 0;
             TransformStack.of(poseStack)
@@ -531,13 +530,13 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
         }
 
         @Override
-        public boolean shouldRender(final LevelAccessor level, final BlockPos pos, final BlockState state) {
-            return super.shouldRender(level, pos, state) && this.isSideActive(state, this.getSide());
+        public boolean shouldRender(final BlockState state) {
+            return super.shouldRender(state) && this.isSideActive(state, this.getSide());
         }
 
         @Override
         public boolean testHit(final LevelAccessor level, final BlockPos pos, final BlockState state, final Vec3 localHit) {
-            final Vec3 offset = this.getLocalOffset(level, pos, state);
+            final Vec3 offset = this.getLocalOffset(state);
             if (offset == null)
                 return false;
             return localHit.distanceTo(offset) < this.scale / 1.5f;

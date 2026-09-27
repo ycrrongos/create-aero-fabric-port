@@ -46,7 +46,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 public class TorsionSpringBlockEntity extends KineticBlockEntity implements ExtraKinetics {
     private final Output springOutput;
-    public ScrollValueBehaviour angleInput;
+    public SimScrollValueBehaviour angleInput;
     protected double sequencedAngleLimit;
 
     public TorsionSpringBlockEntity(final BlockEntityType<?> blockEntityType, final BlockPos blockPos, final BlockState blockState) {
@@ -424,23 +424,23 @@ public class TorsionSpringBlockEntity extends KineticBlockEntity implements Extr
         }
 
         @Override
-        public Vec3 getLocalOffset(final LevelAccessor level, final BlockPos pos, final BlockState state) {
-            return super.getLocalOffset(level, pos, state)
+        public Vec3 getLocalOffset(final BlockState state) {
+            return super.getLocalOffset(state)
                     .add(Vec3.atLowerCornerOf(state.getValue(TorsionSpringBlock.FACING).getUnitVec3i()).scale(-5 / 16f));
         }
 
         @Override
-        public void rotate(final LevelAccessor level, final BlockPos pos, final BlockState state, final PoseStack ms) {
+        public void rotate(final BlockState state, final PoseStack ms) {
             if (!this.getSide().getAxis().isHorizontal()) {
                 TransformStack.of(ms)
                         .rotateY((AngleHelper.horizontalAngle(state.getValue(TorsionSpringBlock.FACING)) + 180) * (float) Math.PI / 180);
             }
-            super.rotate(level, pos, state, ms);
+            super.rotate(state, ms);
         }
 
         @Override
         public boolean testHit(final LevelAccessor level, final BlockPos pos, final BlockState state, final Vec3 localHit) {
-            final Vec3 offset = this.getLocalOffset(level, pos, state);
+            final Vec3 offset = this.getLocalOffset(state);
             if (offset == null) {
                 return false;
             }

@@ -76,7 +76,7 @@ public class HandleBlock extends AbstractDirectionalAxisBlock implements IBE<Han
 
     @Override
     protected InteractionResult useItemOn(final ItemStack itemStack, final BlockState blockState, final Level level, final BlockPos blockPos, final Player player, final InteractionHand interactionHand, final BlockHitResult blockHitResult) {
-        if (AllItems.WRENCH.isIn(itemStack))
+        if (itemStack.is(AllItems.WRENCH))
             return InteractionResult.TRY_WITH_EMPTY_HAND;
 
         if (canInteractWithHandle(player)) {

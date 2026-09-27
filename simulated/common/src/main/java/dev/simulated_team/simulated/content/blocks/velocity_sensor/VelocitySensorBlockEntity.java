@@ -130,7 +130,7 @@ public class VelocitySensorBlockEntity extends SmartBlockEntity implements IHave
         }
     }
 
-    public ScrollValueBehaviour getMaxSpeed() {
+    public SimScrollValueBehaviour getMaxSpeed() {
         return this.maxSpeed;
     }
 

@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.nav_table;
+
+import dev.simulated_team.simulated.util.ValueIO;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -266,7 +268,7 @@ public class NavTableBlockEntity extends SmartBlockEntity implements Clearable {
     @Override
     protected void read(ValueInput tag, boolean clientPacket) {
         HolderLookup.Provider registries = tag.lookup();
-        final ItemStack stack = ItemStack.parseOptional(registries, tag.getCompoundOrEmpty("CurrentStack"));
+        final ItemStack stack = ItemStack.parseOptional(registries, ValueIO.getCompoundOrEmpty(tag, "CurrentStack"));
         this.inventory.slot.setStack(stack);
 
         if (tag.contains("CurrentTarget")) {
@@ -286,7 +288,7 @@ public class NavTableBlockEntity extends SmartBlockEntity implements Clearable {
 
     private void writeCurrentTarget(final CompoundTag tag) {
         final ListTag currentTarget = VecHelper.writeNBT(this.currentTarget);
-        tag.put("CurrentTarget", currentTarget);
+        ;
     }
 
     private Vec3 readCurrentTarget(final CompoundTag tag) {

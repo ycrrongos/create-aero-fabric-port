@@ -1,7 +1,7 @@
 package dev.simulated_team.simulated.content.blocks.redstone.redstone_inductor;
 
 import com.zurrtum.create.foundation.blockEntity.behaviour.ValueSettings;
-import com.zurrtum.create.client.foundation.blockEntity.behaviour.scrollValue.BrassDiodeScrollValueBehaviour;
+import dev.simulated_team.simulated.util.scroll.SimBrassDiodeScrollValueBehaviour;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.zurrtum.create.client.foundation.blockEntity.ValueSettingsBoard;
@@ -12,7 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-public class RedstoneInductorValueBehaviour extends BrassDiodeScrollValueBehaviour {
+public class RedstoneInductorValueBehaviour extends SimBrassDiodeScrollValueBehaviour {
 
     public RedstoneInductorValueBehaviour(final Component label, final SmartBlockEntity be, final ValueBoxTransform slot) {
         super(label, be, slot);

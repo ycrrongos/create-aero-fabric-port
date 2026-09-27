@@ -157,7 +157,7 @@ public class AltitudeSensorBlock extends FaceAttachedHorizontalDirectionalBlock 
                                                        final @NotNull Player player,
                                                        final @NotNull InteractionHand hand,
                                                        final @NotNull BlockHitResult hitResult) {
-        return AllItems.WRENCH.isIn(stack) ? InteractionResult.TRY_WITH_EMPTY_HAND : this.onBlockEntityUseItemOn(level, pos, (be) -> {
+        return stack.is(AllItems.WRENCH) ? InteractionResult.TRY_WITH_EMPTY_HAND : this.onBlockEntityUseItemOn(level, pos, (be) -> {
 
             if (level.isClientSide()) {
                 this.withBlockEntityDo(level, pos, AltitudeSensorScreen::open);

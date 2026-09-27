@@ -1,4 +1,5 @@
 package dev.simulated_team.simulated.content.blocks.lasers.laser_pointer;
+import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -32,7 +33,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 public class LaserPointerBlockEntity extends AbstractLaserBlockEntity implements ClipboardCloneable {
-    private ScrollValueBehaviour range;
+    private SimScrollValueBehaviour range;
     public LaserSensorInteractorBehaviour sensorInteraction;
     private boolean rainbow;
     public int laserColor;
@@ -48,7 +49,7 @@ public class LaserPointerBlockEntity extends AbstractLaserBlockEntity implements
     @Override
     public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
         final int rangeMax = SimConfigService.INSTANCE.server().blocks.laserPointerRange.get();
-        this.range = new ScrollValueBehaviour(
+        this.range = new SimScrollValueBehaviour(
                 SimLang.translate("laser_pointer.max_length").component(), this, new RangeValueBoxTransform()
         ).between(1, rangeMax);
         this.range.setValue(rangeMax);
@@ -208,8 +209,8 @@ public class LaserPointerBlockEntity extends AbstractLaserBlockEntity implements
         }
 
         @Override
-        public void rotate(final LevelAccessor level, final BlockPos pos, final BlockState state, final PoseStack ms) {
-            super.rotate(level, pos, state, ms);
+        public void rotate(final BlockState state, final PoseStack ms) {
+            super.rotate(state, ms);
             final Direction facing = state.getValue(LaserPointerBlock.FACING);
 
             if (facing.getAxis() == Direction.Axis.Y)

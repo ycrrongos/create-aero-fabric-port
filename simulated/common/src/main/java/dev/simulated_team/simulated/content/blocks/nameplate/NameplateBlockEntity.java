@@ -1,4 +1,5 @@
 package dev.simulated_team.simulated.content.blocks.nameplate;
+import dev.simulated_team.simulated.util.ValueIO;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -343,7 +344,7 @@ public class NameplateBlockEntity extends SmartBlockEntity implements ClipboardC
 
         if (tag.contains("ControllerPos")) {
             this.controller = false;
-            this.controllerPos = NbtUtils.readBlockPos(tag, "ControllerPos").get();
+            this.controllerPos = java.util.Optional.of(ValueIO.readBlockPos(tag, "ControllerPos")).get();
         } else {
             this.controller = true;
             this.controllerPos = this.getBlockPos();

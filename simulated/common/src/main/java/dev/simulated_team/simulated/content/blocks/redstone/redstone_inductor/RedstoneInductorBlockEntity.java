@@ -1,4 +1,5 @@
 package dev.simulated_team.simulated.content.blocks.redstone.redstone_inductor;
+import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -29,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 public class RedstoneInductorBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, ClipboardCloneable {
 
-    protected ScrollValueBehaviour inputDelay;
+    protected SimScrollValueBehaviour inputDelay;
     int delayTicks;
     int outputSignal;
     LerpedFloat lerpedState;
@@ -174,12 +175,12 @@ public class RedstoneInductorBlockEntity extends SmartBlockEntity implements IHa
     private static class RedstoneInductorValueBoxTransform extends ValueBoxTransform {
 
         @Override
-        public Vec3 getLocalOffset(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState blockState) {
+        public Vec3 getLocalOffset(final BlockState blockState) {
             return new Vec3(0.5, 5.5f / 16.0f, 0.5);
         }
 
         @Override
-        public void rotate(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState blockState, final PoseStack poseStack) {
+        public void rotate(final BlockState blockState, final PoseStack poseStack) {
             final float yRot = AngleHelper.horizontalAngle(blockState.getValue(BlockStateProperties.HORIZONTAL_FACING)) + 180;
             TransformStack.of(poseStack)
                     .rotateYDegrees(yRot)

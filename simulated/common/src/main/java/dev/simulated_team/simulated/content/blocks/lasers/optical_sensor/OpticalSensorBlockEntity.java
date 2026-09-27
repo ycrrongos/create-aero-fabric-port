@@ -54,7 +54,7 @@ import java.util.List;
 public class OpticalSensorBlockEntity extends AbstractLaserBlockEntity implements Clearable, ClipboardCloneable {
 
     private FilteringBehaviour filter;
-    private ScrollValueBehaviour range;
+    private SimScrollValueBehaviour range;
     public LaserBehaviour laser;
 
     private Block hitBlock = Blocks.AIR;
@@ -255,8 +255,8 @@ public class OpticalSensorBlockEntity extends AbstractLaserBlockEntity implement
         }
 
         @Override
-        public void rotate(final LevelAccessor level, final BlockPos pos, final BlockState state, final PoseStack ms) {
-            super.rotate(level, pos, state, ms);
+        public void rotate(final BlockState state, final PoseStack ms) {
+            super.rotate(state, ms);
             final Direction facing = state.getValue(DirectedDirectionalBlock.FACING);
             if (facing.getAxis() == Direction.Axis.Y)
                 return;
@@ -281,8 +281,8 @@ public class OpticalSensorBlockEntity extends AbstractLaserBlockEntity implement
         }
 
         @Override
-        public void rotate(final LevelAccessor level, final BlockPos pos, final BlockState state, final PoseStack ms) {
-            super.rotate(level, pos, state, ms);
+        public void rotate(final BlockState state, final PoseStack ms) {
+            super.rotate(state, ms);
             final Direction facing = state.getValue(DirectedDirectionalBlock.FACING);
 
             if (facing.getAxis() == Direction.Axis.Y)

@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.ponder.scenes;
 
+
+import dev.simulated_team.simulated.util.ValueIO;
 import com.zurrtum.create.AllBlocks;
 import com.zurrtum.create.client.foundation.ponder.CreateSceneBuilder;
 import dev.simulated_team.simulated.content.blocks.swivel_bearing.SwivelBearingBlock;
@@ -26,7 +28,7 @@ public class SwivelBearingScenes {
                 s -> s.setValue(SwivelBearingBlock.ASSEMBLED, true), false);
 
         scene.world().modifyBlockEntityNBT(util.select().position(swivelPos), SwivelBearingBlockEntity.class, nbt -> {
-            nbt.getCompoundOrEmpty("SwivelCog").putFloat("Speed", rpm);
+            ValueIO.getCompoundOrEmpty(nbt, "SwivelCog").putFloat("Speed", rpm);
         });
     }
 

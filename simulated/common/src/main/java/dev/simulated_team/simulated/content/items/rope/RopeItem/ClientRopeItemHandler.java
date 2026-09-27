@@ -35,7 +35,7 @@ public class ClientRopeItemHandler {
         for (final InteractionHand hand : InteractionHand.values()) {
             final ItemStack heldItem = player.getItemInHand(hand);
 
-            if (!SimItems.ROPE_COUPLING.isIn(heldItem))
+            if (!heldItem.is(SimItems.ROPE_COUPLING.get()))
                 continue;
 
             if (!heldItem.has(SimDataComponents.ROPE_FIRST_CONNECTION))

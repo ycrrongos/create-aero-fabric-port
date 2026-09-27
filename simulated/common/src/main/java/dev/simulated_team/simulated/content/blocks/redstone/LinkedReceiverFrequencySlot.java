@@ -20,7 +20,7 @@ public class LinkedReceiverFrequencySlot extends ValueBoxTransform.Dual{
     Vec3 vertical = VecHelper.voxelSpace(11f, 2.5f, 3f);
 
     @Override
-    public Vec3 getLocalOffset(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState state) {
+    public Vec3 getLocalOffset(final BlockState state) {
         final Direction facing = state.getValue(RedstoneLinkBlock.FACING);
         Vec3 location = this.vertical;
 
@@ -39,7 +39,7 @@ public class LinkedReceiverFrequencySlot extends ValueBoxTransform.Dual{
     }
 
     @Override
-    public void rotate(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState state, final PoseStack poseStack) {
+    public void rotate(final BlockState state, final PoseStack poseStack) {
         final Direction facing = state.getValue(RedstoneLinkBlock.FACING);
         final float yRot = facing.getAxis()
                 .isVertical() ? 0 : AngleHelper.horizontalAngle(facing) + 180;

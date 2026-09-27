@@ -1,7 +1,11 @@
 package dev.simulated_team.simulated.mixin_interface;
 
-import dev.simulated_team.simulated.content.entities.launched_plunger.LaunchedPlungerEntity;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
+
 public interface PlayerLaunchedPlungerExtension {
-    void simulated$setLaunchedPlunger(LaunchedPlungerEntity plunger);
-    LaunchedPlungerEntity simulated$getLaunchedPlunger();
+    default Set<UUID> simulated$getLaunchedPlungers() { return Collections.emptySet(); }
+    default void simulated$addLaunchedPlunger(UUID id) {}
+    default void simulated$removeLaunchedPlunger(UUID id) {}
 }

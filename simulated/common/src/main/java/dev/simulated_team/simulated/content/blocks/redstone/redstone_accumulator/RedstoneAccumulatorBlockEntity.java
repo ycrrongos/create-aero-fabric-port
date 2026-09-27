@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.redstone.redstone_accumulator;
+import dev.simulated_team.simulated.util.scroll.SimBrassDiodeScrollValueBehaviour;
+import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -29,7 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 public class RedstoneAccumulatorBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, ClipboardCloneable {
-    protected ScrollValueBehaviour inputDelay;
+    protected SimScrollValueBehaviour inputDelay;
     protected int delayTicks;
     protected int outputSignal;
     protected LerpedFloat lerpedState;
@@ -49,7 +51,7 @@ public class RedstoneAccumulatorBlockEntity extends SmartBlockEntity implements 
 
     @Override
     public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
-        this.inputDelay = new BrassDiodeScrollValueBehaviour(
+        this.inputDelay = new SimBrassDiodeScrollValueBehaviour(
                 Component.translatable("block.simulated.redstone_accumulator.input_delay"),
                 this, new RedstoneAccumulatorValueBoxTransform());
         this.inputDelay.between(2, 60 * 20 * 60);
@@ -177,12 +179,12 @@ public class RedstoneAccumulatorBlockEntity extends SmartBlockEntity implements 
 
     private static class RedstoneAccumulatorValueBoxTransform extends ValueBoxTransform {
         @Override
-        public Vec3 getLocalOffset(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState blockState) {
+        public Vec3 getLocalOffset(final BlockState blockState) {
             return new Vec3(0.5, 6.6f / 16.0f, 0.5);
         }
 
         @Override
-        public void rotate(final LevelAccessor levelAccessor, final BlockPos blockPos, final BlockState blockState, final PoseStack poseStack) {
+        public void rotate(final BlockState blockState, final PoseStack poseStack) {
             final float yRot = AngleHelper.horizontalAngle(blockState.getValue(RedstoneAccumulatorBlock.FACING)) + 180;
             TransformStack.of(poseStack)
                     .rotateYDegrees(yRot)

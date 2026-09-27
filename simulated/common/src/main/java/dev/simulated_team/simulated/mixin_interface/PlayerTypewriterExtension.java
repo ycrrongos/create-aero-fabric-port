@@ -1,8 +1,6 @@
 package dev.simulated_team.simulated.mixin_interface;
 
-import net.minecraft.core.BlockPos;
 public interface PlayerTypewriterExtension {
-
-    BlockPos simulated$getCurrentTypewriter();
-    void simulated$setCurrentTypewriter(BlockPos pos);
+    default Object simulated$getTypewriter() { return null; }
+    default void simulated$setTypewriter(Object be) {}
 }

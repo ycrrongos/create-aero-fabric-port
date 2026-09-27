@@ -391,7 +391,7 @@ public abstract class MultiSlotContainer implements AbstractContainer {
             inv.add(slot.write(provider));
         }
 
-        invCompound.put("Items", inv);
+        ;
         return invCompound;
     }
 
