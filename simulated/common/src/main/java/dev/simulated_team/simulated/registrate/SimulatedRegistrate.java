@@ -110,7 +110,7 @@ public class SimulatedRegistrate extends CreateRegistrate {
     }
 
     public void addExtraItem(final Identifier item) {
-        TAB_ITEMS.add(() -> BuiltInRegistries.ITEM.get(item));
+        TAB_ITEMS.add(() -> BuiltInRegistries.ITEM.getValue(item));
         ITEM_TO_SECTION.put(item, this.currentSection);
     }
 
@@ -131,7 +131,7 @@ public class SimulatedRegistrate extends CreateRegistrate {
 
     public static void onAddDefaultComponents(BiConsumer<ItemLike, Consumer<DataComponentPatch.Builder>> modify) {
         for (Map.Entry<Identifier, Supplier<ItemLike>> entry : NAVIGATION_TARGET_ITEMS.entrySet()) {
-            NavigationTarget target = SimRegistries.NAVIGATION_TARGET.get(entry.getKey());
+            NavigationTarget target = SimRegistries.NAVIGATION_TARGET.getValue(entry.getKey());
             ItemLike item = entry.getValue().get();
             modify.accept(item, builder -> builder
                     .set(SimDataComponents.TARGET, target));

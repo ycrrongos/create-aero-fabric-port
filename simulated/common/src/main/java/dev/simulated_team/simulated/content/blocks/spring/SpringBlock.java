@@ -126,7 +126,7 @@ public class SpringBlock extends WrenchableDirectionalBlock implements IBE<Sprin
 
         level.setBlockAndUpdate(pos, newState);
         level.setBlockAndUpdate(partnerPos, newPartnerState);
-        AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos, 1, Create.RANDOM.nextFloat() + .5f);
+        AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos, 1, java.util.concurrent.ThreadLocalRandom.current().nextFloat() + .5f);
 
         return InteractionResult.SUCCESS;
     }

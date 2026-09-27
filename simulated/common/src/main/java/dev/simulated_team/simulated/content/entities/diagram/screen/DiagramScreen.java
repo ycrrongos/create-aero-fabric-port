@@ -396,7 +396,7 @@ public class DiagramScreen extends AbstractSimiScreen {
         if (this.renderTime >= 20.0f / FPS) {
             this.renderTime = 0.0f;
         } else {
-            this.renderTime += minecraft.getTimer().getRealtimeDeltaTicks();
+            this.renderTime += minecraft.getDeltaTracker().getRealtimeDeltaTicks();
             return;
         }
 

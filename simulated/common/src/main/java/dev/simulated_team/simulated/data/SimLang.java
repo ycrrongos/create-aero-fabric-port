@@ -9,7 +9,7 @@ import dev.simulated_team.simulated.Simulated;
 import dev.simulated_team.simulated.data.advancements.SimAdvancements;
 import dev.simulated_team.simulated.index.SimKeys;
 import dev.simulated_team.simulated.index.SimSoundEvents;
-import dev.simulated_team.simulated.index.ponder.SimPonderPlugin;
+import dev.simulated_team.simulated.index.SimPonderPlugin;
 import com.zurrtum.create.client.catnip.lang.Lang;
 import com.zurrtum.create.client.catnip.lang.LangBuilder;
 import com.zurrtum.create.client.catnip.lang.LangNumberFormat;

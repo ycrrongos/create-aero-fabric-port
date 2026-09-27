@@ -9,7 +9,7 @@ import com.tterrag.registrate.builders.ItemBuilder;
 import com.tterrag.registrate.providers.RegistrateRecipeProvider;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import dev.simulated_team.simulated.Simulated;
-import dev.simulated_team.simulated.content.entities.diagram.DiagramItem;
+import dev.simulated_team.simulated.content.items.DiagramItem;
 import dev.simulated_team.simulated.content.entities.honey_glue.HoneyGlueItem;
 import dev.simulated_team.simulated.content.items.plunger_launcher.PlungerLauncherItem;
 import dev.simulated_team.simulated.content.items.rope.RopeItem.RopeItem;

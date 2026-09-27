@@ -138,7 +138,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
     }
 
     protected static BlockPos getCameraPos() {
-        final Entity renderViewEntity = Minecraft.getInstance().cameraEntity;
+        final Entity renderViewEntity = Minecraft.getInstance().getCameraEntity();
         if (renderViewEntity == null) {
             return BlockPos.ZERO;
         }
@@ -223,7 +223,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
             this.burnTime = SimItemService.INSTANCE.getBurnTime(stack);
             this.superHeated = this.getNextSuperHeated();
             if (this.burnTime > 0) {
-                if (stack.getCount() == 1 && stack.getItem().hasCraftingRemainingItem()) {
+                if (stack.getCount() == 1 && stack.getItem().craftingRemainingItem()!=null) {
                     slot.setStack(slot.getType().getCraftingRemainingItem().getDefaultInstance());
                 } else {
                     slot.shrink(1);
@@ -310,7 +310,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
                     }
                 }
                 this.burnTime += 20 * 5;
-                this.level.playSound(null, this.getBlockPos(), SoundEvents.GENERIC_EAT, SoundSource.BLOCKS, 1.0f, 1.0f);
+                this.level.playSound(null, this.getBlockPos(), SoundEvents.GENERIC_EAT.value(), SoundSource.BLOCKS, 1.0f, 1.0f);
             }
         }
     }
@@ -361,13 +361,13 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
         hatchPos = hatchPos.add(-facingDirI.getX() * 0.53, -0.1, -facingDirI.getZ() * 0.53);
 
 
-        if (Create.RANDOM.nextFloat() < 0.12) {
+        if (java.util.concurrent.ThreadLocalRandom.current().nextFloat() < 0.12) {
             Vec3 random = VecHelper.offsetRandomly(Vec3.ZERO, RandomSource.create(), 0.15f);
             random = random.subtract(facingDir.scale(random.dot(facingDir)));
             hatchPos = hatchPos.add(random);
 
             final ParticleOptions particle;
-            if (this.isSuperHeated() && Create.RANDOM.nextFloat() < 0.3) {
+            if (this.isSuperHeated() && java.util.concurrent.ThreadLocalRandom.current().nextFloat() < 0.3) {
                 particle = ParticleTypes.FLAME;
             } else {
                 particle = ParticleTypes.SMOKE;
@@ -378,7 +378,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
         }
 
         for (int i = -1; i < 2; i+=2) {
-            if (Create.RANDOM.nextFloat() < 0.25) {
+            if (java.util.concurrent.ThreadLocalRandom.current().nextFloat() < 0.25) {
                 final Vec3 random = VecHelper.offsetRandomly(Vec3.ZERO, RandomSource.create(), 1.0f / 16.0f);
                 final Vec3 pos = Vec3.upFromBottomCenterOf(this.worldPosition, 11.0 / 16.0)
                         .add(facingDir.scale(0.5))
@@ -392,7 +392,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
 
 
 
-        if (this.hatchOpenTime > 0 && Create.RANDOM.nextFloat() < 0.08) {
+        if (this.hatchOpenTime > 0 && java.util.concurrent.ThreadLocalRandom.current().nextFloat() < 0.08) {
             Vec3 random = VecHelper.offsetRandomly(Vec3.ZERO, RandomSource.create(), 0.1f);
             random = random.subtract(facingDir.scale(random.dot(facingDir)));
             hatchPos = hatchPos.add(random);
@@ -407,7 +407,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
         compound.putFloat("GeneratedSpeed", this.generatedSpeed);
         compound.putBoolean("EatingCake", this.eatingCake);
 
-        compound.put("Inventory", this.inventory.write(registries));
+        ValueIO.putCompound(compound, "Inventory", this.inventory.write(registries));
 
         compound.putInt("BurnTime", this.burnTime);
     }
@@ -429,7 +429,6 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
     }
 
 
-    @Override
     public boolean addToGoggleTooltip(final List<Component> tooltip, final boolean isPlayerSneaking) {
         super.addToGoggleTooltip(tooltip, isPlayerSneaking);
 
