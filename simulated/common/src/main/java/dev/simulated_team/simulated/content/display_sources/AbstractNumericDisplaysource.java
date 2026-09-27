@@ -31,7 +31,7 @@ public abstract class AbstractNumericDisplaysource extends NumericSingleLineDisp
     }
 
     @Override
-    protected boolean allowsLabeling(final DisplayLinkContext displayLinkContext) {
+    public boolean allowsLabeling(final DisplayLinkContext displayLinkContext) {
         return true;
     }
 }

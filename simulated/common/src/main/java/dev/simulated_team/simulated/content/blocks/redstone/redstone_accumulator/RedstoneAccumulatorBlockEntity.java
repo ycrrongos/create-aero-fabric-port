@@ -156,8 +156,8 @@ public class RedstoneAccumulatorBlockEntity extends SmartBlockEntity implements 
     }
 
     @Override
-    public boolean readFromClipboard(final HolderLookup.@NotNull Provider provider, final CompoundTag tag, final Player player, final Direction direction, final boolean simulate) {
-        if (!tag.contains("Inverted")) {
+    public boolean readFromClipboard(final ValueInput input, final Player player, final Direction direction, final boolean simulate) {
+        if (tag.read("Inverted", com.mojang.serialization.Codec.BOOL).isEmpty()) {
             return false;
         } else if (simulate) {
             return true;
@@ -172,7 +172,7 @@ public class RedstoneAccumulatorBlockEntity extends SmartBlockEntity implements 
     }
 
     @Override
-    public boolean writeToClipboard(final HolderLookup.@NotNull Provider provider, final CompoundTag tag, final Direction direction) {
+    public boolean writeToClipboard(final ValueOutput output, final Direction direction) {
         tag.putBoolean("Inverted", this.getBlockState().getOptionalValue(RedstoneAccumulatorBlock.INVERTED).orElse(false));
         return true;
     }

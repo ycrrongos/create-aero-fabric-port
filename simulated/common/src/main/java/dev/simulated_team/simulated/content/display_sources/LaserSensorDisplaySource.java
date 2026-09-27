@@ -41,7 +41,7 @@ public class LaserSensorDisplaySource extends NumericSingleLineDisplaySource {
     }
 
     @Override
-    protected boolean allowsLabeling(final DisplayLinkContext displayLinkContext) {
+    public boolean allowsLabeling(final DisplayLinkContext displayLinkContext) {
         return true;
     }
 }

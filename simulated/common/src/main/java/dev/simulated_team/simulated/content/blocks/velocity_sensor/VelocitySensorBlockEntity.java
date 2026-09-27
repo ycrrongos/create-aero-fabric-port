@@ -219,7 +219,7 @@ public class VelocitySensorBlockEntity extends SmartBlockEntity implements IHave
                     SimLang.translate("velocity_sensor.selection.away").component(),
                     SimLang.translate("velocity_sensor.selection.towards").component()
             );
-            return new ValueSettingsBoard(this.label, this.max, 10, rows,
+            return new ValueSettingsBoard(this.label, this.behaviour.getMax(), 10, rows,
                     new ValueSettingsFormatter(this::formatValue));
         }
 
@@ -240,7 +240,7 @@ public class VelocitySensorBlockEntity extends SmartBlockEntity implements IHave
 
         @Override
         public ValueSettings getValueSettings() {
-            return new ValueSettings(this.towards ? 1 : 0, this.value);
+            return new ValueSettings(this.towards ? 1 : 0, Math.abs(this.behaviour.getValue()));
         }
 
         public boolean isTowards() {

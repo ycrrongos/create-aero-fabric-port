@@ -629,7 +629,7 @@ public class SwivelBearingBlockEntity extends KineticBlockEntity implements Extr
         }
 
         if (platePos != null) {
-            compound.put("SwivelPlate", ValueIO.writeBlockPos(NbtUtils, "Pos", platePos));
+            ValueIO.writeBlockPos(compound, "SwivelPlate", platePos);
         }
 
         if (this.sequencedAngleLimit >= 0)

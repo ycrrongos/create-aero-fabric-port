@@ -47,7 +47,7 @@ public class AltitudeSensorDisplaySource extends NumericSingleLineDisplaySource 
     }
 
     @Override
-    protected boolean allowsLabeling(final DisplayLinkContext context) {
+    public boolean allowsLabeling(final DisplayLinkContext context) {
         return true;
     }
 }

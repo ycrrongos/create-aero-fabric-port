@@ -58,7 +58,7 @@ public class SteeringWheelBlockEntity extends GeneratingKineticBlockEntity {
     public boolean held = false;
     private int inUse = 0;
 
-    public SimScrollValueBehaviour<?, ?> angleInput;
+    public SimScrollValueBehaviour angleInput;
 
     public float targetAngle = 0;
     public float targetAngleToUpdate = 0;
@@ -240,13 +240,13 @@ public class SteeringWheelBlockEntity extends GeneratingKineticBlockEntity {
             compound.putBoolean("Held", this.held);
         }
 
-        compound.put("Material", NbtUtils.writeBlockState(this.material));
+        ValueIO.putCompound(compound, "Material", NbtUtils.writeBlockState(this.material));
     }
 
     @Override
     public void writeSafe(final CompoundTag compound, final HolderLookup.Provider registries) {
         super.writeSafe(compound, registries);
-        compound.put("Material", NbtUtils.writeBlockState(this.material));
+        ValueIO.putCompound(compound, "Material", NbtUtils.writeBlockState(this.material));
     }
 
     @Override

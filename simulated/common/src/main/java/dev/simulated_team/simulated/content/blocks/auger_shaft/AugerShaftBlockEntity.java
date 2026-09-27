@@ -300,8 +300,8 @@ public class AugerShaftBlockEntity extends KineticBlockEntity implements ItemRec
         HolderLookup.Provider registries = this.level.registryAccess();
         super.write(compound, clientPacket);
 
-        compound.put("Inventory", this.inventory.write(registries));
-        compound.put("ActorInventory", this.actorInventory.write(registries));
+        ValueIO.putCompound(compound, "Inventory", this.inventory.write(registries));
+        ValueIO.putCompound(compound, "ActorInventory", this.actorInventory.write(registries));
 
         if (!clientPacket) {
             compound.putFloat("Progress", this.updateTracker.getValue());

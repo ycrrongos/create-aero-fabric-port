@@ -446,16 +446,16 @@ public class DockingConnectorBlockEntity extends SmartBlockEntity implements Sim
         tag.putFloat("Feet", this.feet.getValue());
 
         if (this.otherConnectorPosition != null) {
-            tag.put("OtherConnector", NbtUtils.writeBlockPos(this.otherConnectorPosition));
+            ValueIO.writeBlockPos(tag, "OtherConnector", this.otherConnectorPosition);
         }
 
         if (this.otherConnectorSubLevelId != null) {
             ValueIO.putUUID(tag, "OtherConnectorSubLevelId", this.otherConnectorSubLevelId);
         }
 
-        tag.put("Inventory", this.inventory.write(registries));
-        tag.put("Tank", this.tank.write());
-        tag.put("Battery", this.battery.write());
+        ValueIO.putCompound(tag, "Inventory", this.inventory.write(registries));
+        ValueIO.putCompound(tag, "Tank", this.tank.write());
+        ValueIO.putCompound(tag, "Battery", this.battery.write());
         super.write(tag, clientPacket);
     }
 
@@ -471,13 +471,13 @@ public class DockingConnectorBlockEntity extends SmartBlockEntity implements Sim
         this.extension.setValue(this.extension.getValue());
         this.feet.setValue(this.feet.getValue());
 
-        if (tag.contains("OtherConnector")) {
-            this.otherConnectorPosition = java.util.Optional.of(ValueIO.readBlockPos(tag, "OtherConnector")).orElse(null);
+        if (tag.read("OtherConnector", BlockPos.CODEC).isPresent()) {
+            this.otherConnectorPosition = ValueIO.readBlockPos(tag, "OtherConnector");
         } else {
             this.otherConnectorPosition = null;
         }
 
-        if (tag.contains("OtherConnectorSubLevelId")) {
+        if (ValueIO.hasUUID(tag, "OtherConnectorSubLevelId")) {
             this.otherConnectorSubLevelId = ValueIO.getUUID(tag, "OtherConnectorSubLevelId");
         }
 

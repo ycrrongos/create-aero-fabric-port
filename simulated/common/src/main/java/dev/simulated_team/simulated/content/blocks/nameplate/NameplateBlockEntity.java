@@ -375,7 +375,7 @@ public class NameplateBlockEntity extends SmartBlockEntity implements ClipboardC
     }
 
     @Override
-    public boolean writeToClipboard(final HolderLookup.@NotNull Provider var1, final CompoundTag tag, final Direction var3) {
+    public boolean writeToClipboard(final ValueOutput output, final Direction var3) {
         final NameplateBlockEntity controller = this.findController();
 
         tag.putString("StoredName", controller.getName());
@@ -385,13 +385,13 @@ public class NameplateBlockEntity extends SmartBlockEntity implements ClipboardC
     }
 
     @Override
-    public boolean readFromClipboard(final HolderLookup.@NotNull Provider var1, final CompoundTag tag, final Player player, final Direction var4, final boolean simulate) {
+    public boolean readFromClipboard(final ValueInput input, final Player player, final Direction var4, final boolean simulate) {
         final NameplateBlockEntity controller = this.findController();
         if (!controller.allowsEditing()) {
             return false;
         }
 
-        if (!tag.contains("StoredName")) {
+        if (tag.getString("StoredName").isEmpty()) {
             return false;
         }
 

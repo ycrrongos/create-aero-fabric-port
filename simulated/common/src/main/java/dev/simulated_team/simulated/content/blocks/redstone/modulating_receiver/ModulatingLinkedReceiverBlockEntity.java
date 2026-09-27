@@ -122,21 +122,21 @@ public class ModulatingLinkedReceiverBlockEntity extends AbstractLinkedReceiverB
     }
 
     @Override
-    public boolean writeToClipboard(final HolderLookup.@NotNull Provider provider, final CompoundTag tag, final Direction direction) {
-        tag.putInt("minRange", this.minRange);
-        tag.putInt("maxRange", this.maxRange);
+    public boolean writeToClipboard(final ValueOutput output, final Direction direction) {
+        compound.putInt("minRange", this.minRange);
+        compound.putInt("maxRange", this.maxRange);
         return true;
     }
 
     @Override
-    public boolean readFromClipboard(final HolderLookup.@NotNull Provider provider, final CompoundTag tag, final Player player, final Direction direction, final boolean simulate) {
-        if (!tag.contains("minRange"))
+    public boolean readFromClipboard(final ValueInput input, final Player player, final Direction direction, final boolean simulate) {
+        if (compound.getInt("minRange").isEmpty())
             return false;
         if (simulate)
             return true;
 
-        this.minRange = tag.getIntOr("minRange", 0);
-        this.maxRange = tag.getIntOr("maxRange", 0);
+        this.minRange = compound.getIntOr("minRange", 0);
+        this.maxRange = compound.getIntOr("maxRange", 0);
         this.sendData();
         return true;
     }

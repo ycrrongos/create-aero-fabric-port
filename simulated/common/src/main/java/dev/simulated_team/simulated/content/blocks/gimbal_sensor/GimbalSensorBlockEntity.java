@@ -1,4 +1,5 @@
 package dev.simulated_team.simulated.content.blocks.gimbal_sensor;
+import dev.simulated_team.simulated.util.ValueIO;
 import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
 import com.zurrtum.create.foundation.blockEntity.behaviour.ValueSettings;
 import net.minecraft.world.level.storage.ValueInput;
@@ -316,19 +317,17 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
             tag.putFloat("Vel2", (float) this.angleVelocities.y);
             tag.putFloat("Vel3", (float) this.angleVelocities.z);
         }
-
         tag.putDouble("x_angle", this.XAngle);
         tag.putDouble("zz_angle", this.ZAngle);
-
-        ;
+        ValueIO.putCompound(tag, "Powers", powers);
     }
 
     @Override
     protected void read(ValueInput tag, boolean clientPacket) {
         super.read(tag, clientPacket);
 
-        if (tag.contains("Powers")) {
-            final CompoundTag powers = (CompoundTag) tag.get("Powers");
+        if (tag.child("Powers").isPresent()) {
+            final CompoundTag powers = ValueIO.getCompoundOrEmpty(tag, "Powers");
             for (final Map.Entry<Direction, Integer> entry : this.redstoneMap.entrySet()) {
                 entry.setValue(powers.getIntOr(entry.getKey().getName(), 0));
             }
@@ -420,7 +419,7 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
         }
 
         @Override
-        public boolean writeToClipboard(HolderLookup.@NotNull Provider registries, CompoundTag tag, Direction side) {
+        public boolean writeToClipboard(final ValueOutput output, final Direction side) {
             if(!acceptsValueSettings())
                 return false;
             tag.putInt("ScrollValue1", this.primaryValue);
@@ -429,9 +428,9 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
         }
 
         @Override
-        public boolean readFromClipboard(HolderLookup.@NotNull Provider registries, CompoundTag tag, Player player, Direction side, boolean simulate) {
+        public boolean readFromClipboard(final ValueInput input, final Player player, final Direction side, final boolean simulate) {
             if(!acceptsValueSettings()) return false;
-            if(!tag.contains("ScrollValue1") || !tag.contains("ScrollValue2")) return true;
+            if(tag.getInt("ScrollValue1").isEmpty() || tag.getInt("ScrollValue2").isEmpty()) return true;
             if(simulate) return true;
             this.primaryValue = tag.getIntOr("ScrollValue1", 0);
             this.secondaryValue = tag.getIntOr("ScrollValue2", 0);

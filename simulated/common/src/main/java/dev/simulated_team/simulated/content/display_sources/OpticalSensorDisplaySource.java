@@ -53,7 +53,7 @@ public class OpticalSensorDisplaySource extends NumericSingleLineDisplaySource {
     }
 
     @Override
-    protected boolean allowsLabeling(final DisplayLinkContext context) {
+    public boolean allowsLabeling(final DisplayLinkContext context) {
         return true;
     }
 }

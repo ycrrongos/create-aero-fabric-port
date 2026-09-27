@@ -1,4 +1,5 @@
 package dev.simulated_team.simulated.content.blocks.redstone.redstone_inductor;
+import dev.simulated_team.simulated.util.scroll.SimBrassDiodeScrollValueBehaviour;
 import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -30,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 public class RedstoneInductorBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, ClipboardCloneable {
 
-    protected SimScrollValueBehaviour inputDelay;
+    protected SimBrassDiodeSimBrassDiodeScrollValueBehaviour inputDelay;
     int delayTicks;
     int outputSignal;
     LerpedFloat lerpedState;
@@ -151,8 +152,8 @@ public class RedstoneInductorBlockEntity extends SmartBlockEntity implements IHa
     }
 
     @Override
-    public boolean readFromClipboard(final HolderLookup.@NotNull Provider provider, final CompoundTag tag, final Player player, final Direction direction, final boolean simulate) {
-        if (!tag.contains("Inverted")) {
+    public boolean readFromClipboard(final ValueInput input, final Player player, final Direction direction, final boolean simulate) {
+        if (tag.read("Inverted", com.mojang.serialization.Codec.BOOL).isEmpty()) {
             return false;
         } else if (simulate) {
             return true;
@@ -167,7 +168,7 @@ public class RedstoneInductorBlockEntity extends SmartBlockEntity implements IHa
     }
 
     @Override
-    public boolean writeToClipboard(final HolderLookup.@NotNull Provider provider, final CompoundTag tag, final Direction direction) {
+    public boolean writeToClipboard(final ValueOutput output, final Direction direction) {
         tag.putBoolean("Inverted", this.getBlockState().getOptionalValue(RedstoneInductorBlock.INVERTED).orElse(false));
         return true;
     }

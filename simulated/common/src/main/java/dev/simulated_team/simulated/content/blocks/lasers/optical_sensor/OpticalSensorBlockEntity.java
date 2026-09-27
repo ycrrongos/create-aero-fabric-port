@@ -225,13 +225,13 @@ public class OpticalSensorBlockEntity extends AbstractLaserBlockEntity implement
     }
 
     @Override
-    public boolean writeToClipboard(final HolderLookup.@NotNull Provider registries, final CompoundTag tag, final Direction side) {
+    public boolean writeToClipboard(final ValueOutput output, final Direction side) {
         tag.putFloat("Opacity", this.getOpacity());
         return true;
     }
 
     @Override
-    public boolean readFromClipboard(final HolderLookup.@NotNull Provider registries, final CompoundTag tag, final Player player, final Direction side, final boolean simulate) {
+    public boolean readFromClipboard(final ValueInput input, final Player player, final Direction side, final boolean simulate) {
         if(simulate) {
             return true;
         }

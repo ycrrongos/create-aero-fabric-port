@@ -168,14 +168,14 @@ public class LaserPointerBlockEntity extends AbstractLaserBlockEntity implements
     }
 
     @Override
-    public boolean writeToClipboard(final HolderLookup.@NotNull Provider registries, final CompoundTag tag, final Direction side) {
+    public boolean writeToClipboard(final ValueOutput output, final Direction side) {
         tag.putInt("Color", this.laserColor);
         tag.putBoolean("Rainbow", this.isRainbow());
         return true;
     }
 
     @Override
-    public boolean readFromClipboard(final HolderLookup.@NotNull Provider registries, final CompoundTag tag, final Player player, final Direction side, final boolean simulate) {
+    public boolean readFromClipboard(final ValueInput input, final Player player, final Direction side, final boolean simulate) {
         if(simulate) {
             return true;
         }
