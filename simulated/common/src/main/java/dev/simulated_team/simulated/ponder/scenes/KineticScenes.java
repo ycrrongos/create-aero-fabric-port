@@ -101,7 +101,7 @@ public class KineticScenes {
 
         world.hideSection(select.position(shaftPos), Direction.DOWN);
         scene.idle(15);
-        final BlockState cogState = AllBlocks.COGWHEEL.getDefaultState();
+        final BlockState cogState = AllBlocks.COGWHEEL.defaultBlockState();
         world.setBlock(shaftPos, cogState.setValue(CogWheelBlock.AXIS, Direction.Axis.Z), false);
 
         world.showSection(select.position(shaftPos).add(select.fromTo(0, 1, 1, 1, 2, 2)), Direction.DOWN);

@@ -5,10 +5,48 @@ base {
     archivesName = 'simulated-fabric-1.21.11'
 }
 
+def registrateJar = file("${rootDir}/libs/create-fly-registrate-shim.jar")
+
+def helpersJar = file("${rootDir}/libs/create-fly-helpers-shim.jar")
+
+tasks.register('thinRegistrateShim', Jar) {
+    archiveFileName = 'registrate-thin.jar'
+    destinationDirectory = layout.buildDirectory.dir('shims')
+    from(zipTree(registrateJar)) {
+        exclude 'com/tterrag/registrate/providers/RegistrateBlockstateProvider.class'
+        exclude 'com/tterrag/registrate/providers/DataGenContext.class'
+        exclude 'com/tterrag/registrate/providers/RegistrateItemModelProvider.class'
+        exclude 'com/tterrag/registrate/providers/loot/RegistrateBlockLootTables.class'
+        exclude 'com/tterrag/registrate/builders/BlockBuilder.class'
+        exclude 'com/tterrag/registrate/builders/BlockEntityBuilder.class'
+        exclude 'com/tterrag/registrate/builders/BlockEntityBuilder$BlockEntityFactory.class'
+        exclude 'com/tterrag/registrate/builders/BlockEntityBuilder.class'
+        exclude 'com/tterrag/registrate/builders/BlockEntityBuilder$BlockEntityFactory.class'
+        // These stubs shadow the remapped Create Fly helpers.
+        exclude 'com/zurrtum/create/foundation/data/BuilderTransformers.class'
+        exclude 'com/zurrtum/create/foundation/data/CreateRegistrate.class'
+        exclude 'com/zurrtum/create/foundation/data/ModelGen.class'
+        exclude 'com/zurrtum/create/foundation/data/SharedProperties.class'
+        exclude 'com/zurrtum/create/foundation/data/SpecialBlockStateGen.class'
+        exclude 'com/zurrtum/create/foundation/data/TagGen.class'
+    }
+}
+
+// Helpers were compiled against intermediary Minecraft and have no mod metadata, so Loom skips them.
+// libs/create-fly-helpers-mod.jar is that jar plus fabric.mod.json. Loom checksums mod jars
+// during configuration, so the file has to exist before Gradle starts.
+tasks.register('modHelpersShim', Jar) {
+    archiveFileName = 'create-fly-helpers-mod.jar'
+    destinationDirectory = file("${rootDir}/libs")
+    from(zipTree(helpersJar))
+    from('shim/helpers-mod')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 sourceSets {
     main {
         java {
-            srcDirs = ['common/src/main/java', 'fabric/src/main/java']
+            srcDirs = ['common/src/main/java', 'fabric/src/main/java', 'shim/java']
         }
         resources {
             srcDirs = ['common/src/main/resources', 'fabric/src/main/resources']
@@ -23,8 +61,8 @@ dependencies {
     // Sable is already named. Create Fly ships intermediary and must be remapped.
     compileOnly project(path: ':sable', configuration: 'namedElements')
     modCompileOnly files("${rootDir}/libs/create-fly-1.21.11-6.0.9-5.jar")
-    compileOnly files("${rootDir}/libs/create-fly-helpers-shim.jar")
-    compileOnly files("${rootDir}/libs/create-fly-registrate-shim.jar")
+    modCompileOnly files("${rootDir}/libs/create-fly-helpers-mod.jar")
+    compileOnly files(tasks.named('thinRegistrateShim', Jar).flatMap { it.archiveFile })
 }
 
 loom {
@@ -48,4 +86,10 @@ processResources {
 
 tasks.named('compileJava', JavaCompile).configure {
     options.compilerArgs += ['-Xmaxerrs', '10000']
+    // Optional mods that are not on this classpath. Sources stay in tree for a later port.
+    exclude '**/compat/computercraft/**'
+    exclude '**/service/compat/**'
+    exclude '**/compat/jei/**'
+    exclude '**/compat/naturescompass/**'
+    exclude '**/compat/explorerscompass/**'
 }

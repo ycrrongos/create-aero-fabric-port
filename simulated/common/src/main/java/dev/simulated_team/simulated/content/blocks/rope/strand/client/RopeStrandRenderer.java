@@ -39,8 +39,8 @@ public class RopeStrandRenderer {
 
         final BlockPos ownerPos = be.getBlockPos();
 
-        final SuperByteBuffer middle = CachedBuffers.partialFacing(SimPartialModels.ROPE, AllBlocks.ROPE.getDefaultState(), Direction.NORTH);
-        final SuperByteBuffer knot = CachedBuffers.partialFacing(SimPartialModels.ROPE_KNOT, AllBlocks.ROPE.getDefaultState(), Direction.NORTH);
+        final SuperByteBuffer middle = CachedBuffers.partialFacing(SimPartialModels.ROPE, AllBlocks.ROPE.defaultBlockState(), Direction.NORTH);
+        final SuperByteBuffer knot = CachedBuffers.partialFacing(SimPartialModels.ROPE_KNOT, AllBlocks.ROPE.defaultBlockState(), Direction.NORTH);
         final VertexConsumer vb = buffer.getBuffer(RenderType.solid());
 
         final SubLevel subLevel = Sable.HELPER.getContaining(be);

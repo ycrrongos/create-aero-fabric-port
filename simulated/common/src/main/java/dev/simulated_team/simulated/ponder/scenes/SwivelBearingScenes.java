@@ -315,7 +315,7 @@ public class SwivelBearingScenes {
 
         scene.idle(87);
 
-//        world.setBlock(thatOneShaftThatIHate.above(), AllBlocks.ANDESITE_SCAFFOLD.getDefaultState(), false);
+//        world.setBlock(thatOneShaftThatIHate.above(), AllBlocks.ANDESITE_SCAFFOLD.defaultBlockState(), false);
 //        world.showSectionAndMerge(select.position(thatOneShaftThatIHate.above()), Direction.UP, swivelLink);
 
         scene.idle(13);
@@ -331,7 +331,7 @@ public class SwivelBearingScenes {
         scene.idle(5);
 
         world.moveSection(world.showIndependentSection(cogShaft, Direction.NORTH), vector.of(0, -1, 0), 0);
-        world.setBlock(thatOneShaftThatIHate, AllBlocks.ANDESITE_SCAFFOLD.getDefaultState(), false);
+        world.setBlock(thatOneShaftThatIHate, AllBlocks.ANDESITE_SCAFFOLD.defaultBlockState(), false);
         world.showIndependentSection(select.position(thatOneShaftThatIHate), Direction.SOUTH);
 
         scene.idle(10);

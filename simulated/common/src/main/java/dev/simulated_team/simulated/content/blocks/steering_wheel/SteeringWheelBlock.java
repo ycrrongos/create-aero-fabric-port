@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.content.blocks.steering_wheel;
 
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ScheduledTickAccess;
 import com.mojang.serialization.MapCodec;
 import com.zurrtum.create.content.kinetics.base.IRotate;
 import com.zurrtum.create.foundation.block.IBE;
@@ -162,7 +164,7 @@ public class SteeringWheelBlock extends HorizontalDirectionalBlock
     @Override
     protected InteractionResult useItemOn(final ItemStack stack, final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hitResult) {
         if (player.isShiftKeyDown()) {
-            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         return this.onBlockEntityUseItemOn(level, pos, be -> be.applyMaterialIfValid(stack));
     }
@@ -186,8 +188,7 @@ public class SteeringWheelBlock extends HorizontalDirectionalBlock
     }
 
     @Override
-    public BlockState updateShape(final BlockState pState, final Direction pDirection, final BlockState pNeighborState,
-                                  final LevelAccessor pLevel, final BlockPos pCurrentPos, final BlockPos pNeighborPos) {
+    public BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess tickAccess, BlockPos pCurrentPos, Direction pDirection, BlockPos pNeighborPos, BlockState pNeighborState, RandomSource random) {
         this.updateWater(pLevel, pState, pCurrentPos);
         return pState;
     }

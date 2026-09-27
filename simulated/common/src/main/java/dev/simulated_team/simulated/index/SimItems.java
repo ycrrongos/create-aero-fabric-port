@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.index;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import com.zurrtum.create.content.processing.sequenced.SequencedAssemblyItem;
 import com.zurrtum.create.foundation.data.AssetLookup;
 import com.zurrtum.create.foundation.data.CreateRegistrate;
@@ -24,24 +25,23 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
-import net.neoforged.neoforge.common.Tags;
 public class SimItems {
     public static final SimulatedRegistrate REGISTRATE = Simulated.getRegistrate();
 
     public static final ItemEntry<DiagramItem> CONTRAPTION_DIAGRAM =
             REGISTRATE.item("contraption_diagram", DiagramItem::new)
-                    .recipe((c, p) -> ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, c.get(), 1)
+                    .recipe(SimRecipes.items((c, p) -> ShapelessRecipeBuilder.shapeless(BuiltInRegistries.ITEM, RecipeCategory.MISC, c.get(), 1)
                             .requires(Items.PAPER)
                             .requires(SimBlocks.PHYSICS_ASSEMBLER)
                             .unlockedBy("has_ingredient", RegistrateRecipeProvider.has(SimBlocks.PHYSICS_ASSEMBLER))
-                            .save(p))
+                            .save(p)))
                     .register();
 
     public static final ItemEntry<SpringItem> SPRING =
             REGISTRATE.item("spring", SpringItem::new)
                     .properties(p -> p.component(SimDataComponents.BOUNCINESS, 1f))
-                    .recipe((ctx, prov) ->
-                            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ctx.get(), 2)
+                    .recipe(SimRecipes.items((ctx, prov) ->
+                            ShapedRecipeBuilder.shaped(BuiltInRegistries.ITEM, RecipeCategory.MISC, ctx.get(), 2)
                                     .pattern("S")
                                     .pattern("N")
                                     .pattern("S")
@@ -49,19 +49,19 @@ public class SimItems {
                                     .define('N', CommonMetal.IRON.nuggets)
                                     .unlockedBy("has_ingredient", RegistrateRecipeProvider.has(CommonMetal.IRON.plates))
                                     .save(prov)
-                    )
+                    ))
                     .register();
 
     public static ItemEntry<RopeItem> ROPE_COUPLING = REGISTRATE
             .item("rope_coupling", RopeItem::new)
-            .recipe((ctx, prov) -> ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ctx.get(), 1)
+            .recipe(SimRecipes.items((ctx, prov) -> ShapedRecipeBuilder.shaped(BuiltInRegistries.ITEM, RecipeCategory.MISC, ctx.get(), 1)
                     .pattern(" S ")
                     .pattern("NSN")
                     .pattern(" S ")
-                    .define('S', Tags.Items.STRINGS)
-                    .define('N', Tags.Items.NUGGETS_IRON)
-                    .unlockedBy("has_ingredient", RegistrateRecipeProvider.has(Tags.Items.STRINGS))
-                    .save(prov))
+                    .define('S', Items.STRING)
+                    .define('N', Items.IRON_NUGGET)
+                    .unlockedBy("has_ingredient", RegistrateRecipeProvider.has(Items.STRING))
+                    .save(prov)))
             .register();
 
     public static ItemEntry<Item> GYRO_MECHANISM = ingredient("gyroscopic_mechanism");
@@ -97,7 +97,7 @@ public class SimItems {
             REGISTRATE.item("plunger_launcher", PlungerLauncherItem::new)
                     .properties(p -> p.stacksTo(1).durability(200))
                     .model(AssetLookup.itemModelWithPartials())
-                    .tag(Tags.Items.ENCHANTABLES, ItemTags.DURABILITY_ENCHANTABLE)
+                    .tag(ItemTags.DURABILITY_ENCHANTABLE)
                     .register();
 
     private static ItemEntry<Item> ingredient(final String name) {

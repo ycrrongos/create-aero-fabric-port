@@ -2,6 +2,9 @@ package dev.simulated_team.simulated.registrate;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.zurrtum.create.api.behaviour.display.DisplaySource;
+import com.zurrtum.create.api.behaviour.display.DisplayTarget;
+import com.zurrtum.create.api.registry.CreateRegistryKeys;
 import com.zurrtum.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.builders.Builder;
 import com.tterrag.registrate.util.entry.RegistryEntry;
@@ -40,6 +43,16 @@ public class SimulatedRegistrate extends CreateRegistrate {
         super(modId);
         this.currentSection = initialSection;
         MODS.add(modId);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends DisplaySource> RegistryEntry<DisplaySource, T> displaySource(final String name, final Supplier<T> supplier) {
+        return (RegistryEntry<DisplaySource, T>) (RegistryEntry<?, ?>) this.simple(name, CreateRegistryKeys.DISPLAY_SOURCE, () -> supplier.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends DisplayTarget> RegistryEntry<DisplayTarget, T> displayTarget(final String name, final Supplier<T> supplier) {
+        return (RegistryEntry<DisplayTarget, T>) (RegistryEntry<?, ?>) this.simple(name, CreateRegistryKeys.DISPLAY_TARGET, () -> supplier.get());
     }
 
     public SimulatedRegistrate inSection(final Identifier section) {

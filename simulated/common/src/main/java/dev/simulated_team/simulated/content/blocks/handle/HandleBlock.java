@@ -19,6 +19,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -30,7 +31,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.Nullable;
 import java.util.Locale;
 import static net.minecraft.core.Direction.Axis.Y;
@@ -77,7 +77,7 @@ public class HandleBlock extends AbstractDirectionalAxisBlock implements IBE<Han
     @Override
     protected InteractionResult useItemOn(final ItemStack itemStack, final BlockState blockState, final Level level, final BlockPos blockPos, final Player player, final InteractionHand interactionHand, final BlockHitResult blockHitResult) {
         if (AllItems.WRENCH.isIn(itemStack))
-            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
 
         if (canInteractWithHandle(player)) {
             if (level.isClientSide() && player.isLocalPlayer()) {
@@ -86,7 +86,7 @@ public class HandleBlock extends AbstractDirectionalAxisBlock implements IBE<Han
             return InteractionResult.SUCCESS;
         }
 
-        return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override
@@ -160,7 +160,7 @@ public class HandleBlock extends AbstractDirectionalAxisBlock implements IBE<Han
 
 
     public enum Variant implements StringRepresentable {
-        IRON(Ingredient.of(Tags.Items.NUGGETS_IRON)),
+        IRON(Ingredient.of(Items.IRON_NUGGET)),
         COPPER(Ingredient.of(AllTags.commonItemTag("nuggets/copper"))),
         DYED(null);
 

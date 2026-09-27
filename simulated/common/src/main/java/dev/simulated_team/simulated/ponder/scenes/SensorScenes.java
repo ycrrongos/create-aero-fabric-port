@@ -303,7 +303,7 @@ public class SensorScenes {
 
         world.replaceBlocks(util.select().position(3, 1, 1), Blocks.OAK_TRAPDOOR.defaultBlockState(), false);
 
-        world.replaceBlocks(util.select().position(3, 1, 3), SimBlocks.OPTICAL_SENSOR.getDefaultState(), false);
+        world.replaceBlocks(util.select().position(3, 1, 3), SimBlocks.OPTICAL_SENSOR.get().defaultBlockState(), false);
 
         world.toggleRedstonePower(util.select().position(3, 1, 3));
 
@@ -758,7 +758,7 @@ public class SensorScenes {
         scene.addInstruction(CustomAnimateWorldSectionInstruction.rotate(platformSelection, new Vec3(-11, 0, 0), 30, SmoothMovementUtils.quadraticRiseInOut()));
         scene.idle(10);
 
-        world.replaceBlocks(redstoneLamps, AllBlocks.ANDESITE_SCAFFOLD.getDefaultState().setValue(ScaffoldingBlock.BOTTOM, true), false);
+        world.replaceBlocks(redstoneLamps, AllBlocks.ANDESITE_SCAFFOLD.defaultBlockState().setValue(ScaffoldingBlock.BOTTOM, true), false);
 
         redstoneLampSelection = world.showIndependentSection(redstoneLamps, Direction.DOWN);
         final ElementLink<WorldSectionElement> nixieTubesZSelection = world.showIndependentSection(nixieTubesZ, Direction.DOWN);

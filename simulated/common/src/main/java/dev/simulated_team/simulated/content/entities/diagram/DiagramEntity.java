@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.content.entities.diagram;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import com.zurrtum.create.api.schematic.requirement.SpecialEntityItemRequirement;
 import com.zurrtum.create.content.schematics.requirement.ItemRequirement;
 import com.zurrtum.create.foundation.networking.ISyncPersistentData;
@@ -46,15 +48,13 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DiodeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import javax.annotation.Nullable;
@@ -397,7 +397,7 @@ public class DiagramEntity extends HangingEntity implements ISyncPersistentData,
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void lerpTo(final double pX, final double pY, final double pZ, final float pYRot, final float pXRot, final int pSteps) {
         final BlockPos blockpos =
                 this.pos.offset(BlockPos.containing(pX - this.getX(), pY - this.getY(), pZ - this.getZ()));

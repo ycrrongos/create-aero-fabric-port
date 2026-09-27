@@ -176,10 +176,10 @@ public class HoneyGlueEntity extends Entity implements SpecialEntityItemRequirem
 
     @Override
     public void readAdditionalSaveData(final @NotNull CompoundTag compound) {
-        final Vec3 pos = VecHelper.readNBT(compound.getList("Pos", Tag.TAG_DOUBLE)); // we need to grab this from the NBT due to schematics
+        final Vec3 pos = VecHelper.readNBT(compound.getListOrEmpty("Pos")); // we need to grab this from the NBT due to schematics
 
-        final Vec3 from = VecHelper.readNBT(compound.getList("From", Tag.TAG_DOUBLE));
-        final Vec3 to = VecHelper.readNBT(compound.getList("To", Tag.TAG_DOUBLE));
+        final Vec3 from = VecHelper.readNBT(compound.getListOrEmpty("From"));
+        final Vec3 to = VecHelper.readNBT(compound.getListOrEmpty("To"));
         final AABB bb = new AABB(from, to).move(pos);
 
         final Level level = this.level();

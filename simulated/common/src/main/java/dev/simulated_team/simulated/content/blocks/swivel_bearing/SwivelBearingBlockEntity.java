@@ -421,7 +421,7 @@ public class SwivelBearingBlockEntity extends KineticBlockEntity implements Extr
 
         final ServerSubLevel assembledSubLevel;
         final BlockPos assembleOffset;
-        final BlockState link = SimBlocks.SWIVEL_BEARING_LINK_BLOCK.getDefaultState()
+        final BlockState link = SimBlocks.SWIVEL_BEARING_LINK_BLOCK.get().defaultBlockState()
                 .setValue(SwivelBearingPlateBlock.FACING, this.getBlockState().getValue(SwivelBearingBlock.FACING));
 
         if (result != null) {

@@ -85,7 +85,7 @@ public class LinkedTypewriterItem extends BlockItem {
         if (stack.has(DataComponents.BLOCK_ENTITY_DATA)) {
             final CompoundTag tag = stack.get(DataComponents.BLOCK_ENTITY_DATA).copyTag();
             if (tag.contains("Keys", CompoundTag.TAG_LIST)) {
-                final int keyCount = tag.getList("Keys", CompoundTag.TAG_COMPOUND).size();
+                final int keyCount = tag.getListOrEmpty("Keys").size();
                 tooltipComponents.add(Component.translatable("simulated.linked_typewriter.key_count", keyCount).withStyle(ChatFormatting.GOLD));
             }
         }

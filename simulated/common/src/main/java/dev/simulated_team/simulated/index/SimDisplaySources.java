@@ -19,7 +19,7 @@ public class SimDisplaySources {
     public static final RegistryEntry<DisplaySource, NavigationTableDisplaySource> NAV_TABLE_DISPLAY = simple("nav_table_display", NavigationTableDisplaySource::new);
 
     private static <T extends DisplaySource> RegistryEntry<DisplaySource, T> simple(final String name, final Supplier<T> supplier) {
-        return Simulated.getRegistrate().displaySource(name, supplier).register();
+        return Simulated.getRegistrate().displaySource(name, supplier);
     }
 
 }

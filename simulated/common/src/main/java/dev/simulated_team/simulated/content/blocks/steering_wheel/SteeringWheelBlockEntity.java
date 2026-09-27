@@ -377,7 +377,7 @@ public class SteeringWheelBlockEntity extends GeneratingKineticBlockEntity {
             this.level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, this.worldPosition, Block.getId(material));
             return InteractionResult.SUCCESS;
         }
-        return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     private static class SteeringWheelValueBoxTransform extends ValueBoxTransform.Sided {

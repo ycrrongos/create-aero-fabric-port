@@ -137,7 +137,7 @@ public class PhysicsAssemblerScenes {
 
         world.setBlock(assembler1, Blocks.AIR.defaultBlockState(), false);
 
-        scene.addInstruction(new OffsetBreakParticlesInstruction(AABB.unitCubeFromLowerCorner(new Vec3(2.5, 2, 1)), SimBlocks.PHYSICS_ASSEMBLER.getDefaultState()));
+        scene.addInstruction(new OffsetBreakParticlesInstruction(AABB.unitCubeFromLowerCorner(new Vec3(2.5, 2, 1)), SimBlocks.PHYSICS_ASSEMBLER.get().defaultBlockState()));
 
         scene.idle(20);
 

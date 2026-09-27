@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "id": "create_fly_helpers_shim",
+  "version": "1.0.0",
+  "name": "Create Fly Helpers Shim",
+  "environment": "*"
+}

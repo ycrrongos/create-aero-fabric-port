@@ -146,7 +146,7 @@ public class LaserPointerBlock extends DirectionalBlock implements IBE<LaserPoin
             return InteractionResult.SUCCESS;
         }
 
-        return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override

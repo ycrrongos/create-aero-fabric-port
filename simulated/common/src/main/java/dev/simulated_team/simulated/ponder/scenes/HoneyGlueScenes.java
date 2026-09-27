@@ -135,7 +135,7 @@ public class HoneyGlueScenes {
         world.setBlock(movedBlockElement, Blocks.SPRUCE_PLANKS.defaultBlockState(), false);
 
         world.modifyBlock(pistonBase, s -> s.setValue(MechanicalPistonBlock.STATE, MechanicalPistonBlock.PistonState.MOVING), false);
-        world.setBlock(new BlockPos(1, 2, 2), AllBlocks.PISTON_EXTENSION_POLE.getDefaultState().setValue(PistonExtensionPoleBlock.FACING, Direction.WEST), false);
+        world.setBlock(new BlockPos(1, 2, 2), AllBlocks.PISTON_EXTENSION_POLE.defaultBlockState().setValue(PistonExtensionPoleBlock.FACING, Direction.WEST), false);
 
         world.setKineticSpeed(kineticShafts, 32);
         world.setKineticSpeed(select.position(largeCog), -16);

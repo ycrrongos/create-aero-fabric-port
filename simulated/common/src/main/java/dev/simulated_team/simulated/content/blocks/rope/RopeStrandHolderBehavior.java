@@ -44,7 +44,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
@@ -385,7 +385,7 @@ public class RopeStrandHolderBehavior extends BlockEntityBehaviour {
 
                 if (level instanceof final ServerLevel serverLevel) {
                     serverLevel.sendParticles(
-                            new BlockParticleOption(ParticleTypes.BLOCK, AllBlocks.ROPE.getDefaultState()),
+                            new BlockParticleOption(ParticleTypes.BLOCK, AllBlocks.ROPE.defaultBlockState()),
                             position.x, position.y, position.z,
                             10, 0.1, 0.1, 0.1, 0.1
                     );

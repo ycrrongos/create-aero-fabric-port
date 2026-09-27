@@ -134,13 +134,13 @@ public class SimBlockEntityTypes {
             .blockEntity("handle", HandleBlockEntity::new)
             .validBlock(SimBlocks.IRON_HANDLE)
             .validBlock(SimBlocks.COPPER_HANDLE)
-            .validBlocks(SimBlocks.DYED_HANDLES.toArray())
+            .validBlocks(SimBlocks.DYED_HANDLES)
             .register();
 
     public static final BlockEntityEntry<PortableEngineBlockEntity> PORTABLE_ENGINE = REGISTRATE
             .blockEntity("portable_engine", PortableEngineBlockEntity::new)
             .onRegister(SimInventoryService.INSTANCE.registerInventory((be, dir) -> be.inventory))
-            .validBlocks(SimBlocks.PORTABLE_ENGINES.toArray())
+            .validBlocks(SimBlocks.PORTABLE_ENGINES)
             .renderer(() -> PortableEngineRenderer::new)
             .register();
 
@@ -213,7 +213,7 @@ public class SimBlockEntityTypes {
     //TODO visual once new nameplate is in
     public static final BlockEntityEntry<NameplateBlockEntity> NAMEPLATE = REGISTRATE
             .blockEntity("nameplate", NameplateBlockEntity::new)
-            .validBlocks(SimBlocks.NAMEPLATES.toArray())
+            .validBlocks(SimBlocks.NAMEPLATES)
             .renderer(() -> NameplateRenderer::new)
             .register();
 

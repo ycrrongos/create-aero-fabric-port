@@ -74,8 +74,8 @@ public class RopeStrandElement extends AnimatedSceneElementBase implements Anima
 
     @Override
     protected void renderLast(final PonderLevel world, final MultiBufferSource buffer, final GuiGraphics graphics, final float fade, final float pt) {
-        final SuperByteBuffer middle = CachedBuffers.partialFacing(SimPartialModels.ROPE, AllBlocks.ROPE.getDefaultState(), Direction.NORTH);
-        final SuperByteBuffer knot = CachedBuffers.partialFacing(SimPartialModels.ROPE_KNOT, AllBlocks.ROPE.getDefaultState(), Direction.NORTH);
+        final SuperByteBuffer middle = CachedBuffers.partialFacing(SimPartialModels.ROPE, AllBlocks.ROPE.defaultBlockState(), Direction.NORTH);
+        final SuperByteBuffer knot = CachedBuffers.partialFacing(SimPartialModels.ROPE_KNOT, AllBlocks.ROPE.defaultBlockState(), Direction.NORTH);
         final VertexConsumer vb = buffer.getBuffer(RenderType.solid());
         final PoseStack ps = graphics.pose();
 

@@ -65,7 +65,7 @@ public class SymmetricSailBlock extends RotatedPillarBlock implements IWrenchabl
     }
 
     public void applyDye(final BlockState state, final Level world, final BlockPos pos, final Vec3 hit, @Nullable final DyeColor color) {
-        BlockState newState = (SimBlocks.DYED_SYMMETRIC_SAILS.get(color)).getDefaultState();
+        BlockState newState = (SimBlocks.DYED_SYMMETRIC_SAILS.get(color)).get().defaultBlockState();
         newState = BlockHelper.copyProperties(state, newState);
 
         // Dye the block itself
@@ -139,7 +139,7 @@ public class SymmetricSailBlock extends RotatedPillarBlock implements IWrenchabl
             placementHelper.getOffset(player, level, blockState, blockPos, blockHitResult).placeInWorld(level, (BlockItem) heldItem.getItem(), player, interactionHand, blockHitResult);
             return InteractionResult.SUCCESS;
         }
-        return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     public DyeColor getColor() {

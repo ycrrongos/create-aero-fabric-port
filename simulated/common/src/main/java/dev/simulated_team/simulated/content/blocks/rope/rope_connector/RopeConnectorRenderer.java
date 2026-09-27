@@ -41,7 +41,7 @@ public class RopeConnectorRenderer extends SafeBlockEntityRenderer<RopeConnector
         if ((!holder.isAttached()) && (!be.isVirtual() || !be.getRopeHolder().renderAttached)) {
             return;
         }
-        final SuperByteBuffer knot = CachedBuffers.partialFacing(SimPartialModels.ROPE_CONNECTOR_KNOT, AllBlocks.ROPE.getDefaultState(), Direction.NORTH);
+        final SuperByteBuffer knot = CachedBuffers.partialFacing(SimPartialModels.ROPE_CONNECTOR_KNOT, AllBlocks.ROPE.defaultBlockState(), Direction.NORTH);
 
         final BlockPos blockPos = be.getBlockPos();
         final BlockState state = be.getBlockState();

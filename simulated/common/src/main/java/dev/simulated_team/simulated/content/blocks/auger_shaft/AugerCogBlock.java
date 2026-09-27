@@ -25,7 +25,7 @@ public class AugerCogBlock extends AugerShaftBlock implements ICogWheel {
         if (level.isClientSide())
             return InteractionResult.SUCCESS;
 
-        return this.transformAuger(state, SimBlocks.AUGER_SHAFT.getDefaultState(), context, level);
+        return this.transformAuger(state, SimBlocks.AUGER_SHAFT.get().defaultBlockState(), context, level);
     }
 
     @Override

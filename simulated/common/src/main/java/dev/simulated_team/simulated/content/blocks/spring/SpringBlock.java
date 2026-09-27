@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.content.blocks.spring;
 
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ScheduledTickAccess;
 import com.zurrtum.create.AllSoundEvents;
 import com.zurrtum.create.Create;
 import com.zurrtum.create.content.equipment.wrench.IWrenchable;
@@ -62,8 +64,8 @@ public class SpringBlock extends WrenchableDirectionalBlock implements IBE<Sprin
     }
 
     @Override
-    public BlockState updateShape(final BlockState pState, final Direction pFacing, final BlockState pFacingState, final LevelAccessor pLevel, final BlockPos pCurrentPos, final BlockPos pFacingPos) {
-        return pState.getValue(FACING).getOpposite() == pFacing && !pState.canSurvive(pLevel, pCurrentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+    public BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess tickAccess, BlockPos pCurrentPos, Direction pFacing, BlockPos pFacingPos, BlockState pFacingState, RandomSource random) {
+        return pState.getValue(FACING).getOpposite() == pFacing && !pState.canSurvive(pLevel, pCurrentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(pState, pLevel, tickAccess, pCurrentPos, pFacing, pFacingPos, pFacingState, random);
     }
 
     public static boolean canAttach(final LevelReader pReader, final BlockPos pPos, final Direction pDirection) {

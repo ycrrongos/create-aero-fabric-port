@@ -103,7 +103,7 @@ public class ThrottleLeverRenderer extends SafeBlockEntityRenderer<ThrottleLever
 
     private static void renderOutline(final ThrottleLeverBlockEntity be, final PoseStack ms, final MultiBufferSource bufferSource, final float angle) {
         final VertexConsumer consumer = bufferSource.getBuffer(RenderType.lines());
-        final VoxelShape leverShape = SimBlocks.THROTTLE_LEVER.get().getHandleShape(SimBlocks.THROTTLE_LEVER.getDefaultState());
+        final VoxelShape leverShape = SimBlocks.THROTTLE_LEVER.get().getHandleShape(SimBlocks.THROTTLE_LEVER.get().defaultBlockState());
 
         ms.pushPose();
         final PoseTransformStack stack = TransformStack.of(ms);

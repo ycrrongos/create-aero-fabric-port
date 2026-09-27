@@ -6,8 +6,8 @@ import dev.simulated_team.simulated.Simulated;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
+import com.tterrag.registrate.providers.modelgen.ModelFile;
+import com.tterrag.registrate.providers.modelgen.MultiPartBlockStateBuilder;
 public class DirectionalGearshiftGenerator {
     public static <P extends DirectionalGearshiftBlock> void generate(final DataGenContext<Block, P> context, final RegistrateBlockstateProvider provider) {
         final MultiPartBlockStateBuilder builder = provider.getMultipartBuilder(context.get());

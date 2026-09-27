@@ -7,7 +7,7 @@ import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import dev.simulated_team.simulated.Simulated;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
+import com.tterrag.registrate.providers.modelgen.ModelFile;
 public class SteeringWheelGenerator extends SpecialBlockStateGen {
     @Override
     protected int getXRotation(final BlockState state) {

@@ -1,4 +1,7 @@
 package dev.simulated_team.simulated.util;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.SubLevelHelper;

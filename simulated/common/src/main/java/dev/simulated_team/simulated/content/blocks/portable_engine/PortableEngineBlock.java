@@ -101,7 +101,7 @@ public class PortableEngineBlock extends HorizontalKineticBlock implements IBE<P
         final ContainerSlot slot = inventory.slot;
         final ItemStack currentItemStack = slot.getStack().copy();
         if (currentItemStack.isEmpty() && heldItem.isEmpty()) {
-            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
         final DyeColor color = SimItemService.getDyeColor(heldItem);
@@ -109,7 +109,7 @@ public class PortableEngineBlock extends HorizontalKineticBlock implements IBE<P
             if (!level.isClientSide())
                 level.playSound(null, blockPos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0f, 1.1f - level.random.nextFloat() * .2f);
 
-            final BlockState newState = BlockHelper.copyProperties(blockState, SimBlocks.PORTABLE_ENGINES.get(color).getDefaultState());
+            final BlockState newState = BlockHelper.copyProperties(blockState, SimBlocks.PORTABLE_ENGINES.get(color).get().defaultBlockState());
             level.setBlockAndUpdate(blockPos, newState);
 
             return InteractionResult.SUCCESS;

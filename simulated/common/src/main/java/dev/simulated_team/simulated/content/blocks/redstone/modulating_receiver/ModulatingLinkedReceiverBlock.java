@@ -143,6 +143,6 @@ public class ModulatingLinkedReceiverBlock extends WrenchableDirectionalBlock im
 	        return InteractionResult.SUCCESS;
         }
 
-		return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 }

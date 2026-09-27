@@ -56,11 +56,11 @@ public class RedstoneInductorBlock extends AbstractDiodeBlock implements IBE<Red
     public InteractionResult toggle(final Level pLevel, final BlockPos pPos, final BlockState pState, final Player player,
                                     final InteractionHand pHand) {
         if (!player.mayBuild())
-            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         if (player.isShiftKeyDown())
-            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         if (AllItems.WRENCH.isIn(player.getItemInHand(pHand)))
-            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
 
         if (pLevel.isClientSide()) {
             addParticles(pState, pLevel, pPos, 1f);

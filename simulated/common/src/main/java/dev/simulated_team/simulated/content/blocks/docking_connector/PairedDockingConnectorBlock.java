@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.content.blocks.docking_connector;
 
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ScheduledTickAccess;
 import com.mojang.serialization.MapCodec;
 import dev.simulated_team.simulated.index.SimBlocks;
 import net.minecraft.core.BlockPos;
@@ -55,14 +57,14 @@ public class PairedDockingConnectorBlock extends DirectionalBlock {
     }
 
     @Override
-    protected @NotNull BlockState updateShape(final BlockState state, final @NotNull Direction direction, final @NotNull BlockState neighborState, final @NotNull LevelAccessor level, final @NotNull BlockPos pos, final @NotNull BlockPos neighborPos) {
+    protected @NotNull BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
         final Direction facing = state.getValue(FACING);
         if (facing != direction) {
-            return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+            return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
         }
 
         if (neighborState.is(SimBlocks.DOCKING_CONNECTOR) && neighborState.getValue(BlockStateProperties.FACING) == facing.getOpposite()) {
-            return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+            return super.updateShape(state, level, tickAccess, pos, direction, neighborPos, neighborState, random);
         }
 
         return Blocks.AIR.defaultBlockState();

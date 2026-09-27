@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.content.blocks.nameplate;
 
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ScheduledTickAccess;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.zurrtum.create.content.equipment.wrench.IWrenchable;
@@ -160,7 +162,7 @@ public class NameplateBlock extends HorizontalDirectionalBlock implements IBE<Na
         }
 
         if (player.isShiftKeyDown()) {
-            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
         final ItemStack heldItem = player.getItemInHand(interactionHand);
@@ -191,7 +193,7 @@ public class NameplateBlock extends HorizontalDirectionalBlock implements IBE<Na
                     nbe.sendData();
                 }
             });
-            return success.booleanValue() ? InteractionResult.SUCCESS : InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return success.booleanValue() ? InteractionResult.SUCCESS : InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
         if (level.isClientSide()) {
@@ -226,9 +228,9 @@ public class NameplateBlock extends HorizontalDirectionalBlock implements IBE<Na
     }
 
     @Override
-    public BlockState updateShape(final BlockState pState, final Direction pDirection, final BlockState pNeighborState, final LevelAccessor pLevel, final BlockPos pPos, final BlockPos pNeighborPos) {
+    public BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess tickAccess, BlockPos pPos, Direction pDirection, BlockPos pNeighborPos, BlockState pNeighborState, RandomSource random) {
         final Position posState = this.getPositionState(pLevel, pPos, pState.getValue(FACING));
-        return super.updateShape(pState, pDirection, pNeighborState, pLevel, pPos, pNeighborPos).setValue(POSITION, posState);
+        return super.updateShape(pState, pLevel, tickAccess, pPos, pDirection, pNeighborPos, pNeighborState, random).setValue(POSITION, posState);
     }
 
     @Override

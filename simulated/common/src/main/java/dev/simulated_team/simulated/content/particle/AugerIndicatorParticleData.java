@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.content.particle;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,8 +15,6 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 /**
  * Stolen shamelessly from {@link com.zurrtum.create.content.kinetics.base.RotationIndicatorParticleData}
  */
@@ -80,7 +80,7 @@ public class AugerIndicatorParticleData implements ParticleOptions, ICustomParti
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public ParticleEngine.SpriteParticleRegistration<AugerIndicatorParticleData> getMetaFactory() {
         return AugerIndicatorParticle.Factory::new;
     }

@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import java.util.List;
 public class NameplateBlockTarget extends ConditionalDisplayTarget {
-    public static final RegistryEntry<DisplayTarget, NameplateBlockTarget> NAMEPLATE = Simulated.getRegistrate().displayTarget("nameplate", NameplateBlockTarget::new).register();
+    public static final RegistryEntry<DisplayTarget, NameplateBlockTarget> NAMEPLATE = Simulated.getRegistrate().displayTarget("nameplate", NameplateBlockTarget::new);
 
     @Override
     public boolean allowsWriting(final DisplayLinkContext context) {
