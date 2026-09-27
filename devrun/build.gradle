@@ -10,6 +10,7 @@ dependencies {
     implementation project(path: ':sable-companion', configuration: 'namedElements')
     implementation project(path: ':sable', configuration: 'namedElements')
     implementation project(path: ':simulated', configuration: 'namedElements')
+    implementation project(path: ':aeronautics', configuration: 'namedElements')
     implementation project(path: ':sable:sable_rapier', configuration: 'namedElements')
     implementation "org.apache.maven:maven-artifact:3.8.5"
 

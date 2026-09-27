@@ -1,0 +1,74 @@
+version = '0.1.0+mc1.21.11'
+group = 'dev.eriksonn.aeronautics'
+
+base {
+    archivesName = 'aeronautics-fabric-1.21.11'
+}
+
+def registrateJar = file("${rootDir}/libs/create-fly-registrate-shim.jar")
+def helpersJar = file("${rootDir}/libs/create-fly-helpers-shim.jar")
+
+tasks.register('thinRegistrateShim', Jar) {
+    archiveFileName = 'registrate-thin.jar'
+    destinationDirectory = layout.buildDirectory.dir('shims')
+    from(zipTree(registrateJar)) {
+        exclude 'com/tterrag/registrate/providers/RegistrateBlockstateProvider.class'
+        exclude 'com/tterrag/registrate/providers/DataGenContext.class'
+        exclude 'com/tterrag/registrate/providers/RegistrateItemModelProvider.class'
+        exclude 'com/tterrag/registrate/providers/loot/RegistrateBlockLootTables.class'
+        exclude 'com/tterrag/registrate/builders/BlockBuilder.class'
+        exclude 'com/tterrag/registrate/builders/BlockEntityBuilder.class'
+        exclude 'com/tterrag/registrate/builders/BlockEntityBuilder$BlockEntityFactory.class'
+        exclude 'com/zurrtum/create/foundation/data/BuilderTransformers.class'
+        exclude 'com/zurrtum/create/foundation/data/CreateRegistrate.class'
+        exclude 'com/zurrtum/create/foundation/data/ModelGen.class'
+        exclude 'com/zurrtum/create/foundation/data/SharedProperties.class'
+        exclude 'com/zurrtum/create/foundation/data/SpecialBlockStateGen.class'
+        exclude 'com/zurrtum/create/foundation/data/TagGen.class'
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['bootstrap/java', 'fabric/src/main/java', 'shim/java']
+        }
+        resources {
+            srcDirs = ['common/src/main/resources', 'fabric/src/main/resources']
+        }
+    }
+}
+
+dependencies {
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+    modApi("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${rootProject.forgeconfigapiport_version}")
+
+    compileOnly project(path: ':simulated', configuration: 'namedElements')
+    compileOnly project(path: ':sable', configuration: 'namedElements')
+    modCompileOnly files("${rootDir}/libs/create-fly-1.21.11-6.0.9-5.jar")
+    modCompileOnly files("${rootDir}/libs/create-fly-helpers-mod.jar")
+    compileOnly files(tasks.named('thinRegistrateShim', Jar).flatMap { it.archiveFile })
+}
+
+loom {
+    accessWidenerPath = file('common/src/main/resources/aeronautics.accesswidener')
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version,
+                'fabric_loader_version': rootProject.fabric_loader_version,
+                'minecraft_version': rootProject.minecraft_version,
+                'java_version': rootProject.java_version
+    }
+    filesMatching('*.mixins.json') {
+        expand 'mod_id': 'aeronautics'
+    }
+    exclude 'META-INF/accesstransformer.cfg'
+    exclude 'META-INF/neoforge.mods.toml'
+}
+
+tasks.named('compileJava', JavaCompile).configure {
+    options.compilerArgs += ['-Xmaxerrs', '10000']
+}
