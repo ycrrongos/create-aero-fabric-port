@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.steering_wheel;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zurrtum.create.client.AllPartialModels;
 import com.zurrtum.create.client.content.kinetics.base.KineticBlockEntityRenderer;
@@ -70,7 +71,7 @@ public class SteeringWheelRenderer extends KineticBlockEntityRenderer<SteeringWh
 
         model.light(light);
         model.color(Color.WHITE);
-        model.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        model.renderInto(ms.last(), buffer.getBuffer(Sheets.solidBlockSheet()));
     }
 
     private SuperByteBuffer getWheelModel(final SteeringWheelBlockEntity be) {

@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.physics_assembler;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.content.redstone.analogLever.AnalogLeverBlock;
@@ -23,7 +24,7 @@ public class PhysicsAssemblerRenderer extends SmartBlockEntityRenderer<PhysicsAs
     @Override
     protected void renderSafe(final PhysicsAssemblerBlockEntity be, final float partialTicks, final PoseStack ms, final MultiBufferSource buffer, final int light, final int overlay) {
         final BlockState blockState = be.getBlockState();
-        final VertexConsumer vb = buffer.getBuffer(RenderType.solid());
+        final VertexConsumer vb = buffer.getBuffer(Sheets.solidBlockSheet());
 
         // Render handle
         final SuperByteBuffer handle = CachedBuffers.partial(SimPartialModels.ASSEMBLER_LEVER, blockState);
@@ -32,7 +33,7 @@ public class PhysicsAssemblerRenderer extends SmartBlockEntityRenderer<PhysicsAs
                 .rotate(angle, Direction.EAST)
                 .translate(-1 / 2f, -7 / 16f, -1 / 2f);
         handle.light(light)
-                .renderInto(ms, vb);
+                .renderInto(ms.last(), vb);
     }
 
     public static float getRenderAngle(final PhysicsAssemblerBlockEntity be, final float partialTicks) {

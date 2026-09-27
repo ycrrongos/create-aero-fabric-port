@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.throttle_lever;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.content.redstone.analogLever.AnalogLeverBlock;
@@ -62,7 +63,7 @@ public class ThrottleLeverRenderer extends SafeBlockEntityRenderer<ThrottleLever
         }
 
         if (!VisualizationManager.supportsVisualization(be.getLevel())) {
-            final VertexConsumer vb = bufferSource.getBuffer(RenderType.cutoutMipped());
+            final VertexConsumer vb = bufferSource.getBuffer(Sheets.cutoutBlockSheet());
 
             final SuperByteBuffer handle = CachedBuffers.partial(SimPartialModels.THROTTLE_LEVER_HANDLE, leverState);
             final SuperByteBuffer button = CachedBuffers.partial(SimPartialModels.THROTTLE_LEVER_BUTTON, leverState);
@@ -80,18 +81,18 @@ public class ThrottleLeverRenderer extends SafeBlockEntityRenderer<ThrottleLever
             this.transformHandleExternal(handle, angle, face);
             handle
                     .light(light)
-                    .renderInto(ms, vb);
+                    .renderInto(ms.last(), vb);
 
             this.transformHandleExternal(button, angle, face)
                     .translate(0, 14 / 16f, 8 / 16f)
                     .rotateXDegrees((float) buttonAngle)
                     .translateBack(0, 14 / 16f, 8 / 16f)
                     .light(light)
-                    .renderInto(ms, vb);
+                    .renderInto(ms.last(), vb);
 
             diode.light(light)
                     .color(color)
-                    .renderInto(ms, vb);
+                    .renderInto(ms.last(), vb);
         }
 
         final Minecraft minecraft = Minecraft.getInstance();

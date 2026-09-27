@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.velocity_sensor;
+import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
+import com.zurrtum.create.foundation.blockEntity.behaviour.ValueSettings;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -65,7 +67,7 @@ public class VelocitySensorBlockEntity extends SmartBlockEntity implements IHave
     public void addBehaviours(final List<BlockEntityBehaviour<?>> list) {
         this.maxSpeed = new VelocitySensorScrollValueBehaviour(SimLang.translate("velocity_sensor.description").component(), this, new VelocitySensorValueBoxTransform());
         this.maxSpeed.between(1, 50);
-        this.maxSpeed.value = 10;
+        this.maxSpeed.setValue(10);
         this.maxSpeed.withFormatter((value) -> value + " m/s");
         list.add(this.maxSpeed);
     }
@@ -205,7 +207,7 @@ public class VelocitySensorBlockEntity extends SmartBlockEntity implements IHave
         }
     }
 
-    public static class VelocitySensorScrollValueBehaviour extends ScrollValueBehaviour {
+    public static class VelocitySensorScrollValueBehaviour extends SimScrollValueBehaviour {
         private boolean towards;
         public VelocitySensorScrollValueBehaviour(final Component label, final SmartBlockEntity be, final ValueBoxTransform slot) {
             super(label, be, slot);

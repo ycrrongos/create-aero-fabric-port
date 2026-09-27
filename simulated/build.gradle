@@ -92,4 +92,7 @@ tasks.named('compileJava', JavaCompile).configure {
     exclude '**/compat/jei/**'
     exclude '**/compat/naturescompass/**'
     exclude '**/compat/explorerscompass/**'
+    // Ponder scenes are client tutorials; re-enable after core Simulated compiles.
+    exclude '**/ponder/**'
+    exclude '**/SimPonderScenes.java'
 }

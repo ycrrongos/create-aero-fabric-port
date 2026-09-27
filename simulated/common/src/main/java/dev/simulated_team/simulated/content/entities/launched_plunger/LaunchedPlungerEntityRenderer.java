@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.entities.launched_plunger;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -242,13 +243,13 @@ public class LaunchedPlungerEntityRenderer extends EntityRenderer<LaunchedPlunge
         stack.scale(1.75f, 1.75f, 1.75f);
         stack.translate(0, 0, 2.5f / 16f);
 
-        final VertexConsumer vb = multiBufferSource.getBuffer(RenderType.solid());
+        final VertexConsumer vb = multiBufferSource.getBuffer(Sheets.solidBlockSheet());
         final SuperByteBuffer body = CachedBuffers.partial(SimPartialModels.LAUNCHED_PLUNGER_BODY, Blocks.AIR.defaultBlockState());
         final SuperByteBuffer spool = CachedBuffers.partial(SimPartialModels.LAUNCHED_PLUNGER_SPOOL, Blocks.AIR.defaultBlockState());
         final SuperByteBuffer joint = CachedBuffers.partial(SimPartialModels.LAUNCHED_PLUNGER_JOINT, Blocks.AIR.defaultBlockState());
 
         stack.rotateZDegrees(90f);
-        body.light(light).renderInto(poseStack, vb);
+        body.light(light).renderInto(poseStack.last(), vb);
 
         FACE_NORMAL.set(selfNormal.x, selfNormal.y, selfNormal.z);
         SELF.set(pos.x, pos.y, pos.z);
@@ -266,10 +267,10 @@ public class LaunchedPlungerEntityRenderer extends EntityRenderer<LaunchedPlunge
 
         poseStack.pushPose();
         stack.rotateZDegrees((float) Math.toDegrees(angle));
-        joint.light(light).renderInto(poseStack, vb);
+        joint.light(light).renderInto(poseStack.last(), vb);
         stack.translate(0, 0, 3f / 16f);
         stack.rotateXDegrees((float) distanceIncludingSublevels * 90f * 2.6f);
-        spool.light(light).renderInto(poseStack, vb);
+        spool.light(light).renderInto(poseStack.last(), vb);
         poseStack.popPose();
 
         poseStack.popPose();

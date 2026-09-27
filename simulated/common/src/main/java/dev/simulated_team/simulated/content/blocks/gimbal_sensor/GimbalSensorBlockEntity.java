@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.gimbal_sensor;
+import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
+import com.zurrtum.create.foundation.blockEntity.behaviour.ValueSettings;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -346,7 +348,7 @@ public class GimbalSensorBlockEntity extends SmartBlockEntity implements IHaveGo
         this.ZAngle = tag.getDoubleOr("z_angle", 0.0);
     }
 
-    public static class GimbalSensorScrollValueBehaviour extends ScrollValueBehaviour {
+    public static class GimbalSensorScrollValueBehaviour extends SimScrollValueBehaviour {
         protected Direction lastSide = Direction.NORTH;
         protected int primaryValue;
         protected int secondaryValue;

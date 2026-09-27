@@ -42,7 +42,7 @@ public class LaserPointerRenderer extends AbstractLaserRenderer<LaserPointerBloc
         }
         superBuffer.disableDiffuse();
         superBuffer.color((int) (colors.x * 255), (int) (colors.z * 255), (int) (colors.y * 255), 255);
-        superBuffer.renderInto(pose, buffer.getBuffer(SimRenderTypes.lens()));
+        superBuffer.renderInto(pose.last(), buffer.getBuffer(SimRenderTypes.lens()));
 
         // only draw non-black lasers
         if (!isDarkerThanDark) {

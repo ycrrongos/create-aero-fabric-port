@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.gimbal_sensor;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.filtering.FilteringRenderer;
@@ -29,7 +30,7 @@ public class GimbalSensorRenderer extends SafeBlockEntityRenderer<GimbalSensorBl
             return;
         }
 
-        final VertexConsumer vb = buffer.getBuffer(RenderType.cutout());
+        final VertexConsumer vb = buffer.getBuffer(Sheets.cutoutBlockSheet());
         final Quaternionf Q = be.getBaseQuaternion();
 
         // Render Redstone Indicators
@@ -46,7 +47,7 @@ public class GimbalSensorRenderer extends SafeBlockEntityRenderer<GimbalSensorBl
             // int color = (signalStrength > 0) ? 0xCD0000 : 0x630002; // Digital indicators (on/off only)
             indicator.light(light)
                     .color(color)
-                    .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+                    .renderInto(ms.last(), buffer.getBuffer(Sheets.cutoutBlockSheet()));
 
             ms.popPose();
         }
@@ -64,6 +65,6 @@ public class GimbalSensorRenderer extends SafeBlockEntityRenderer<GimbalSensorBl
         final SuperByteBuffer buf = CachedBuffers.partial(model, te.getBlockState());
         buf.rotateCentered(Q);
         buf.translate(0.5, 0.5, 0.5);
-        buf.light(light).renderInto(ms, vb);
+        buf.light(light).renderInto(ms.last(), vb);
     }
 }

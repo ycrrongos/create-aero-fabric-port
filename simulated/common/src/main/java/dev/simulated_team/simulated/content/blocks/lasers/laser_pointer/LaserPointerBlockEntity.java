@@ -51,7 +51,7 @@ public class LaserPointerBlockEntity extends AbstractLaserBlockEntity implements
         this.range = new ScrollValueBehaviour(
                 SimLang.translate("laser_pointer.max_length").component(), this, new RangeValueBoxTransform()
         ).between(1, rangeMax);
-        this.range.value = rangeMax;
+        this.range.setValue(rangeMax);
 
         this.sensorInteraction = new LaserSensorInteractorBehaviour(this, this::gatherStartAndEnd, this::getRaycastLength, this::getPower, this::matchesSensor);
         this.sensorInteraction.setShouldCast(this::shouldCast);
@@ -139,7 +139,7 @@ public class LaserPointerBlockEntity extends AbstractLaserBlockEntity implements
 
     @Override
     public float getRaycastLength() {
-        return this.range.value;
+        return this.range.getValue();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.redstone.linked_typewriter;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.client.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
@@ -60,7 +61,7 @@ public class LinkedTypewriterRenderer extends SmartBlockEntityRenderer<LinkedTyp
                               int light, final int overlay) {
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay);
 
-        final VertexConsumer vb = buffer.getBuffer(RenderType.cutout());
+        final VertexConsumer vb = buffer.getBuffer(Sheets.cutoutBlockSheet());
         final BlockState blockState = be.getBlockState();
         final Direction facing = blockState.getValue(BlockStateProperties.HORIZONTAL_FACING);
 
@@ -83,7 +84,7 @@ public class LinkedTypewriterRenderer extends SmartBlockEntityRenderer<LinkedTyp
         ps.rotateY(180);
         float carriageAnimation = (float) Math.pow(carriagePos, 3);
         ps.translate(carriageAnimation * 0.375 + -3 * s, 3 * s, s);
-        CachedBufferer.partial(CSimPartialModels.LINKED_TYPEWRITER_CARRIAGE, blockState).light(light).renderInto(ms, vb);
+        CachedBufferer.partial(CSimPartialModels.LINKED_TYPEWRITER_CARRIAGE, blockState).light(light).renderInto(ms.last(), vb);
         ms.popPose();
          */
 
@@ -131,9 +132,9 @@ public class LinkedTypewriterRenderer extends SmartBlockEntityRenderer<LinkedTyp
         ms.translate(0.0F, depression, 0.0F);
 
         if (!isSpacebar) {
-            CachedBuffers.partial(SimPartialModels.LINKED_TYPEWRITER_KEY, blockState).light(light).renderInto(ms, vb);
+            CachedBuffers.partial(SimPartialModels.LINKED_TYPEWRITER_KEY, blockState).light(light).renderInto(ms.last(), vb);
         } else {
-            CachedBuffers.partial(SimPartialModels.LINKED_TYPEWRITER_KEY_SPACEBAR, blockState).light(light).renderInto(ms, vb);
+            CachedBuffers.partial(SimPartialModels.LINKED_TYPEWRITER_KEY_SPACEBAR, blockState).light(light).renderInto(ms.last(), vb);
         }
 
         ms.popPose();

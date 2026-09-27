@@ -1,4 +1,5 @@
 package dev.simulated_team.simulated.content.blocks.swivel_bearing;
+import dev.simulated_team.simulated.util.scroll.SimScrollOptionBehaviour;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -140,8 +141,8 @@ public class SwivelBearingBlockEntity extends KineticBlockEntity implements Extr
     public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
         super.addBehaviours(behaviours);
 
-        this.lockedDefaultOption = new ScrollOptionBehaviour<>(LockingSetting.class, SCROLL_OPTION_TITLE, this, new SelectionModeValueBox(this::isValidForOptionPanel));
-        this.lockedDefaultOption.value = 1;
+        this.lockedDefaultOption = new SimScrollOptionBehaviour<>(LockingSetting.class, SCROLL_OPTION_TITLE, this, new SelectionModeValueBox(this::isValidForOptionPanel));
+        this.lockedDefaultOption.setValue(1);
         behaviours.add(this.lockedDefaultOption);
     }
 

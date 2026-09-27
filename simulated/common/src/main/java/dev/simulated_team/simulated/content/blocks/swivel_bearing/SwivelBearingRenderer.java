@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.swivel_bearing;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.content.kinetics.base.IRotate;
@@ -37,8 +38,8 @@ public class SwivelBearingRenderer extends KineticBlockEntityRenderer<SwivelBear
                 getAngleForBe(be.getExtraKinetics(), be.getBlockPos(), axis),
                 light);
 
-        final VertexConsumer vb = buffer.getBuffer(RenderType.solid());
-        cogwheel.renderInto(ms, vb);
+        final VertexConsumer vb = buffer.getBuffer(Sheets.solidBlockSheet());
+        cogwheel.renderInto(ms.last(), vb);
         if (!be.isAssembled()) {
             renderRotatingBuffer(be, CachedBuffers.partialFacing(SimPartialModels.SHAFT_SIXTEENTH, state, state.getValue(SwivelBearingBlock.FACING)), ms, vb, light);
         }

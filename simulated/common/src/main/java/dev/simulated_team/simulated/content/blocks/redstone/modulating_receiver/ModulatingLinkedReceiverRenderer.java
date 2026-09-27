@@ -1,6 +1,7 @@
 package dev.simulated_team.simulated.content.blocks.redstone.modulating_receiver;
 
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zurrtum.create.client.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
 import com.zurrtum.create.client.flywheel.api.visualization.VisualizationManager;
@@ -56,7 +57,7 @@ public class ModulatingLinkedReceiverRenderer extends SmartBlockEntityRenderer<M
             superBuffer.rotateCentered(AngleHelper.rad(-90 - AngleHelper.verticalAngle(facing)), Direction.EAST);
 
             superBuffer.light(light);
-            superBuffer.renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
+            superBuffer.renderInto(ms.last(), bufferSource.getBuffer(Sheets.solidBlockSheet()));
         }
     }
 }

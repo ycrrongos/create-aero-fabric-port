@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.lasers.optical_sensor;
+import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
+import com.zurrtum.create.foundation.blockEntity.behaviour.ValueSettings;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -89,7 +91,7 @@ public class OpticalSensorBlockEntity extends AbstractLaserBlockEntity implement
         behaviours.add(this.range = new RangeScrollValueBehaviour(
                 SimLang.translate("optical_sensor.max_length").component(), this, new RangeValueBoxTransform()
             ).between(1, maxRange));
-        this.range.value = maxRange;
+        this.range.setValue(maxRange);
         behaviours.add(this.laser = new LaserBehaviour(this, this::gatherStartAndEnd, this::getRaycastLength));
     }
 
@@ -294,7 +296,7 @@ public class OpticalSensorBlockEntity extends AbstractLaserBlockEntity implement
         }
     }
 
-    private static class RangeScrollValueBehaviour extends ScrollValueBehaviour {
+    private static class RangeScrollValueBehaviour extends SimScrollValueBehaviour {
         public RangeScrollValueBehaviour(final Component label, final SmartBlockEntity be, final ValueBoxTransform slot) {
             super(label, be, slot);
         }

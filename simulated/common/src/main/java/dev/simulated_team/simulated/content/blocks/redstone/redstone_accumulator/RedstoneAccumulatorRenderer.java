@@ -40,7 +40,7 @@ public class RedstoneAccumulatorRenderer extends SmartBlockEntityRenderer<Redsto
         render.light(light);
         render.translate(0.5, 0, 0.5);
         render.rotateYDegrees(AngleHelper.horizontalAngle(facing)).pushPose();
-        render.renderInto(ms, buffer.getBuffer(DIODE_RENDER_TYPE));
+        render.renderInto(ms.last(), buffer.getBuffer(DIODE_RENDER_TYPE));
     }
 
     private int getLitAmount(final RedstoneAccumulatorBlockEntity be, final float partialTicks) {

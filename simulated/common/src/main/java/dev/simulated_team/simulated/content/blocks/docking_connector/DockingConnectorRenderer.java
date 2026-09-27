@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.docking_connector;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
@@ -24,7 +25,7 @@ public class DockingConnectorRenderer extends SafeBlockEntityRenderer<DockingCon
 
     @Override
     protected void renderSafe(final DockingConnectorBlockEntity be, final float partialTicks, final PoseStack ms, final MultiBufferSource bufferSource, final int light, final int overlay) {
-        final VertexConsumer vb = bufferSource.getBuffer(RenderType.cutout());
+        final VertexConsumer vb = bufferSource.getBuffer(Sheets.cutoutBlockSheet());
         final Direction direction = be.getBlockState()
                 .getValue(BlockStateProperties.FACING);
         final BlockState blockState = be.getBlockState();
@@ -40,8 +41,8 @@ public class DockingConnectorRenderer extends SafeBlockEntityRenderer<DockingCon
         rotateToFaceCentered(ms, direction);
         piston1.translate(0, extension * 0.5, 0);
         piston2.translate(0, extension, 0);
-        piston1.light(light).renderInto(ms, vb);
-        piston2.light(light).renderInto(ms, vb);
+        piston1.light(light).renderInto(ms.last(), vb);
+        piston2.light(light).renderInto(ms.last(), vb);
 
         final Vector2f footAnchor = new Vector2f();
         final Vector2f sidePistonTopAnchor = new Vector2f();
@@ -76,9 +77,9 @@ public class DockingConnectorRenderer extends SafeBlockEntityRenderer<DockingCon
             sidePiston1.mulPose(rotationMatrix);
             sidePiston2.mulPose(rotationMatrix);
 
-            sidePiston1.light(light).renderInto(ms, vb);
-            sidePiston2.light(light).renderInto(ms, vb);
-            foot.light(light).renderInto(ms, vb);
+            sidePiston1.light(light).renderInto(ms.last(), vb);
+            sidePiston2.light(light).renderInto(ms.last(), vb);
+            foot.light(light).renderInto(ms.last(), vb);
             ms.popPose();
         }
 

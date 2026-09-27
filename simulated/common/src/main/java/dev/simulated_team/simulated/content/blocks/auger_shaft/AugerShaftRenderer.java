@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.auger_shaft;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -32,7 +33,7 @@ public class AugerShaftRenderer extends KineticBlockEntityRenderer<AugerShaftBlo
 
         if (be.getBlockState().getBlock() instanceof AugerCogBlock) {
             final Direction facing = Direction.get(Direction.AxisDirection.POSITIVE, state.getValue(AugerShaftBlock.AXIS));
-            final VertexConsumer solid = buffer.getBuffer(RenderType.solid());
+            final VertexConsumer solid = buffer.getBuffer(Sheets.solidBlockSheet());
 
             for (int i = 0; i < 2; i++) {
                 final SuperByteBuffer redstone = CachedBuffers.partialFacing(be.flowDirection == (i == 1 ? facing.getOpposite() : facing) && be.getSpeed() != 0 ? SimPartialModels.AUGER_REDSTONE_ON : SimPartialModels.AUGER_REDSTONE_OFF, state, facing);
@@ -44,7 +45,7 @@ public class AugerShaftRenderer extends KineticBlockEntityRenderer<AugerShaftBlo
                         .uncenter();
 
                 redstone.light(light)
-                        .renderInto(ms, solid);
+                        .renderInto(ms.last(), solid);
             }
         }
     }

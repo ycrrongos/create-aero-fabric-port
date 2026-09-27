@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.torsion_spring;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zurrtum.create.client.AllPartialModels;
 import com.zurrtum.create.content.contraptions.bearing.BearingBlock;
@@ -37,11 +38,11 @@ public class TorsionSpringRenderer extends KineticBlockEntityRenderer<TorsionSpr
             spring.rotateCentered(AngleHelper.rad(AngleHelper.horizontalAngle(facing.getOpposite())), Direction.UP);
         }
         spring.rotateCentered(AngleHelper.rad(-90 - AngleHelper.verticalAngle(facing)), Direction.EAST);
-        spring.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        spring.renderInto(ms.last(), buffer.getBuffer(Sheets.solidBlockSheet()));
 
         final SuperByteBuffer shaftOut = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, be.getBlockState(), facing);
         kineticRotationTransform(shaftOut, be, facing.getAxis(), getAngleForBe(be.getExtraKinetics(), be.getBlockPos(), facing.getAxis()), light);
-        shaftOut.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        shaftOut.renderInto(ms.last(), buffer.getBuffer(Sheets.solidBlockSheet()));
     }
 
     @Override

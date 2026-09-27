@@ -53,7 +53,7 @@ public class RedstoneAccumulatorBlockEntity extends SmartBlockEntity implements 
                 Component.translatable("block.simulated.redstone_accumulator.input_delay"),
                 this, new RedstoneAccumulatorValueBoxTransform());
         this.inputDelay.between(2, 60 * 20 * 60);
-        this.inputDelay.value = 10;
+        this.inputDelay.setValue(10);
         this.inputDelay.withFormatter(this::format);
         this.inputDelay.withCallback(this::inputDelayChanged);
         behaviours.add(this.inputDelay);
@@ -73,7 +73,7 @@ public class RedstoneAccumulatorBlockEntity extends SmartBlockEntity implements 
         if(!backSignal && !sideSignal) this.delayTicks = 0;
 
         int tempSignal = this.outputSignal;
-        if (this.delayTicks == this.inputDelay.value) {
+        if (this.delayTicks == this.inputDelay.getValue()) {
             if (backSignal) {
                 tempSignal++;
                 this.delayTicks = 0;
@@ -84,7 +84,7 @@ public class RedstoneAccumulatorBlockEntity extends SmartBlockEntity implements 
 
             if (tempSignal != this.outputSignal) this.setOutputSignal(tempSignal);
         } else {
-            this.delayTicks = Math.min(this.delayTicks + 1 , this.inputDelay.value);
+            this.delayTicks = Math.min(this.delayTicks + 1 , this.inputDelay.getValue());
             this.level.updateNeighborsAt(this.worldPosition, this.getBlockState().getBlock());
             this.level.updateNeighborsAt(this.worldPosition.relative(facing), this.getBlockState().getBlock());
         }

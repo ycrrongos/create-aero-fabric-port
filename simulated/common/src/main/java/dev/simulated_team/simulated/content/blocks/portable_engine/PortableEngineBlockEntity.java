@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.portable_engine;
+import dev.simulated_team.simulated.util.scroll.SimRotationDirectionScrollBehaviour;
+import dev.simulated_team.simulated.util.scroll.SimScrollOptionBehaviour;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -77,7 +79,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
      */
     protected float generatedSpeed;
 
-    protected ScrollOptionBehaviour<IControlContraption.MovementMode> movementDirection;
+    protected SimRotationDirectionScrollBehaviour movementDirection;
 
     protected float clientAngle;
     public float lastHatchOpenTime = 0;
@@ -96,9 +98,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
 
     @Override
     public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
-        this.movementDirection = new ScrollOptionBehaviour(WindmillBearingBlockEntity.RotationDirection.class,
-                Component.translatable("create.contraptions.windmill.rotation_direction"), this, new PortableEngineValueBoxTransform());
-        this.movementDirection.withCallback(t -> this.onDirectionChanged());
+        this.movementDirection = new SimRotationDirectionScrollBehaviour(this, Component.translatable("create.contraptions.windmill.rotation_direction"), new PortableEngineValueBoxTransform());
 
         behaviours.add(this.movementDirection);
         super.addBehaviours(behaviours);
@@ -244,9 +244,7 @@ public class PortableEngineBlockEntity extends GeneratingKineticBlockEntity impl
             if (Mth.sign(newSpeed) != Mth.sign(this.getSpeed())) {
                 // swap direction if the speed would not be going the same way
                 this.generatedSpeed = isLit ? generatedSpeed : 0;
-                final IControlContraption.MovementMode[] directions = IControlContraption.MovementMode.values();
-                final IControlContraption.MovementMode existingValue = directions[this.movementDirection.getValue()];
-                this.movementDirection.setValue((existingValue.ordinal() + 1) % directions.length);
+                this.movementDirection.setValue(this.movementDirection.getValue() == 0 ? 1 : 0);
                 this.updateGeneratedRotation();
             }
         }

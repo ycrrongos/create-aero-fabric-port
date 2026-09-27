@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.velocity_sensor;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
@@ -19,7 +20,7 @@ public class VelocitySensorRenderer extends SafeBlockEntityRenderer<VelocitySens
 
     @Override
     protected void renderSafe(final VelocitySensorBlockEntity be, final float partialTicks, final PoseStack ms, final MultiBufferSource buffer, final int light, final int overlay) {
-        final VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
+        final VertexConsumer vb = buffer.getBuffer(Sheets.cutoutBlockSheet());
 
         final BlockState state  = be.getBlockState();
         final SuperByteBuffer diode = CachedBuffers.partial(SimPartialModels.VELOCITY_SENSOR_DIODE, state);
@@ -39,14 +40,14 @@ public class VelocitySensorRenderer extends SafeBlockEntityRenderer<VelocitySens
         final int color = SimColors.redstone(signalStrength);
 
         this.transform(diode, state);
-        diode.light(light).color(front ? color : SimColors.REDSTONE_OFF).renderInto(ms, vb);
+        diode.light(light).color(front ? color : SimColors.REDSTONE_OFF).renderInto(ms.last(), vb);
 
         this.transform(diode, state);
         diode.rotateCenteredDegrees(180, Direction.Axis.Y);
-        diode.light(light).color(front ? SimColors.REDSTONE_OFF : color).renderInto(ms, vb);
+        diode.light(light).color(front ? SimColors.REDSTONE_OFF : color).renderInto(ms.last(), vb);
 
         this.transform(fan.rotateCentered(be.getFanAngle(partialTicks), AbstractDirectionalAxisBlock.getDirectionOfAxis(state)), state);
-        fan.light(light).renderInto(ms, vb);
+        fan.light(light).renderInto(ms.last(), vb);
     }
 
     private void transform(final SuperByteBuffer diode, final BlockState state) {

@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.nav_table;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.zurrtum.create.client.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
@@ -59,7 +60,7 @@ public class NavTableRenderer extends SmartBlockEntityRenderer<NavTableBlockEnti
                 final int color = SimColors.redstone(signalStrength); // Analog indicators (mixes between colors smoothly)
                 indicator.light(light)
                         .color(color)
-                        .renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+                        .renderInto(ms.last(), buffer.getBuffer(Sheets.cutoutBlockSheet()));
 
                 ms.popPose();
             }
@@ -71,7 +72,7 @@ public class NavTableRenderer extends SmartBlockEntityRenderer<NavTableBlockEnti
             final SuperByteBuffer pointer = CachedBuffers.partial(SimPartialModels.NAV_TABLE_POINTER, navState);
 
             pointer.rotateY(arrowAngle);
-            pointer.light(light).renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+            pointer.light(light).renderInto(ms.last(), buffer.getBuffer(Sheets.cutoutBlockSheet()));
             ms.popPose();
         }
 

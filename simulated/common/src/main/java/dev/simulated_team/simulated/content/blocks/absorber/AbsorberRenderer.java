@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.absorber;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.client.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
@@ -24,7 +25,7 @@ public class AbsorberRenderer extends SmartBlockEntityRenderer<AbsorberBlockEnti
     protected void renderSafe(final AbsorberBlockEntity be, final float partialTicks, final PoseStack ms, final MultiBufferSource buffer, final int light, final int overlay) {
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay);
         final Level level = SableDistUtil.getClientLevel();
-        final VertexConsumer vb = buffer.getBuffer(RenderType.cutout());
+        final VertexConsumer vb = buffer.getBuffer(Sheets.cutoutBlockSheet());
 
         final BlockState blockState = be.getBlockState();
 
@@ -61,7 +62,7 @@ public class AbsorberRenderer extends SmartBlockEntityRenderer<AbsorberBlockEnti
 
         sponge.translate(0,0.25,0);
         sponge.scale(1,1-pos*movementDistance/9,1);
-        sponge.light(light).renderInto(ms,vb);
+        sponge.light(light).renderInto(ms.last(), vb);
         final Matrix4f rotationMatrix = new Matrix4f();
         this.apply(CachedBuffers.partial(SimPartialModels.ABSORBER_HAT,blockState),ms,light,vb,yRot,totalMovement,rotationMatrix);
         totalMovement/=2;
@@ -91,6 +92,6 @@ public class AbsorberRenderer extends SmartBlockEntityRenderer<AbsorberBlockEnti
         final Matrix4f r = new Matrix4f().rotate(yRot,0,1,0);
         buffer.mulPose(r.mul(rotationMatrix));
         buffer.translate(-0.5,0,-0.5);
-        buffer.light(light).renderInto(ms,vb);
+        buffer.light(light).renderInto(ms.last(), vb);
     }
 }

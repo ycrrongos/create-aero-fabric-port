@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.altitude_sensor;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.client.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
@@ -32,7 +33,7 @@ public class AltitudeSensorRenderer extends SmartBlockEntityRenderer<AltitudeSen
     public static void render(final BlockState blockState, final int tickCount, final float dialValue, final float visualHeight,
                               final PoseStack poseStack, final PoseStack contraptionPose, final Matrix4f worldLight, final MultiBufferSource bufferSource, final int light) {
         final Level level = SableDistUtil.getClientLevel();
-        final VertexConsumer vb = bufferSource.getBuffer(RenderType.cutout());
+        final VertexConsumer vb = bufferSource.getBuffer(Sheets.cutoutBlockSheet());
         final SuperByteBuffer indicator = CachedBuffers.partial(SimPartialModels.ALTITUDE_SENSOR_INDICATOR, blockState);
 
         PartialModel box = SimPartialModels.ALTITUDE_SENSOR_LINEAR_CASE;
@@ -87,9 +88,9 @@ public class AltitudeSensorRenderer extends SmartBlockEntityRenderer<AltitudeSen
         final int color = SimColors.redstone(dialValue);
         indicator.color(color);
 
-        face.renderInto(poseStack, vb);
-        dialBuffer.renderInto(poseStack, vb);
-        indicator.renderInto(poseStack, vb);
+        face.renderInto(poseStack.last(), vb);
+        dialBuffer.renderInto(poseStack.last(), vb);
+        indicator.renderInto(poseStack.last(), vb);
     }
 
     @Override

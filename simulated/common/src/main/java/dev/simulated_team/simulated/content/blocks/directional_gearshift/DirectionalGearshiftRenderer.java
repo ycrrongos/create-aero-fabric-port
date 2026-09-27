@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.directional_gearshift;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -50,7 +51,7 @@ public class DirectionalGearshiftRenderer extends SplitShaftRenderer {
         final Direction direction = blockState.getValue(DirectionalGearshiftBlock.FACING);
         final boolean vertical = axis.isVertical() || (direction.getAxis().isVertical() && !blockState.getValue(DirectionalGearshiftBlock.AXIS_ALONG_FIRST_COORDINATE));
 
-        final VertexConsumer consumer = bufferSource.getBuffer(RenderType.solid());
+        final VertexConsumer consumer = bufferSource.getBuffer(Sheets.solidBlockSheet());
         final SuperByteBuffer barrel = CachedBuffers.partial(SimPartialModels.DIRECTIONAL_GEARSHIFT_CENTER, blockState);
 
         final SuperByteBuffer barrelShaftA = CachedBuffers.partial(SimPartialModels.DIRECTIONAL_GEARSHIFT_BARREL_SHAFT, blockState);
@@ -61,7 +62,7 @@ public class DirectionalGearshiftRenderer extends SplitShaftRenderer {
         }
         barrelShaftA.rotateZCentered((float) Math.PI);
         barrelShaftA.rotateYCentered(shaftAngle);
-        barrelShaftA.light(light).renderInto(ms, consumer);
+        barrelShaftA.light(light).renderInto(ms.last(), consumer);
 
         final SuperByteBuffer barrelShaftB = CachedBuffers.partial(SimPartialModels.DIRECTIONAL_GEARSHIFT_BARREL_SHAFT, blockState);
         kineticRotationTransform(barrelShaftB, be, axis, angle, light);
@@ -70,7 +71,7 @@ public class DirectionalGearshiftRenderer extends SplitShaftRenderer {
             barrelShaftB.rotateZCenteredDegrees(90);
         }
         barrelShaftB.rotateYCentered(shaftAngle);
-        barrelShaftB.light(light).renderInto(ms, consumer);
+        barrelShaftB.light(light).renderInto(ms.last(), consumer);
 
         kineticRotationTransform(barrel, be, axis, angle, light);
         barrel.center().rotateToFace(direction).uncenter();
@@ -79,7 +80,7 @@ public class DirectionalGearshiftRenderer extends SplitShaftRenderer {
             barrel.rotateZCenteredDegrees(90);
         }
 
-        barrel.light(light).renderInto(ms, consumer);
+        barrel.light(light).renderInto(ms.last(), consumer);
 
         super.renderSafe(be, partialTicks, ms, bufferSource, light, overlay);
     }

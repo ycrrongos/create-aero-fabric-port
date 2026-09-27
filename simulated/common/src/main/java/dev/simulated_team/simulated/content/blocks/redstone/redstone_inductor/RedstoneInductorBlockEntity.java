@@ -51,7 +51,7 @@ public class RedstoneInductorBlockEntity extends SmartBlockEntity implements IHa
     public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
         this.inputDelay = new RedstoneInductorValueBehaviour(CreateLang.translateDirect("logistics.redstone_interval"), this, new RedstoneInductorValueBoxTransform());
         this.inputDelay.between(0, 60 * 20 * 60);
-        this.inputDelay.value = 10;
+        this.inputDelay.setValue(10);
         this.inputDelay.withFormatter(this::format);
         this.inputDelay.withCallback(this::inputDelayChanged);
         behaviours.add(this.inputDelay);

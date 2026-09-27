@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.redstone.redstone_inductor;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zurrtum.create.client.foundation.blockEntity.renderer.ColoredOverlayBlockEntityRenderer;
 import com.zurrtum.create.client.flywheel.api.visualization.VisualizationManager;
@@ -29,7 +30,7 @@ public class RedstoneInductorRenderer extends ColoredOverlayBlockEntityRenderer<
         final Direction facing = be.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
         render.translate(0.5, 0, 0.5);
         render.rotateYDegrees(AngleHelper.horizontalAngle(facing)).pushPose();
-        render.renderInto(ms, buffer.getBuffer(RenderType.cutout()));
+        render.renderInto(ms.last(), buffer.getBuffer(Sheets.cutoutBlockSheet()));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.ponder.elements.rope;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.AllBlocks;
@@ -76,7 +77,7 @@ public class RopeStrandElement extends AnimatedSceneElementBase implements Anima
     protected void renderLast(final PonderLevel world, final MultiBufferSource buffer, final GuiGraphics graphics, final float fade, final float pt) {
         final SuperByteBuffer middle = CachedBuffers.partialFacing(SimPartialModels.ROPE, AllBlocks.ROPE.defaultBlockState(), Direction.NORTH);
         final SuperByteBuffer knot = CachedBuffers.partialFacing(SimPartialModels.ROPE_KNOT, AllBlocks.ROPE.defaultBlockState(), Direction.NORTH);
-        final VertexConsumer vb = buffer.getBuffer(RenderType.solid());
+        final VertexConsumer vb = buffer.getBuffer(Sheets.solidBlockSheet());
         final PoseStack ps = graphics.pose();
 
         final PonderRopePose currentPose = new PonderRopePose();
@@ -124,20 +125,20 @@ public class RopeStrandElement extends AnimatedSceneElementBase implements Anima
             final int worldLight = LightTexture.FULL_BLOCK;
 
             knot.light(worldLight)
-                    .renderInto(ps, vb);
+                    .renderInto(ps.last(), vb);
 
             ps.pushPose();
             ps.translate(0.0, 0.5, 0.0);
             ps.scale(1.0f, (float) length, 1.0f);
 
             middle.light(worldLight)
-                    .renderInto(ps, vb);
+                    .renderInto(ps.last(), vb);
             ps.popPose();
 
             if(renderPoint1 == renderPoints.getLast()) {
                 ps.translate(0, length, 0);
                 knot.light(worldLight)
-                        .renderInto(ps, vb);
+                        .renderInto(ps.last(), vb);
             }
 
             ps.popPose();

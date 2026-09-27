@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.items.plunger_launcher;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zurrtum.create.client.content.equipment.zapper.ShootableGadgetRenderHandler;
@@ -95,11 +96,11 @@ public class PlungerLauncherItemRenderer extends CustomRenderedItemModelRenderer
             }
         }
 
-        body.light(light).renderInto(ms, buffer.getBuffer(RenderType.solid()));
-        joint.light(light).renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        body.light(light).renderInto(ms.last(), buffer.getBuffer(Sheets.solidBlockSheet()));
+        joint.light(light).renderInto(ms.last(), buffer.getBuffer(Sheets.solidBlockSheet()));
 
         ms.translate(0, 0, 3 / 16f);
-        spool.light(light).renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        spool.light(light).renderInto(ms.last(), buffer.getBuffer(Sheets.solidBlockSheet()));
         ms.popPose();
     }
 

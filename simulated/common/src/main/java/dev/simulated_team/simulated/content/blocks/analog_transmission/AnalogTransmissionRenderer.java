@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.analog_transmission;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.content.kinetics.base.IRotate;
@@ -37,9 +38,9 @@ public class AnalogTransmissionRenderer extends KineticBlockEntityRenderer<Analo
                 getAngleForBe(be.getExtraKinetics(), be.getBlockPos(), axis),
                 light);
 
-        cogwheel.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        cogwheel.renderInto(ms.last(), buffer.getBuffer(Sheets.solidBlockSheet()));
 
-        final VertexConsumer vb = buffer.getBuffer(RenderType.solid());
+        final VertexConsumer vb = buffer.getBuffer(Sheets.solidBlockSheet());
         KineticBlockEntityRenderer.renderRotatingKineticBlock(be, shaft(getRotationAxisOf(be)), ms, vb, light);
     }
 

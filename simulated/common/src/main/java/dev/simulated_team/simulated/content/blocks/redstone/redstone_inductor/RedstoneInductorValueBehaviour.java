@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.redstone.redstone_inductor;
 
+import com.zurrtum.create.foundation.blockEntity.behaviour.ValueSettings;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.scrollValue.BrassDiodeScrollValueBehaviour;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.ValueBoxTransform;
@@ -26,7 +27,7 @@ public class RedstoneInductorValueBehaviour extends BrassDiodeScrollValueBehavio
     public void onShortInteract(final Player player, final InteractionHand hand, final Direction side, final BlockHitResult hitResult) {
         final BlockState blockState = this.blockEntity.getBlockState();
         if (blockState.getBlock() instanceof final RedstoneInductorBlock bdb)
-            bdb.toggle(this.getWorld(), this.getPos(), blockState, player, hand);
+            bdb.toggle(this.getLevel(), this.getPos(), blockState, player, hand);
     }
 
     @Override

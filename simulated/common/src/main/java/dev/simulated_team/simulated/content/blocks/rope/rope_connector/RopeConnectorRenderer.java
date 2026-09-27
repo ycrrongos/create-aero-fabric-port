@@ -1,6 +1,7 @@
 package dev.simulated_team.simulated.content.blocks.rope.rope_connector;
 
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zurrtum.create.AllBlocks;
 import com.zurrtum.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
@@ -63,6 +64,6 @@ public class RopeConnectorRenderer extends SafeBlockEntityRenderer<RopeConnector
         knotBuffer.rotateCentered((float) ((zRotLast) / 180 * Math.PI), Direction.SOUTH);
 
         knotBuffer.rotateCentered((float) (Math.PI / 2.0), Direction.UP);
-        knotBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+        knotBuffer.renderInto(ms.last(), buffer.getBuffer(Sheets.solidBlockSheet()));
     }
 }

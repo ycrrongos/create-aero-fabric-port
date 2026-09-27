@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.torsion_spring;
+import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
+import com.zurrtum.create.foundation.blockEntity.behaviour.ValueSettings;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -395,7 +397,7 @@ public class TorsionSpringBlockEntity extends KineticBlockEntity implements Extr
         }
     }
 
-    public static class TorsionSpringScrollValueBehaviour extends ScrollValueBehaviour {
+    public static class TorsionSpringScrollValueBehaviour extends SimScrollValueBehaviour {
 
         public TorsionSpringScrollValueBehaviour(final SmartBlockEntity be) {
             super(SimLang.translate("torsion_spring.angle_limit").component(), be, new TorsionSpringValueBox());

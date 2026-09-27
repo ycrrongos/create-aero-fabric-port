@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.steering_wheel;
+import dev.simulated_team.simulated.util.scroll.SimScrollValueBehaviour;
+import com.zurrtum.create.foundation.blockEntity.behaviour.ValueSettings;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -54,7 +56,7 @@ public class SteeringWheelBlockEntity extends GeneratingKineticBlockEntity {
     public boolean held = false;
     private int inUse = 0;
 
-    public ScrollValueBehaviour angleInput;
+    public SimScrollValueBehaviour<?, ?> angleInput;
 
     public float targetAngle = 0;
     public float targetAngleToUpdate = 0;
@@ -83,7 +85,7 @@ public class SteeringWheelBlockEntity extends GeneratingKineticBlockEntity {
     public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
         behaviours.add(new HoldTipBehaviour(this, SteeringWheelBlockEntity::holdTipGetter));
         behaviours.add(this.angleInput = new SteeringWheelScrollValueBehaviour(this).between(1, 360));
-        this.angleInput.value = 180;
+        this.angleInput.setValue(180);
     }
 
     public static MutableComponent holdTipGetter(final Player player, final BlockPos pos, final BlockState state) {
@@ -249,7 +251,7 @@ public class SteeringWheelBlockEntity extends GeneratingKineticBlockEntity {
     protected void read(ValueInput compound, boolean clientPacket) {
         super.read(compound, clientPacket);
         // todo pr create to validate this for all scroll value behaviours
-        this.angleInput.value = Mth.clamp(this.angleInput.value, 1, 360);
+        this.angleInput.setValue(Mth.clamp(this.angleInput.getValue(), 1, 360));
 
         this.angle = Math.clamp(compound.getFloatOr("Angle", 0f), -360, 360);
         if (clientPacket) {
@@ -402,7 +404,7 @@ public class SteeringWheelBlockEntity extends GeneratingKineticBlockEntity {
         }
     }
 
-    private static class SteeringWheelScrollValueBehaviour extends ScrollValueBehaviour {
+    private static class SteeringWheelScrollValueBehaviour extends SimScrollValueBehaviour {
         public SteeringWheelScrollValueBehaviour(final SmartBlockEntity be) {
             super(SimLang.translate("torsion_spring.angle_limit").component(), be, new SteeringWheelValueBoxTransform());
             this.withFormatter(v -> Math.abs(v) + CreateLang.translateDirect("generic.unit.degrees")

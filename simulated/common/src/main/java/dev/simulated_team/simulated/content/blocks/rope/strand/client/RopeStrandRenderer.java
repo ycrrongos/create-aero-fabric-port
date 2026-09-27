@@ -1,5 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.rope.strand.client;
 
+import net.minecraft.client.renderer.Sheets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.AllBlocks;
@@ -41,7 +42,7 @@ public class RopeStrandRenderer {
 
         final SuperByteBuffer middle = CachedBuffers.partialFacing(SimPartialModels.ROPE, AllBlocks.ROPE.defaultBlockState(), Direction.NORTH);
         final SuperByteBuffer knot = CachedBuffers.partialFacing(SimPartialModels.ROPE_KNOT, AllBlocks.ROPE.defaultBlockState(), Direction.NORTH);
-        final VertexConsumer vb = buffer.getBuffer(RenderType.solid());
+        final VertexConsumer vb = buffer.getBuffer(Sheets.solidBlockSheet());
 
         final SubLevel subLevel = Sable.HELPER.getContaining(be);
         Pose3dc containingPose = null;
@@ -91,13 +92,13 @@ public class RopeStrandRenderer {
 
                 if (i > 1) {
                     knot.light(worldLight)
-                            .renderInto(ps, vb);
+                            .renderInto(ps.last(), vb);
                 }
                 ps.translate(0.0, 0.5, 0.0);
                 ps.scale(1.0f, (float) length, 1.0f);
 
                 middle.light(worldLight)
-                        .renderInto(ps, vb);
+                        .renderInto(ps.last(), vb);
                 ps.popPose();
             }
             ps.popPose();

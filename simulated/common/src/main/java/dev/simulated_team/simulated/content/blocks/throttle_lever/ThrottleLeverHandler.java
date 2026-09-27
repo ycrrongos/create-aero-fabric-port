@@ -29,7 +29,7 @@ public class ThrottleLeverHandler extends BlockHoldInteraction {
             this.lastSignal = be.state;
             this.inverted = be.getBlockState().getValue(ThrottleLeverBlock.INVERTED);
             this.signal = this.inverted ? 15 - be.state : be.state;
-            this.value = this.signal / 15f;
+            this.setValue(this.signal / 15f);
             this.animatedValue = this.lastAnimatedValue = this.value;
         }
         super.startHold(level, player, pos);
@@ -117,7 +117,7 @@ public class ThrottleLeverHandler extends BlockHoldInteraction {
     public boolean activeOnMouseMove(final double yaw, final double pitch) {
         this.value -= (float) (pitch / 180.0);
 
-        this.value = Math.min(1.0f, Math.max(0.0f, this.value));
+        this.setValue(Math.min(1.0f, Math.max(0.0f, this.value)));
 
         final int newSignal = Math.round(this.value * 15.0f);
         this.signal = Math.min(15, Math.max(0, newSignal));
