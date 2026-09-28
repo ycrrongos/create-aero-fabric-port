@@ -1,45 +1,26 @@
 package dev.eriksonn.aeronautics.fabric.service;
 
+import com.zurrtum.create.catnip.config.Builder;
 import dev.eriksonn.aeronautics.config.AeroConfig;
 import dev.eriksonn.aeronautics.config.client.AeroClient;
 import dev.eriksonn.aeronautics.config.server.AeroServer;
-import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.ModConfigSpec;
-import org.apache.commons.lang3.tuple.Pair;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 
+/** Create Fly JSON config via catnip Builder (not ForgeConfigAPIPort ModConfigSpec). */
 public class FabricAeroConfigService implements AeroConfig {
-	private static AeroServer server;
-	private static AeroClient client;
+	private static final AeroServer SERVER = Builder.create(AeroServer::new, "aeronautics", "server");
+	private static final AeroClient CLIENT = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT
+			? Builder.create(AeroClient::new, "aeronautics", "client")
+			: new AeroClient();
 
-	static {
-		server = registerServer();
-		client = registerClient();
-		// Create Fly stress wiring deferred — AeroStress is not CStress.
-		
+	@Override
+	public AeroServer getServerConfig() {
+		return SERVER;
 	}
 
-	private static AeroServer registerServer() {
-		final Pair<AeroServer, ModConfigSpec> pair = new ModConfigSpec.Builder().configure(builder -> new AeroServer());
-		final AeroServer config = pair.getLeft();
-		((AeroConfigHolder) (Object) config).aeronautics$setSpecification(pair.getRight());
-		ConfigRegistry.INSTANCE.register("aeronautics", ModConfig.Type.SERVER, pair.getRight(), "aeronautics-server.toml");
-		return config;
-	}
-
-	private static AeroClient registerClient() {
-		final Pair<AeroClient, ModConfigSpec> pair = new ModConfigSpec.Builder().configure(builder -> new AeroClient());
-		final AeroClient config = pair.getLeft();
-		((AeroConfigHolder) (Object) config).aeronautics$setSpecification(pair.getRight());
-		ConfigRegistry.INSTANCE.register("aeronautics", ModConfig.Type.CLIENT, pair.getRight(), "aeronautics-client.toml");
-		return config;
-	}
-
-	@Override public AeroServer getServerConfig() { return server; }
-	@Override public AeroClient getClientConfig() { return client; }
-
-	/** Bridges ConfigBase (no spec field) and ForgeConfigAPIPort registration. */
-	public interface AeroConfigHolder {
-		void aeronautics$setSpecification(ModConfigSpec specification);
+	@Override
+	public AeroClient getClientConfig() {
+		return CLIENT;
 	}
 }

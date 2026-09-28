@@ -107,13 +107,17 @@ tasks.named('compileJava', JavaCompile).configure {
     exclude '**/*Visual.java'
     exclude '**/index/client/**'
     exclude '**/events/AeronauticsClientEvents.java'
-    exclude '**/AeroAdvancements.java'
     exclude '**/data/AeroAdvancementTriggers.java'
     exclude '**/api/CustomSituationalMusic.java'
     exclude '**/aeronautics/index/AeroArmInteractionPoints.java'
     exclude '**/aeronautics/index/AeroPartialModels.java'
     exclude '**/aeronautics/index/AeroClickInteractions.java'
     exclude '**/LevititeShaderManager.java'
+    exclude '**/HotAirBurnerValueBehaviour.java'
+
+    exclude '**/balloon/effect/**'
+    exclude '**/hot_air/sound/**'
+    exclude '**/propeller/bearing/sound/**'
 }
 
 

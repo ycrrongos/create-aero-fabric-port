@@ -24,6 +24,11 @@ public class SimScrollOptionBehaviour<T extends Enum<T> & INamedIconOptions> ext
         this.behaviour.setValue(value);
     }
 
+    public SimScrollOptionBehaviour<T> withCallback(final java.util.function.Consumer<Integer> callback) {
+        this.behaviour.withCallback(callback);
+        return this;
+    }
+
     public T get() {
         final T[] constants = this.options.getEnumConstants();
         final int idx = Math.floorMod(this.getValue(), constants.length);

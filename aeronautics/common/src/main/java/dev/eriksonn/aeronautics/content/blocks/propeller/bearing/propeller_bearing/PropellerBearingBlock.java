@@ -2,12 +2,9 @@ package dev.eriksonn.aeronautics.content.blocks.propeller.bearing.propeller_bear
 
 import com.zurrtum.create.content.contraptions.bearing.BearingBlock;
 import com.zurrtum.create.foundation.block.IBE;
-import dev.simulated_team.simulated.api.CustomStressImpactTooltipProvider;
 import dev.eriksonn.aeronautics.data.AeroLang;
 import dev.eriksonn.aeronautics.index.AeroBlockEntityTypes;
 import dev.eriksonn.aeronautics.index.AeroBlockShapes;
-import com.zurrtum.create.client.catnip.lang.Lang;
-import com.zurrtum.create.client.catnip.lang.LangBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -21,23 +18,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class PropellerBearingBlock extends BearingBlock implements IBE<PropellerBearingBlockEntity>, CustomStressImpactTooltipProvider {
+public class PropellerBearingBlock extends BearingBlock implements IBE<PropellerBearingBlockEntity> {
     public PropellerBearingBlock(final Properties properties) {
         super(properties);
-    }
-
-    public LangBuilder getCustomImpactLang() {
-        return Lang.builder("aeronautics").translate("propeller.sails");
-    }
-
-    @Override
-    public int getBarLength() {
-        return 3;
-    }
-
-    @Override
-    public int getFilledBarLength() {
-        return 3;
     }
 
     @Override
