@@ -20,8 +20,11 @@ import static net.minecraft.tags.BlockTags.DAMPENS_VIBRATIONS;
 
 public class AeroTags {
 	public static void addGenerators() {
-		Aeronautics.getRegistrate().addDataGenerator(ProviderType.BLOCK_TAGS, BlockTags::genBlockTags);
-		Aeronautics.getRegistrate().addDataGenerator(ProviderType.ITEM_TAGS, ItemTags::genItemTags);
+		try {
+			Aeronautics.getRegistrate().addDataGenerator(ProviderType.BLOCK_TAGS, BlockTags::genBlockTags);
+			Aeronautics.getRegistrate().addDataGenerator(ProviderType.ITEM_TAGS, ItemTags::genItemTags);
+		} catch (Throwable ignored) {
+		}
 	}
 
 	public static class BlockTags {

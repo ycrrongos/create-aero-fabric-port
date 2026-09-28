@@ -2,7 +2,6 @@ package dev.eriksonn.aeronautics.index;
 
 import com.zurrtum.create.AllBlocks;
 import com.zurrtum.create.AllItems;
-import com.zurrtum.create.api.behaviour.display.DisplaySource;
 import com.zurrtum.create.content.decoration.encasing.EncasingRegistry;
 import com.zurrtum.create.foundation.block.DyedBlockList;
 import com.zurrtum.create.client.foundation.block.connected.SimpleCTBehaviour;
@@ -22,7 +21,6 @@ import dev.eriksonn.aeronautics.content.blocks.hot_air.envelope.EnvelopeBlock;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.envelope.EnvelopeEncasedShaftBlock;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner.HotAirBurnerBlock;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.steam_vent.SteamVentBlock;
-import dev.eriksonn.aeronautics.content.blocks.mounted_potato_cannon.MountedPotatoCannonBlock;
 import dev.eriksonn.aeronautics.content.blocks.propeller.bearing.gyroscopic_propeller_bearing.GyroscopicPropellerBearingBlock;
 import dev.eriksonn.aeronautics.content.blocks.propeller.bearing.propeller_bearing.PropellerBearingBlock;
 import dev.eriksonn.aeronautics.content.blocks.propeller.small.andesite.AndesitePropellerBlock;
@@ -208,7 +206,6 @@ public class AeroBlocks {
                                             prov.modLoc("block/" + ctx.getName() + "/block_" + blockState.getValue(HotAirBurnerBlock.VARIANT).getSerializedName()))
                             )
                     )
-                    .transform(DisplaySource.displaySource(AeroDisplaySources.GAS_DISPLAY))
                     .transform(pickaxeOnly())
                     .item()
                     .transform(customItemModel())
@@ -234,7 +231,6 @@ public class AeroBlocks {
                                     .getExistingFile(prov.modLoc("block/" + ctx.getName() + "/block_" + (blockState.getValue(SteamVentBlock.VARIANT).getSerializedName())))))
                     .item()
                     .transform(customItemModel())
-                    .transform(DisplaySource.displaySource(AeroDisplaySources.GAS_DISPLAY))
                     .tag(net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE)
                     .recipe((c, p) -> ShapedRecipeBuilder.shaped(RecipeCategory.MISC, c.get(), 1)
                             .pattern("G")
@@ -355,17 +351,6 @@ public class AeroBlocks {
                                 .unlockedBy("has_ingredient", RegistrateRecipeProvider.has(AllItems.PROPELLER))
                                 .save(p, Aeronautics.path(c.getName() + "_from_andesite"));
                     })
-                    .item()
-                    .transform(customItemModel())
-                    .register();
-
-    public static final BlockEntry<MountedPotatoCannonBlock> MOUNTED_POTATO_CANNON =
-            REGISTRATE.block("mounted_potato_cannon", MountedPotatoCannonBlock::new)
-                    .initialProperties(SharedProperties::stone)
-                    .blockstate(AeroBlockStateGen::directionalPoweredAxisBlockstate)
-                    .properties(BlockBehaviour.Properties::noOcclusion)
-                    .transform(AeroStress.setImpact(2.0))
-                    .transform(pickaxeOnly())
                     .item()
                     .transform(customItemModel())
                     .register();

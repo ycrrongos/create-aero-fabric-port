@@ -3,7 +3,7 @@ package dev.eriksonn.aeronautics.content.blocks.propeller.bearing.propeller_bear
 import com.zurrtum.create.AllBlocks;
 import com.zurrtum.create.AllSoundEvents;
 import com.zurrtum.create.AllTags;
-import com.zurrtum.create.api.equipment.goggles.IHaveGoggleInformation;
+import com.zurrtum.create.client.api.goggles.IHaveGoggleInformation;
 import com.zurrtum.create.api.stress.BlockStressValues;
 import com.zurrtum.create.content.contraptions.AssemblyException;
 import com.zurrtum.create.content.contraptions.ControlledContraptionEntity;
@@ -13,7 +13,7 @@ import com.zurrtum.create.content.contraptions.bearing.MechanicalBearingBlockEnt
 import com.zurrtum.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
 import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
-import com.zurrtum.create.foundation.gui.AllIcons;
+import com.zurrtum.create.client.foundation.gui.AllIcons;
 import com.zurrtum.create.foundation.utility.ServerSpeedProvider;
 import dev.eriksonn.aeronautics.Aeronautics;
 import dev.eriksonn.aeronautics.config.AeroConfig;
@@ -216,13 +216,13 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
     public void activeTick() {
         this.behavior.pushEntities();
 
-        if (this.level.isClientSide) {
+        if (this.level.isClientSide()) {
             this.behavior.spawnParticles();
         }
     }
 
     public void onDirectionChanged() {
-        if (!this.level.isClientSide && this.running) {
+        if (!this.level.isClientSide() && this.running) {
             this.updateGeneratedRotation();
         }
     }
@@ -279,7 +279,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
             speed = this.slowdownController.getSpeed(1);
         }
 
-        if (this.level.isClientSide) {
+        if (this.level.isClientSide()) {
             speed *= ServerSpeedProvider.get();
             speed += this.clientAngleDiff / 3f;
         }
@@ -305,7 +305,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
     }
 
     private void updateSlowdownSpeed() {
-        if (this.slowdownController.stepGoal() && !this.level.isClientSide) {
+        if (this.slowdownController.stepGoal() && !this.level.isClientSide()) {
             this.disassemble();
             return;
         }
@@ -319,7 +319,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
         super.attach(contraption);
         this.contraptionInitialize();
 
-        if (this.level.isClientSide) {
+        if (this.level.isClientSide()) {
             this.currentSoundInstance = AeroSoundDistUtil.tickPropellerSounds(this, this.currentSoundInstance);
         }
     }

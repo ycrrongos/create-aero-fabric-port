@@ -2,7 +2,7 @@ package dev.eriksonn.aeronautics.content.blocks.mounted_potato_cannon;
 
 import com.zurrtum.create.AllEntityTypes;
 import com.zurrtum.create.AllSoundEvents;
-import com.zurrtum.create.api.equipment.goggles.IHaveGoggleInformation;
+import com.zurrtum.create.client.api.goggles.IHaveGoggleInformation;
 import com.zurrtum.create.api.equipment.potatoCannon.PotatoCannonProjectileType;
 import com.zurrtum.create.content.equipment.potatoCannon.PotatoCannonItem;
 import com.zurrtum.create.content.equipment.potatoCannon.PotatoProjectileEntity;
@@ -155,7 +155,7 @@ public class MountedPotatoCannonBlockEntity extends KineticBlockEntity implement
 				animationSpeed = barrelTimer * 75;
 				//wait 2 ticks before firing to sync up visuals
 				if (this.barrelTimer > 2) {
-					if (this.level.isClientSide) {
+					if (this.level.isClientSide()) {
 						this.speed = 0.2F;
 					}
 
@@ -169,7 +169,7 @@ public class MountedPotatoCannonBlockEntity extends KineticBlockEntity implement
 							barrelPos = new Vec3(this.getBlockPos().getX() + 0.5, this.getBlockPos().getY() + 0.5, this.getBlockPos().getZ() + 0.5).add(this.getAimingVector().scale(this.blockedLength / 1.725f));
 						}
 
-						if (!this.level.isClientSide) {
+						if (!this.level.isClientSide()) {
 							final PotatoCannonProjectileType type = ammo.type();
 
 							//motion

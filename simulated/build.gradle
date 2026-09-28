@@ -124,10 +124,8 @@ tasks.named('compileJava', JavaCompile).configure {
 
     exclude '**/*Renderer.java'
     exclude '**/*Visual.java'
-    exclude '**/api/sound/**'
     exclude '**/HoneyGlueItem.java'
     exclude '**/SpringItem.java'
-    exclude '**/SoundFile.java'
     exclude '**/FabricSimEntityService.java'
         exclude '**/HandleBlockEntity.java'
     exclude '**/LaserBehaviour.java'
@@ -159,7 +157,6 @@ tasks.named('compileJava', JavaCompile).configure {
     exclude '**/ThrottleLeverClientGripHandler.java'
     exclude '**/content/items/rope/**'
     exclude '**/RopeItem.java'
-    exclude '**/SimBlockStateGen.java'
     exclude '**/LaunchedPlungerServerHandler.java'
     exclude '**/RopeStrandHolderBlockEntity.java'
     exclude '**/AltitudeSensorBlock.java'

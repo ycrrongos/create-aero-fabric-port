@@ -31,7 +31,11 @@ tasks.register('thinRegistrateShim', Jar) {
 sourceSets {
     main {
         java {
-            srcDirs = ['bootstrap/java', 'fabric/src/main/java', 'shim/java']
+            srcDirs = [
+                'common/src/main/java',
+                'fabric/src/main/java',
+                'shim/java',
+            ]
         }
         resources {
             srcDirs = ['common/src/main/resources', 'fabric/src/main/resources']
@@ -45,6 +49,7 @@ dependencies {
 
     compileOnly project(path: ':simulated', configuration: 'namedElements')
     compileOnly project(path: ':sable', configuration: 'namedElements')
+    compileOnly project(path: ':veil', configuration: 'namedElements')
     modCompileOnly files("${rootDir}/libs/create-fly-1.21.11-6.0.9-5.jar")
     modCompileOnly files("${rootDir}/libs/create-fly-helpers-mod.jar")
     compileOnly files(tasks.named('thinRegistrateShim', Jar).flatMap { it.archiveFile })
@@ -71,4 +76,39 @@ processResources {
 
 tasks.named('compileJava', JavaCompile).configure {
     options.compilerArgs += ['-Xmaxerrs', '10000']
+    // Client / optional-deps slices — restore after core registration compiles.
+    exclude '**/data/neoforge/**'
+    exclude '**/compat/**'
+    exclude '**/mixin/**'
+    exclude '**/content/ponder/**'
+    exclude '**/aeronautics/index/AeroPonder*.java'
+    exclude '**/aeronautics/index/AeroParticleTypes.java'
+    exclude '**/aeronautics/content/particle/**'
+    exclude '**/content/particle/**'
+    exclude '**/*Renderer.java'
+    exclude '**/*Visual.java'
+    exclude '**/index/client/**'
+    exclude '**/events/AeronauticsClientEvents.java'
+    exclude '**/aeronautics/AeronauticsClient.java'
+    exclude '**/common/src/main/java/**/AeroAdvancements.java'
+    exclude '**/data/AeroAdvancementTriggers.java'
+    exclude '**/api/levitite_blend_crystallization/LevititeClientCatalyzerHandler.java'
+    exclude '**/api/CustomSituationalMusic.java'
+    exclude '**/aeronautics/index/AeroArmInteractionPoints.java'
+    exclude '**/aeronautics/index/AeroPartialModels.java'
+    exclude '**/aeronautics/index/AeroClickInteractions.java'
+    exclude '**/aeronautics/util/AeroSoundDistUtil.java'
+    exclude '**/content/blocks/hot_air/balloon/effect/**'
+    exclude '**/content/blocks/hot_air/sound/**'
+    exclude '**/mixin/levitite/VanillaChunkedSubLevelRenderDataMixin.java'
+    exclude '**/ChunkRenderTypeSetAccessor.java'
+    exclude '**/HeatedCulledRenderRegionBuilder.java'
+    exclude '**/content/blocks/mounted_potato_cannon/**'
+    exclude '**/content/blocks/hot_air/balloon/**'
+    exclude '**/content/blocks/hot_air/gust/**'
+    exclude '**/content/blocks/hot_air/BlockEntityLiftingGasProvider.java'
+    exclude '**/content/display_sources/**'
+    exclude '**/LevititeShaderManager.java'
+    exclude '**/data/AeroLang.java'
+    exclude '**/content/components/Converter.java'
 }

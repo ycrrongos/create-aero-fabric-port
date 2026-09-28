@@ -25,12 +25,17 @@ public class Aeronautics {
 	public static final String MOD_ID = "aeronautics";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	private static final NonNullSupplier<AeroRegistrate> REGISTRATE = NonNullSupplier.lazy(() ->
-			(AeroRegistrate) new AeroRegistrate(Aeronautics.path("aeronautics"), MOD_ID).defaultCreativeTab((ResourceKey<CreativeModeTab>) null));
+	private static final AeroRegistrate REGISTRATE_INSTANCE =
+			new AeroRegistrate(Aeronautics.path("aeronautics"), MOD_ID);
+	private static final NonNullSupplier<AeroRegistrate> REGISTRATE = () -> REGISTRATE_INSTANCE;
 
 	public static void init() {
 		setTooltips();
-		getRegistrate().addDataGenerator(ProviderType.LANG, AeroLang::registrateLang);
+		try {
+			getRegistrate().addDataGenerator(ProviderType.LANG, AeroLang::registrateLang);
+		} catch (Throwable t) {
+			LOGGER.warn("Aero lang datagen skipped: {}", t.toString());
+		}
 
 		AeroBlocks.init();
 		AeroBlockEntityTypes.init();

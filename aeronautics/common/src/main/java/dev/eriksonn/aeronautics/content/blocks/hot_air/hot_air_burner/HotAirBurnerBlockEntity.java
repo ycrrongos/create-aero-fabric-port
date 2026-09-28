@@ -1,10 +1,10 @@
 package dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner;
 
-import com.zurrtum.create.api.equipment.goggles.IHaveGoggleInformation;
-import com.zurrtum.create.api.equipment.goggles.IHaveHoveringInformation;
+import com.zurrtum.create.client.api.goggles.IHaveGoggleInformation;
+import com.zurrtum.create.client.api.goggles.IHaveHoveringInformation;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import com.zurrtum.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.zurrtum.create.foundation.blockEntity.behaviour.ValueBoxTransform;
+import com.zurrtum.create.client.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import dev.eriksonn.aeronautics.config.AeroConfig;
 import dev.eriksonn.aeronautics.config.server.AeroBlockConfigs;
@@ -125,7 +125,7 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
             this.tickBalloonLogic();
         }
 
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             if (!this.isVirtual()) {
                 this.notifyUpdate();
             }
@@ -141,7 +141,7 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
         super.tick();
 
         this.ticksSinceSync++;
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             return;
         }
 
@@ -206,7 +206,7 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
     public void invalidate() {
         super.invalidate();
 
-        if (this.level.isClientSide) {
+        if (this.level.isClientSide()) {
             AeroSoundDistUtil.removePosHotAirBurnerSound(this.getBlockPos());
         } else {
             this.removeFromBalloon();
