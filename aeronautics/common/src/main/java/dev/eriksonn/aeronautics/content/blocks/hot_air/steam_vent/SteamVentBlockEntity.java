@@ -157,6 +157,16 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
     }
 
     @Override
+    public BlockPos liftingGasBlockPos() {
+        return this.getBlockPos();
+    }
+
+    @Override
+    public Level liftingGasLevel() {
+        return this.level;
+    }
+
+    @Override
     public void doRaycast() {
         final BlockPos pos = this.getBlockPos();
 
@@ -271,9 +281,8 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
 
         tag.putInt("SignalStrength", this.signalStrength);
         tag.putInt("RawSignalStrength", this.rawSignalStrength);
-        if (clientPacket) {
-            ClientBalloonInfo.writeToNBT(tag, (ServerBalloon) this.currentBalloon);
-        }
+        // Persist balloon stats on server saves too so inspect/suite can verify lift.
+        ClientBalloonInfo.writeToNBT(tag, (ServerBalloon) this.currentBalloon);
     }
 
     @Override

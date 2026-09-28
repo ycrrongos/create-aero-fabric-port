@@ -103,7 +103,7 @@ public interface BlockEntityLiftingGasProvider {
         final BlockPos castPos = this.getCastPosition();
 
         if (castPos != null) {
-            final Balloon existingBalloon = BalloonMap.MAP.get(this.getLevel()).getBalloon(castPos);
+            final Balloon existingBalloon = BalloonMap.MAP.get(this.liftingGasLevel()).getBalloon(castPos);
 
             if (existingBalloon != null) {
                 // Yip yip!
@@ -120,7 +120,7 @@ public interface BlockEntityLiftingGasProvider {
         if (this.getBalloon() != null)
             return;
 
-        final Level level = this.getLevel();
+        final Level level = this.liftingGasLevel();
         final BlockPos castPos = this.getCastPosition();
 
         final BalloonMap balloonMap = BalloonMap.MAP.get(level);
@@ -170,7 +170,7 @@ public interface BlockEntityLiftingGasProvider {
             // it's just like the scorpion and the frog
 
             if (this.isChunkUnloaded() && balloon.getHeaters().isEmpty()) {
-                final Level level = this.getLevel();
+                final Level level = this.liftingGasLevel();
                 assert level != null;
 
                 BalloonMap.MAP.get(level).unloadBalloon(serverBalloon);
@@ -248,9 +248,17 @@ public interface BlockEntityLiftingGasProvider {
 
     double getClientPredictedVolume();
 
-    BlockPos getBlockPos();
+    /**
+     * Named distinctly from {@link net.minecraft.world.level.block.entity.BlockEntity#getBlockPos()}
+     * so Loom remapping does not leave an unmapped interface method that never bridges at runtime.
+     */
+    BlockPos liftingGasBlockPos();
 
-    Level getLevel();
+    /**
+     * Named distinctly from {@link net.minecraft.world.level.block.entity.BlockEntity#getLevel()}
+     * for the same remapping reason as {@link #liftingGasBlockPos()}.
+     */
+    Level liftingGasLevel();
 
     boolean isChunkUnloaded();
 
@@ -264,7 +272,7 @@ public interface BlockEntityLiftingGasProvider {
             this.tryCreateBalloon();
 
         if (this.getBalloon() instanceof final ServerBalloon balloon && balloon.getTotalFilledVolume() > 1) {
-            AeroAdvancements.HEAD_IN_THE_CLOUDS.awardToNearby(this.getBlockPos(), this.getLevel());
+            AeroAdvancements.HEAD_IN_THE_CLOUDS.awardToNearby(this.liftingGasBlockPos(), this.liftingGasLevel());
         }
     }
 

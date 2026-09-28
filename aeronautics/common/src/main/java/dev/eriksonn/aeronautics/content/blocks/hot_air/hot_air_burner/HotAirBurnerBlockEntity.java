@@ -29,6 +29,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -215,9 +216,8 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
         compound.putBoolean("IsPowered", this.powered);
         compound.putInt("SignalStrength", this.signalStrength);
 
-        if (clientPacket) {
-            ClientBalloonInfo.writeToNBT(compound, (ServerBalloon) this.getBalloon());
-        }
+        // Persist balloon stats on server saves too so inspect/suite can verify lift.
+        ClientBalloonInfo.writeToNBT(compound, (ServerBalloon) this.getBalloon());
 
         super.write(compound, clientPacket);
     }
@@ -248,6 +248,16 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
     @Override
     public @Nullable BlockPos getCastPosition() {
         return this.castPosition;
+    }
+
+    @Override
+    public BlockPos liftingGasBlockPos() {
+        return this.getBlockPos();
+    }
+
+    @Override
+    public Level liftingGasLevel() {
+        return this.level;
     }
 
     @Override
