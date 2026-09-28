@@ -6,6 +6,7 @@ import com.tterrag.registrate.util.entry.BlockEntityEntry;
 import dev.eriksonn.aeronautics.Aeronautics;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner.HotAirBurnerBlockEntity;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.steam_vent.SteamVentBlockEntity;
+import dev.eriksonn.aeronautics.content.blocks.mounted_potato_cannon.MountedPotatoCannonBlockEntity;
 import dev.eriksonn.aeronautics.content.blocks.propeller.bearing.gyroscopic_propeller_bearing.GyroscopicPropellerBearingBlockEntity;
 import dev.eriksonn.aeronautics.content.blocks.propeller.bearing.propeller_bearing.PropellerBearingBlockEntity;
 import dev.eriksonn.aeronautics.content.blocks.propeller.small.andesite.AndesitePropellerBlockEntity;
@@ -53,6 +54,11 @@ public class AeroBlockEntityTypes {
     public static final BlockEntityEntry<SmartPropellerBlockEntity> SMART_PROPELLER = REGISTRATE
             .blockEntity("smart_propeller", SmartPropellerBlockEntity::new)
             .validBlocks(AeroBlocks.SMART_PROPELLER)
+            .register();
+
+    public static final BlockEntityEntry<MountedPotatoCannonBlockEntity> MOUNTED_POTATO_CANNON = REGISTRATE
+            .blockEntity("mounted_potato_cannon", MountedPotatoCannonBlockEntity::new)
+            .validBlocks(AeroBlocks.MOUNTED_POTATO_CANNON)
             .register();
 
     public static void init() {}

@@ -5,8 +5,10 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.Optional;
+
 /**
  * An info wrapper that holds an item type, and its associated component data. Primarly used for Simulated's multiloader inventory structure. <p>
  * In order to generate a wrapper from a given item easily, <b>{@link ItemInfoWrapper#generateFromStack(ItemStack) generateFromStack()}</b> can be used. <p>

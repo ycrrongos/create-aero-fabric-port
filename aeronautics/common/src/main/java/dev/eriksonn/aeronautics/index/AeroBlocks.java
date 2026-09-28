@@ -8,6 +8,7 @@ import dev.eriksonn.aeronautics.content.blocks.hot_air.envelope.EnvelopeBlock;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.envelope.EnvelopeEncasedShaftBlock;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner.HotAirBurnerBlock;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.steam_vent.SteamVentBlock;
+import dev.eriksonn.aeronautics.content.blocks.mounted_potato_cannon.MountedPotatoCannonBlock;
 import dev.eriksonn.aeronautics.content.blocks.propeller.bearing.gyroscopic_propeller_bearing.GyroscopicPropellerBearingBlock;
 import dev.eriksonn.aeronautics.content.blocks.propeller.bearing.propeller_bearing.PropellerBearingBlock;
 import dev.eriksonn.aeronautics.content.blocks.propeller.small.andesite.AndesitePropellerBlock;
@@ -77,6 +78,11 @@ public class AeroBlocks {
 
     public static final BlockEntry<SmartPropellerBlock> SMART_PROPELLER = REGISTRATE
             .block("smart_propeller", SmartPropellerBlock::new)
+            .initialProperties(SharedProperties::softMetal)
+            .item().build().register();
+
+    public static final BlockEntry<MountedPotatoCannonBlock> MOUNTED_POTATO_CANNON = REGISTRATE
+            .block("mounted_potato_cannon", MountedPotatoCannonBlock::new)
             .initialProperties(SharedProperties::softMetal)
             .item().build().register();
 

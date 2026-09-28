@@ -5,9 +5,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 public abstract class SingleSlotContainer implements AbstractContainer {
 
     public final ContainerSlot slot;

@@ -144,7 +144,6 @@ tasks.named('compileJava', JavaCompile).configure {
     exclude '**/LaserBehaviour.java'
     exclude '**/SteeringWheelGenerator.java'
     exclude '**/SimCodecUtil.java'
-    exclude '**/SingleSlotContainer.java'
     exclude '**/MultiSlotContainer.java'
         exclude '**/HoneyGlueEntity.java'
     exclude '**/RenderableNavigationTarget.java'
