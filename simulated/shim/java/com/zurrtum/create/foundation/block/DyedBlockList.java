@@ -20,4 +20,10 @@ public final class DyedBlockList<T extends Block> {
     public BlockEntry<T> get(final DyeColor color) {
         return this.map.get(color);
     }
+
+    @SuppressWarnings("unchecked")
+    public BlockEntry<? extends Block>[] toArray() {
+        return this.map.values().toArray(BlockEntry[]::new);
+    }
 }
+

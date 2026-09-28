@@ -287,7 +287,7 @@ public class MountedPotatoCannonBlockEntity extends KineticBlockEntity implement
 
 	@Override
 	protected void write(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket) {
-		super.write(compound, registries, clientPacket);
+		super.write(compound, clientPacket);
 
 		compound.put("inventory", this.inventory.write(registries));
 		compound.putInt("ItemRotationID", this.itemRotationId);
@@ -304,18 +304,18 @@ public class MountedPotatoCannonBlockEntity extends KineticBlockEntity implement
 
 	@Override
 	protected void read(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket) {
-		super.read(compound, registries, clientPacket);
+		super.read(compound, clientPacket);
 
 		this.inventory.read(registries, compound.getCompound("inventory"));
 		this.inventory.updateCachedType(registries, this.inventory.slot.getStack());
-		if (clientPacket && compound.getBoolean("NeedsUpdate")) {
+		if (clientPacket && compound.getBooleanOr("NeedsUpdate", false)) {
 			this.resetAndUpdate();
 		}
 
-		this.chargeTimer = compound.getFloat("ChargeTimer");
-		this.barrelTimer = compound.getInt("BarrelTimer");
-		this.itemRotationId = compound.getInt("ItemRotationID");
-		this.itemTimer = compound.getInt("ItemTimer");
+		this.chargeTimer = compound.getFloatOr("ChargeTimer", 0f);
+		this.barrelTimer = compound.getIntOr("BarrelTimer", 0);
+		this.itemRotationId = compound.getIntOr("ItemRotationID", 0);
+		this.itemTimer = compound.getIntOr("ItemTimer", 0);
 		this.currentState = NBTHelper.readEnum(compound, "State", State.class);
 	}
 

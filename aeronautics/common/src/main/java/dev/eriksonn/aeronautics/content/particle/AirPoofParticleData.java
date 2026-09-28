@@ -20,7 +20,7 @@ public class AirPoofParticleData implements ParticleOptions, ICustomParticleData
 
     @Override
     public ParticleProvider.Sprite<AirPoofParticleData> getMetaFactory() {
-        return AirPoofParticle.Factory::new;
+        return sprites -> null;
     }
 
     @Override

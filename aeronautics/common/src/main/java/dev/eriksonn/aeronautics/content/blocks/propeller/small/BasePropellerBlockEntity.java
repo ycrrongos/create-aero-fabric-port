@@ -1,7 +1,7 @@
 package dev.eriksonn.aeronautics.content.blocks.propeller.small;
 
 import com.zurrtum.create.content.kinetics.base.KineticBlockEntity;
-import com.zurrtum.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
 import dev.eriksonn.aeronautics.content.blocks.propeller.behaviour.PropellerActorBehaviour;
 import dev.eriksonn.aeronautics.index.AeroAdvancements;
 import dev.ryanhcode.sable.api.block.propeller.BlockEntityPropeller;
@@ -33,7 +33,7 @@ public abstract class BasePropellerBlockEntity extends KineticBlockEntity implem
     }
 
     @Override
-    public void addBehaviours(final List<BlockEntityBehaviour> behaviours) {
+    public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
         super.addBehaviours(behaviours);
 
         this.prop = this.createBehavior();

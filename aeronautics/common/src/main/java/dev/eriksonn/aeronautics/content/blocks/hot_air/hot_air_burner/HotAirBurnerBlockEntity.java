@@ -3,9 +3,9 @@ package dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner;
 import com.zurrtum.create.client.api.goggles.IHaveGoggleInformation;
 import com.zurrtum.create.client.api.goggles.IHaveHoveringInformation;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
-import com.zurrtum.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.ValueBoxTransform;
-import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
+import com.zurrtum.create.client.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import dev.eriksonn.aeronautics.config.AeroConfig;
 import dev.eriksonn.aeronautics.config.server.AeroBlockConfigs;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.GasEmitterRenderHandler;
@@ -25,6 +25,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
@@ -85,7 +87,7 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
     }
 
     @Override
-    public void addBehaviours(final List<BlockEntityBehaviour> behaviours) {
+    public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
         this.setMaxCapacity(AeroConfig.server().blocks.hotAirBurnerMaxHotAir.get());
 
         this.hotAirAmountBehaviour = new HotAirBurnerValueBehaviour(SCROLL_OPTION_TITLE, this,
@@ -214,7 +216,7 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
     }
 
     @Override
-    public void write(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket) {
+    public void write(final ValueOutput compound, final boolean clientPacket) {
         compound.putBoolean("IsPowered", this.powered);
         compound.putInt("SignalStrength", this.signalStrength);
 
@@ -222,20 +224,20 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
             ClientBalloonInfo.writeToNBT(compound, (ServerBalloon) this.getBalloon());
         }
 
-        super.write(compound, registries, clientPacket);
+        super.write(compound, clientPacket);
     }
 
     @Override
-    protected void read(final CompoundTag tag, final HolderLookup.Provider registries, final boolean clientPacket) {
-        this.powered = tag.getBoolean("IsPowered");
-        this.signalStrength = tag.getInt("SignalStrength");
+    protected void read(final ValueInput tag, final boolean clientPacket) {
+        this.powered = tag.getBooleanOr("IsPowered", false);
+        this.signalStrength = tag.getIntOr("SignalStrength", 0);
 
         if (clientPacket) {
             this.ticksSinceSync = 0;
             this.clientBalloonInfo = ClientBalloonInfo.readFromNBT(tag);
         }
 
-        super.read(tag, registries, clientPacket);
+        super.read(tag, clientPacket);
     }
 
     @Override

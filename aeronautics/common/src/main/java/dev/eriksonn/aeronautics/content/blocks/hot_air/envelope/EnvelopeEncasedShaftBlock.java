@@ -36,7 +36,7 @@ public class EnvelopeEncasedShaftBlock extends EncasedShaftBlock implements Enve
 
     protected final DyeColor color;
 
-    protected EnvelopeEncasedShaftBlock(final Properties properties, final DyeColor color) {
+    public EnvelopeEncasedShaftBlock(final Properties properties, final DyeColor color) {
         super(properties, () -> AeroBlocks.ENVELOPE_ENCASED_SHAFTS.get(color).get());
         this.color = color;
     }

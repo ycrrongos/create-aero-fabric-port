@@ -6,9 +6,9 @@ import com.zurrtum.create.content.contraptions.DirectionalExtenderScrollOptionSl
 import com.zurrtum.create.content.fluids.tank.FluidTankBlockEntity;
 import com.zurrtum.create.content.kinetics.base.IRotate;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
-import com.zurrtum.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.ValueBoxTransform;
-import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
+import com.zurrtum.create.client.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import dev.eriksonn.aeronautics.config.AeroConfig;
 import dev.eriksonn.aeronautics.config.server.AeroBlockConfigs;
@@ -31,6 +31,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundSource;
@@ -77,7 +79,7 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
     }
 
     @Override
-    public void addBehaviours(final List<BlockEntityBehaviour> behaviours) {
+    public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
         final AeroBlockConfigs config = AeroConfig.server().blocks;
         this.setMaxCapacity(config.steamVentMaxHotAir.get());
         this.steamAmountBehaviour = new SteamVentValueBehaviour(SCROLL_OPTION_TITLE, this,
@@ -278,8 +280,8 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
     }
 
     @Override
-    protected void write(final CompoundTag tag, final HolderLookup.Provider registries, final boolean clientPacket) {
-        super.write(tag, registries, clientPacket);
+    protected void write(final ValueOutput tag, final boolean clientPacket) {
+        super.write(tag, clientPacket);
 
         tag.putInt("SignalStrength", this.signalStrength);
         tag.putInt("RawSignalStrength", this.rawSignalStrength);
@@ -289,11 +291,11 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
     }
 
     @Override
-    protected void read(final CompoundTag tag, final HolderLookup.Provider registries, final boolean clientPacket) {
-        super.read(tag, registries, clientPacket);
+    protected void read(final ValueInput tag, final boolean clientPacket) {
+        super.read(tag, clientPacket);
 
-        this.signalStrength = tag.getInt("SignalStrength");
-        this.rawSignalStrength = tag.getInt("RawSignalStrength");
+        this.signalStrength = tag.getIntOr("SignalStrength", 0);
+        this.rawSignalStrength = tag.getIntOr("RawSignalStrength", 0);
         if (clientPacket) {
             this.ticksSinceSync = 0;
             this.clientBalloonInfo = ClientBalloonInfo.readFromNBT(tag);

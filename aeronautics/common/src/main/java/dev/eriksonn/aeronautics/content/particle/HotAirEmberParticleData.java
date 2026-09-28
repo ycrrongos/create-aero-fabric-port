@@ -40,7 +40,7 @@ public class HotAirEmberParticleData implements ParticleOptions, ICustomParticle
 
     @Override
     public ParticleProvider.Sprite<HotAirEmberParticleData> getMetaFactory() {
-        return HotAirEmberParticle.Factory::new;
+        return sprites -> null;
     }
 
     @Override

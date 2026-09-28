@@ -39,7 +39,7 @@ public class LevititeSparkleParticleData implements ParticleOptions, ICustomPart
 
     @Override
     public ParticleProvider.Sprite<LevititeSparkleParticleData> getMetaFactory() {
-        return LevititeSparkleParticle.Factory::new;
+        return sprites -> null;
     }
 
     @Override

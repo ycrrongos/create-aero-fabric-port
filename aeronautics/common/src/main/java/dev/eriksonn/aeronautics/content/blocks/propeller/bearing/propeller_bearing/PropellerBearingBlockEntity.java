@@ -10,9 +10,10 @@ import com.zurrtum.create.content.contraptions.ControlledContraptionEntity;
 import com.zurrtum.create.content.contraptions.bearing.BearingBlock;
 import com.zurrtum.create.content.contraptions.bearing.BearingContraption;
 import com.zurrtum.create.content.contraptions.bearing.MechanicalBearingBlockEntity;
-import com.zurrtum.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
-import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
+import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.client.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
+import com.zurrtum.create.client.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
+import dev.simulated_team.simulated.util.scroll.SimScrollOptionBehaviour;
 import com.zurrtum.create.client.foundation.gui.AllIcons;
 import com.zurrtum.create.foundation.utility.ServerSpeedProvider;
 import dev.eriksonn.aeronautics.Aeronautics;
@@ -31,6 +32,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -119,13 +122,13 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
     }
 
     @Override
-    public void addBehaviours(final List<BlockEntityBehaviour> behaviours) {
+    public void addBehaviours(final List<BlockEntityBehaviour<?>> behaviours) {
         super.addBehaviours(behaviours);
         //remove normal mech bearing value box
         this.movementMode.setValue(2);
         behaviours.remove(this.movementMode);
 
-        this.thrustDirectionOption = new ScrollOptionBehaviour<>(ThrustDirection.class, SCROLL_OPTION_TITLE, this, this.getMovementModeSlot());
+        this.thrustDirectionOption = new SimScrollOptionBehaviour<>(ThrustDirection.class, SCROLL_OPTION_TITLE, this, this.getMovementModeSlot());
 
         this.getThrustDirectionOption().withCallback($ -> this.onDirectionChanged());
         behaviours.add(this.getThrustDirectionOption());
@@ -228,7 +231,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
     }
 
     @Override
-    public void write(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket) {
+    public void write(final ValueOutput compound, final boolean clientPacket) {
         compound.putFloat("LastGenerated", this.lastGeneratedSpeed);
         compound.putFloat("RotationSpeed", this.getRotationSpeed());
 
@@ -237,22 +240,22 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
             this.slowdownController.serializeIntoNBT(compound);
         }
 
-        super.write(compound, registries, clientPacket);
+        super.write(compound, clientPacket);
     }
 
     @Override
-    protected void read(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket) {
+    protected void read(final ValueInput compound, final boolean clientPacket) {
         if (!this.wasMoved) {
-            this.lastGeneratedSpeed = compound.getFloat("LastGenerated");
+            this.lastGeneratedSpeed = compound.getFloatOr("LastGenerated", 0f);
         }
 
-        this.setRotationSpeed(compound.getFloat("RotationSpeed"));
-        this.disassemblySlowdown = compound.getBoolean("DisassemblySlowdown");
+        this.setRotationSpeed(compound.getFloatOr("RotationSpeed", 0f));
+        this.disassemblySlowdown = compound.getBooleanOr("DisassemblySlowdown", false);
         if (this.disassemblySlowdown) {
             this.slowdownController.deserializeFromNBT(compound);
         }
 
-        super.read(compound, registries, clientPacket);
+        super.read(compound, clientPacket);
     }
 
     @Override

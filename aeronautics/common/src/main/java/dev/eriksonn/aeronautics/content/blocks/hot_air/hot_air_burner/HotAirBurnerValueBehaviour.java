@@ -47,7 +47,7 @@ public class HotAirBurnerValueBehaviour extends ScrollValueBehaviour {
 
     @Override
     public ValueSettings getValueSettings() {
-        return new ValueSettings(0, this.value / this.interval);
+        return new ValueSettings(0, this.behaviour.getValue() / this.interval);
     }
 
     @Override
@@ -62,17 +62,17 @@ public class HotAirBurnerValueBehaviour extends ScrollValueBehaviour {
         this.minSupplier = min;
         this.maxSupplier = max;
 
-        this.between(min.get(), max.get());
+        this.behaviour.between(min.get(), max.get());
         return this;
     }
 
     @Override
     public void setValue(int value) {
         value = Mth.clamp(value, this.minSupplier.get(), this.maxSupplier.get());
-        if (value == this.value)
+        if (value == this.behaviour.getValue())
             return;
 
-        this.value = value;
+        this.behaviour.setValue(value);
 
         this.blockEntity.setChanged();
         this.blockEntity.sendData();

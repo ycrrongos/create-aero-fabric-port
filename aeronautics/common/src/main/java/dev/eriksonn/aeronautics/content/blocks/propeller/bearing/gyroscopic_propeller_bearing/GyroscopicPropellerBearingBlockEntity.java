@@ -19,6 +19,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -53,16 +55,16 @@ public class GyroscopicPropellerBearingBlockEntity extends PropellerBearingBlock
     }
 
     @Override
-    public void write(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket) {
+    public void write(final ValueOutput compound, final boolean clientPacket) {
         compound.putBoolean("IsPowered", this.powered);
-        super.write(compound, registries, clientPacket);
+        super.write(compound, clientPacket);
     }
 
     @Override
-    protected void read(final CompoundTag compound, final HolderLookup.Provider registries, final boolean clientPacket) {
-        this.powered = compound.getBoolean("IsPowered");
+    protected void read(final ValueInput compound, final boolean clientPacket) {
+        this.powered = compound.getBooleanOr("IsPowered", false);
 
-        super.read(compound, registries, clientPacket);
+        super.read(compound, clientPacket);
     }
 
     public void tick() {

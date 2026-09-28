@@ -33,7 +33,7 @@ public record GustParticleData(
 
     @Override
     public ParticleProvider.Sprite<GustParticleData> getMetaFactory() {
-        return GustParticle.Factory::new;
+        return sprites -> null;
     }
 
     @Override

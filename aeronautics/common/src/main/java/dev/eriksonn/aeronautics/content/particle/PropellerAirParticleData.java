@@ -45,7 +45,7 @@ public class PropellerAirParticleData implements ParticleOptions, ICustomParticl
 
     @Override
     public ParticleProvider.Sprite<PropellerAirParticleData> getMetaFactory() {
-        return PropellerAirParticle.Factory::new;
+        return sprites -> null;
     }
 
     @Override
