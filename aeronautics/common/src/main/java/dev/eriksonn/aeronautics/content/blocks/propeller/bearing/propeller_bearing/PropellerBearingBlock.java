@@ -6,6 +6,7 @@ import dev.simulated_team.simulated.api.CustomStressImpactTooltipProvider;
 import dev.eriksonn.aeronautics.data.AeroLang;
 import dev.eriksonn.aeronautics.index.AeroBlockEntityTypes;
 import dev.eriksonn.aeronautics.index.AeroBlockShapes;
+import com.zurrtum.create.client.catnip.lang.Lang;
 import com.zurrtum.create.client.catnip.lang.LangBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +27,7 @@ public class PropellerBearingBlock extends BearingBlock implements IBE<Propeller
     }
 
     public LangBuilder getCustomImpactLang() {
-        return AeroLang.translate("propeller.sails");
+        return Lang.builder("aeronautics").translate("propeller.sails");
     }
 
     @Override

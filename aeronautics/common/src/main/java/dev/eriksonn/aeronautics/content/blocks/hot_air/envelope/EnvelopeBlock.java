@@ -1,5 +1,6 @@
 package dev.eriksonn.aeronautics.content.blocks.hot_air.envelope;
 
+import net.minecraft.world.phys.HitResult;
 import com.zurrtum.create.AllBlocks;
 import com.zurrtum.create.api.schematic.requirement.SpecialBlockItemRequirement;
 import com.zurrtum.create.content.decoration.encasing.CasingBlock;
@@ -143,8 +144,7 @@ public class EnvelopeBlock extends CasingBlock implements Envelope, SpecialBlock
         return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
-    @Override
-    public ItemStack getCloneItemStack(final BlockState state, final HitResult target, final LevelReader level, final BlockPos pos, final Player player) {
+        public ItemStack getCloneItemStack(final BlockState state, final HitResult target, final LevelReader level, final BlockPos pos, final Player player) {
         return AeroBlocks.DYED_ENVELOPE_BLOCKS.get(this.color).asItem().getDefaultInstance();
     }
 
@@ -152,10 +152,9 @@ public class EnvelopeBlock extends CasingBlock implements Envelope, SpecialBlock
         return this.color;
     }
 
-    @Override
-    protected void fallOn(final BlockState state, final Level level, final BlockPos pos, final Entity entity, final double fallDistance) {
+        protected void fallOn(final BlockState state, final Level level, final BlockPos pos, final Entity entity, final double fallDistance) {
         if (entity.isSuppressingBounce()) {
-            super.fallOn(state, level, pos, entity, fallDistance);
+            super.fallOn(level, state, pos, entity, fallDistance);
         } else {
             entity.causeFallDamage((float) fallDistance, 0.0F, level.damageSources().fall());
         }

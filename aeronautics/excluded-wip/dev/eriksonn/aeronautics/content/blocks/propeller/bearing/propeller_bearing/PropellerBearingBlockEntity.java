@@ -76,7 +76,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
      * last generated speed for server client syncing
      */
     protected float lastGeneratedSpeed;
-    private ScrollOptionBehaviour<ThrustDirection> thrustDirectionOption;
+    private SimScrollOptionBehaviour<ThrustDirection> thrustDirectionOption;
     /**
      * client smoothed rotation speed
      */
@@ -132,7 +132,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
 
         this.thrustDirectionOption = new SimScrollOptionBehaviour<>(ThrustDirection.class, SCROLL_OPTION_TITLE, this, this.getMovementModeSlot());
 
-        this.getThrustDirectionOption().onValueChanged($ -> this.onDirectionChanged());
+        this.getThrustDirectionOption().behaviour.withCallback($ -> this.onDirectionChanged());
         behaviours.add(this.getThrustDirectionOption());
         behaviours.add(this.behavior = this.getAndPreparePropBehaviour());
     }
@@ -513,7 +513,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
         this.rotationSpeed = rotationSpeed;
     }
 
-    public ScrollOptionBehaviour<ThrustDirection> getThrustDirectionOption() {
+    public SimScrollOptionBehaviour<ThrustDirection> getThrustDirectionOption() {
         return this.thrustDirectionOption;
     }
 

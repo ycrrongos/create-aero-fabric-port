@@ -1,5 +1,6 @@
 package dev.eriksonn.aeronautics.content.blocks.hot_air.steam_vent;
 
+import net.minecraft.world.phys.HitResult;
 import com.zurrtum.create.content.equipment.wrench.IWrenchable;
 import com.zurrtum.create.content.fluids.tank.FluidTankBlock;
 import com.zurrtum.create.content.kinetics.steamEngine.SteamEngineBlock;
@@ -80,8 +81,7 @@ public class SteamVentBlock extends Block implements IBE<SteamVentBlockEntity>, 
         return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
-    @Override
-    public void onPlace(final @NotNull BlockState pState, final @NotNull Level pLevel, final BlockPos pPos, final @NotNull BlockState pOldState, final boolean pIsMoving) {
+        public void onPlace(final @NotNull BlockState pState, final @NotNull Level pLevel, final BlockPos pPos, final @NotNull BlockState pOldState, final boolean pIsMoving) {
         FluidTankBlock.updateBoilerState(pState, pLevel, pPos.relative(Direction.DOWN));
 
         this.withBlockEntityDo(pLevel, pPos, SteamVentBlockEntity::getAndCacheTank);
@@ -92,8 +92,7 @@ public class SteamVentBlock extends Block implements IBE<SteamVentBlockEntity>, 
         });
     }
 
-    @Override
-    public void onRemove(final BlockState pState, final @NotNull Level level, final @NotNull BlockPos pos, final @NotNull BlockState newState, final boolean pIsMoving) {
+        public void onRemove(final BlockState pState, final @NotNull Level level, final @NotNull BlockPos pos, final @NotNull BlockState newState, final boolean pIsMoving) {
         this.withBlockEntityDo(level, pos, x -> x.rawSignalStrength = 0);
         if (pState.hasBlockEntity() && (!pState.is(newState.getBlock()) || !newState.hasBlockEntity()))
             level.removeBlockEntity(pos);
@@ -118,8 +117,7 @@ public class SteamVentBlock extends Block implements IBE<SteamVentBlockEntity>, 
                 .setValue(FACING, context.getPlayer().isShiftKeyDown() ? context.getHorizontalDirection().getOpposite() : context.getHorizontalDirection());
     }
 
-    @Override
-    public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block blockIn, final BlockPos fromPos, final boolean isMoving) {
+        public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block blockIn, final BlockPos fromPos, final boolean isMoving) {
         if (level.isClientSide())
             return;
 

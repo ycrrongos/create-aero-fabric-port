@@ -38,7 +38,7 @@ public class AeronauticsCommonEvents {
             return;
         }
 
-        serverContainer.addObserver(new BalloonMap.BalloonSubLevelObserver(level));
+        // serverContainer.addObserver(...); // BalloonSubLevelObserver port pending
     }
 
     public static void onServerStopped(final MinecraftServer server) {

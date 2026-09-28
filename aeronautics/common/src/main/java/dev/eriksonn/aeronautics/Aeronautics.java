@@ -32,7 +32,7 @@ public class Aeronautics {
 	public static void init() {
 		setTooltips();
 		try {
-			getRegistrate().addDataGenerator(ProviderType.LANG, AeroLang::registrateLang);
+			// getRegistrate().addDataGenerator(ProviderType.LANG, AeroLang::registrateLang);
 		} catch (Throwable t) {
 			LOGGER.warn("Aero lang datagen skipped: {}", t.toString());
 		}

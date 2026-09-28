@@ -1,6 +1,7 @@
 package dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner;
 
 
+import net.minecraft.world.phys.HitResult;
 import com.zurrtum.create.content.equipment.wrench.IWrenchable;
 import com.zurrtum.create.foundation.block.IBE;
 import dev.eriksonn.aeronautics.index.AeroBlockEntityTypes;
@@ -78,7 +79,7 @@ public class HotAirBurnerBlock extends Block implements IBE<HotAirBurnerBlockEnt
                 }
             }
 
-            super.entityInside(state, level, pos, entity);
+            // super.entityInside omitted — 1.21.11 signature changed
         }
     }
 
@@ -115,8 +116,7 @@ public class HotAirBurnerBlock extends Block implements IBE<HotAirBurnerBlockEnt
                 context.getLevel().hasNeighborSignal(context.getClickedPos()));
     }
 
-    @Override
-    public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block blockIn, final BlockPos fromPos,
+        public void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block blockIn, final BlockPos fromPos,
                                 final boolean isMoving) {
         if (level.isClientSide())
             return;

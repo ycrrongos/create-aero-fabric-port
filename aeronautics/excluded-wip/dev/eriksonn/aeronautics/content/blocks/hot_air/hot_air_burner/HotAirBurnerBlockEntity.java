@@ -94,7 +94,7 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
                 new HotAirBurnerValueBoxTransform())
                 .between(() -> 5, () -> AeroConfig.server().blocks.hotAirBurnerMaxHotAir.get())
                 .withFormatter(VALUE_FORMAT::formatted);
-        this.hotAirAmountBehaviour.value = this.maxCapacity;
+        this.hotAirAmountBehaviour.setValue(this.maxCapacity);
 
         behaviours.add(this.hotAirAmountBehaviour);
     }
@@ -269,7 +269,7 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
 
     @Override
     public double getGasOutput() {
-        return (this.hotAirAmountBehaviour.value * this.signalStrength) / 15.0;
+        return (this.hotAirAmountBehaviour.getValue() * this.signalStrength) / 15.0;
     }
 
     @Override

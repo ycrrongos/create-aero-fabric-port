@@ -88,10 +88,9 @@ public class EnvelopeEncasedShaftBlock extends EncasedShaftBlock implements Enve
         return AeroBlockEntityTypes.ENVELOPE_ENCASED_SHAFT.create(pos, state);
     }
 
-    @Override
-    protected void fallOn(final BlockState state, final Level level, final BlockPos pos, final Entity entity, final double fallDistance) {
+        protected void fallOn(final BlockState state, final Level level, final BlockPos pos, final Entity entity, final double fallDistance) {
         if (entity.isSuppressingBounce()) {
-            super.fallOn(state, level, pos, entity, fallDistance);
+            super.fallOn(level, state, pos, entity, fallDistance);
         } else {
             entity.causeFallDamage((float) fallDistance, 0.5F, level.damageSources().fall());
         }
@@ -106,8 +105,7 @@ public class EnvelopeEncasedShaftBlock extends EncasedShaftBlock implements Enve
         }
     }
 
-    @Override
-    public ItemStack getCloneItemStack(final BlockState state, final HitResult target, final LevelReader level, final BlockPos pos, final Player player) {
+        public ItemStack getCloneItemStack(final BlockState state, final HitResult target, final LevelReader level, final BlockPos pos, final Player player) {
         return this.getCasing().asItem().getDefaultInstance();
     }
 

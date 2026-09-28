@@ -1,7 +1,5 @@
 package dev.eriksonn.aeronautics.fabric.service;
 
-import com.zurrtum.create.api.stress.BlockStressValues;
-import com.zurrtum.create.infrastructure.config.CStress;
 import dev.eriksonn.aeronautics.config.AeroConfig;
 import dev.eriksonn.aeronautics.config.client.AeroClient;
 import dev.eriksonn.aeronautics.config.server.AeroServer;
@@ -17,17 +15,14 @@ public class FabricAeroConfigService implements AeroConfig {
 	static {
 		server = registerServer();
 		client = registerClient();
-		try {
-			final CStress stress = server.kinetics.stressValues;
-		 BlockStressValues.IMPACTS.registerProvider(stress::getImpact);
-		 BlockStressValues.CAPACITIES.registerProvider(stress::getCapacity);
-		} catch (Throwable ignored) {}
+		// Create Fly stress wiring deferred — AeroStress is not CStress.
+		
 	}
 
 	private static AeroServer registerServer() {
 		final Pair<AeroServer, ModConfigSpec> pair = new ModConfigSpec.Builder().configure(builder -> new AeroServer());
 		final AeroServer config = pair.getLeft();
-		config.aeronautics$setSpecification(pair.getRight());
+		((AeroConfigHolder) (Object) config).aeronautics$setSpecification(pair.getRight());
 		ConfigRegistry.INSTANCE.register("aeronautics", ModConfig.Type.SERVER, pair.getRight(), "aeronautics-server.toml");
 		return config;
 	}
@@ -35,7 +30,7 @@ public class FabricAeroConfigService implements AeroConfig {
 	private static AeroClient registerClient() {
 		final Pair<AeroClient, ModConfigSpec> pair = new ModConfigSpec.Builder().configure(builder -> new AeroClient());
 		final AeroClient config = pair.getLeft();
-		config.aeronautics$setSpecification(pair.getRight());
+		((AeroConfigHolder) (Object) config).aeronautics$setSpecification(pair.getRight());
 		ConfigRegistry.INSTANCE.register("aeronautics", ModConfig.Type.CLIENT, pair.getRight(), "aeronautics-client.toml");
 		return config;
 	}

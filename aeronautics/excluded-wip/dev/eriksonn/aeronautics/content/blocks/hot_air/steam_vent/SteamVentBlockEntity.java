@@ -85,9 +85,9 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
         this.setMaxCapacity(config.steamVentMaxHotAir.get());
         this.steamAmountBehaviour = new SteamVentValueBehaviour(SCROLL_OPTION_TITLE, this,
                 new SteamVentValueBoxTransform())
-                .between(50, config.steamVentMaxHotAir.get())
+                .between(() -> 50, () -> config.steamVentMaxHotAir.get())
                 .withFormatter(VALUE_FORMAT::formatted);
-        this.steamAmountBehaviour.value = this.maxCapacity;
+        this.steamAmountBehaviour.setValue(this.maxCapacity);
 
         behaviours.add(this.steamAmountBehaviour);
     }
@@ -362,7 +362,7 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
         BlockEntity be;
 
         @Override
-        public Sided fromSide(final Direction direction) {
+        public void fromSide(final Direction direction) {
             this.direction = direction;
 
             Level level = this.be.getLevel();
@@ -373,12 +373,11 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
                     final Vec3 hit = target.getLocation();
                     final Vec3 localHit = hit.subtract(Vec3.atCenterOf(this.be.getBlockPos()));
                     if (localHit.y < 0.4) {
-                        this.direction = Direction.getNearest(localHit.x, 0, localHit.z);
+                        this.direction = Direction.getApproximateNearest(localHit.x, 0, localHit.z);
                     }
                 }
             }
-            return this;
-        }
+            }
 
         @Override
         protected Vec3 getSouthLocation() {
@@ -406,7 +405,7 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
             float xRot = this.getSide() == Direction.UP ? 90 : this.getSide() == Direction.DOWN ? 270 : 0;
             xRot += 22.5f;
             TransformStack.of(ms)
-                    .rotateYDegrees(yRot)
+                    .mulPose(com.mojang.math.Axis.YP.rotationDegrees(yRot))
                     .rotateXDegrees(xRot);
         }
 

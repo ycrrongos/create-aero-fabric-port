@@ -28,6 +28,7 @@ public final class AeroLang {
     public static AeroLang number(Object n) { return new AeroLang(Component.literal(String.valueOf(n))); }
     public static AeroLang blockName(BlockState state) { return new AeroLang(state.getBlock().getName().copy()); }
     public static AeroLang kilopixelGram(double v) { return text(String.format("%.2f kg", v)); }
+    public static AeroLang pixelNewton(double v) { return text(String.format("%.2f N", v)); }
 
     public static List<Component> translatedOptions(String prefix, String... keys) {
         List<Component> out = new ArrayList<>();
@@ -50,6 +51,7 @@ public final class AeroLang {
     }
 
     public MutableComponent component() { return component; }
+    public static void registrateLang(Object provider) {}
     public String string() { return component.getString(); }
     @Override public String toString() { return string(); }
 }

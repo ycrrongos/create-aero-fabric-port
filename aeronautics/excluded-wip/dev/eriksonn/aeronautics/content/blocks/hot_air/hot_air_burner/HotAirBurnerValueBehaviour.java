@@ -20,22 +20,23 @@ public class HotAirBurnerValueBehaviour extends ScrollValueBehaviour {
     private static final MutableComponent TITLE = AeroLang.translate("generic.hot_air").component();
 
     private int interval = 5;
-
-    private Supplier<Integer> minSupplier, maxSupplier;
+    private Supplier<Integer> minSupplier = () -> 0;
+    private Supplier<Integer> maxSupplier = () -> 100;
 
     public HotAirBurnerValueBehaviour(final Component label, final SmartBlockEntity be, final ValueBoxTransform slot) {
         super(label, be, slot);
     }
-    private void updateInterval()
-    {
-        this.interval = (this.maxSupplier.get()- this.minSupplier.get()+250)/500;
-        this.interval *=5;
+
+    private void updateInterval() {
+        this.interval = (this.maxSupplier.get() - this.minSupplier.get() + 250) / 500;
+        this.interval *= 5;
         this.interval = Math.max(1, this.interval);
     }
+
     @Override
     public ValueSettingsBoard createBoard(final Player player, final BlockHitResult hitResult) {
         this.updateInterval();
-        return new ValueSettingsBoard(this.label, this.maxSupplier.get()/ this.interval, 10, ImmutableList.of(TITLE),
+        return new ValueSettingsBoard(this.label, this.maxSupplier.get() / this.interval, 10, ImmutableList.of(TITLE),
                 new ValueSettingsFormatter(this::format));
     }
 
@@ -52,8 +53,6 @@ public class HotAirBurnerValueBehaviour extends ScrollValueBehaviour {
 
     @Override
     public void setValueSettings(final Player player, final ValueSettings valueSetting, final boolean ctrlDown) {
-        if (!valueSetting.equals(this.getValueSettings()))
-            this.playFeedbackSound(this);
         this.updateInterval();
         this.setValue(valueSetting.value() * this.interval);
     }
@@ -61,24 +60,22 @@ public class HotAirBurnerValueBehaviour extends ScrollValueBehaviour {
     public ScrollValueBehaviour between(final Supplier<Integer> min, final Supplier<Integer> max) {
         this.minSupplier = min;
         this.maxSupplier = max;
-
         this.behaviour.between(min.get(), max.get());
         return this;
     }
 
-    @Override
-    public void setValue(int value) {
-        value = Mth.clamp(value, this.minSupplier.get(), this.maxSupplier.get());
-        if (value == this.behaviour.getValue())
-            return;
-
-        this.behaviour.setValue(value);
-
+    public void setValue(final int value) {
+        final int clamped = Mth.clamp(value, this.minSupplier.get(), this.maxSupplier.get());
+        if (clamped == this.behaviour.getValue()) return;
+        this.behaviour.setValue(clamped);
         this.blockEntity.setChanged();
         this.blockEntity.sendData();
     }
 
-    @Override
+    public int getValue() {
+        return this.behaviour.getValue();
+    }
+
     public String getClipboardKey() {
         return "Hot Air";
     }

@@ -76,37 +76,23 @@ processResources {
 
 tasks.named('compileJava', JavaCompile).configure {
     options.compilerArgs += ['-Xmaxerrs', '10000']
-    // Client / optional-deps slices — restore after core registration compiles.
     exclude '**/data/neoforge/**'
     exclude '**/compat/**'
     exclude '**/mixin/**'
     exclude '**/content/ponder/**'
-
-
-    exclude 'dev/eriksonn/aeronautics/content/particle/*Particle.java'
-    exclude '**/content/blocks/hot_air/balloon/ClientBalloon.java'
-    exclude '**/content/blocks/hot_air/balloon/effect/**'
-
     exclude '**/aeronautics/index/AeroPonder*.java'
     exclude '**/*Renderer.java'
     exclude '**/*Visual.java'
     exclude '**/index/client/**'
     exclude '**/events/AeronauticsClientEvents.java'
-    exclude '**/aeronautics/common/**/AeronauticsClient.java'
-    exclude '**/common/src/main/java/**/AeroAdvancements.java'
+    exclude '**/AeroAdvancements.java'
     exclude '**/data/AeroAdvancementTriggers.java'
-    exclude '**/api/levitite_blend_crystallization/LevititeClientCatalyzerHandler.java'
     exclude '**/api/CustomSituationalMusic.java'
     exclude '**/aeronautics/index/AeroArmInteractionPoints.java'
     exclude '**/aeronautics/index/AeroPartialModels.java'
     exclude '**/aeronautics/index/AeroClickInteractions.java'
-    exclude '**/common/src/main/java/**/util/AeroSoundDistUtil.java'
-    exclude '**/content/blocks/hot_air/balloon/effect/**'
-    exclude '**/content/blocks/hot_air/sound/**'
-    exclude '**/mixin/levitite/VanillaChunkedSubLevelRenderDataMixin.java'
-    exclude '**/ChunkRenderTypeSetAccessor.java'
-    exclude '**/HeatedCulledRenderRegionBuilder.java'
-    exclude '**/content/blocks/mounted_potato_cannon/**'
     exclude '**/LevititeShaderManager.java'
-    exclude '**/common/src/main/java/**/data/AeroLang.java'
 }
+
+
+
