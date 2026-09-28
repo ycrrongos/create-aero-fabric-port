@@ -44,8 +44,8 @@ public class EnvelopeBlock extends CasingBlock implements Envelope, SpecialBlock
     }
 
     protected static void applyDye(final BlockState state, final Level level, final BlockPos pos, final DyeColor color) {
-        final BlockState newEnvelopeState = BlockHelper.copyProperties(state, AeroBlocks.DYED_ENVELOPE_BLOCKS.get(color).getDefaultState());
-        final BlockState newEncasedEnvelopeState = BlockHelper.copyProperties(state, AeroBlocks.ENVELOPE_ENCASED_SHAFTS.get(color).getDefaultState());
+        final BlockState newEnvelopeState = BlockHelper.copyProperties(state, AeroBlocks.DYED_ENVELOPE_BLOCKS.get(color).get().defaultBlockState());
+        final BlockState newEncasedEnvelopeState = BlockHelper.copyProperties(state, AeroBlocks.ENVELOPE_ENCASED_SHAFTS.get(color).get().defaultBlockState());
 
         // Dye the block itself
         if (selfDye(level, pos, state, color)) {
@@ -96,13 +96,13 @@ public class EnvelopeBlock extends CasingBlock implements Envelope, SpecialBlock
 
     static boolean selfDye(final Level level, final BlockPos pos, final BlockState state, final DyeColor color) {
         if (state.getBlock() instanceof final EnvelopeBlock eb && eb.getColor() != color) {
-            level.setBlockAndUpdate(pos, AeroBlocks.DYED_ENVELOPE_BLOCKS.get(color).getDefaultState());
+            level.setBlockAndUpdate(pos, AeroBlocks.DYED_ENVELOPE_BLOCKS.get(color).get().defaultBlockState());
             return true;
         }
 
         if (state.getBlock() instanceof final EnvelopeEncasedShaftBlock eb && eb.getColor() != color) {
             final Direction.Axis axis = eb.getRotationAxis(state);
-            level.setBlockAndUpdate(pos, AeroBlocks.ENVELOPE_ENCASED_SHAFTS.get(color).getDefaultState().setValue(RotatedPillarKineticBlock.AXIS, axis));
+            level.setBlockAndUpdate(pos, AeroBlocks.ENVELOPE_ENCASED_SHAFTS.get(color).get().defaultBlockState().setValue(RotatedPillarKineticBlock.AXIS, axis));
             return true;
         }
 
@@ -129,12 +129,6 @@ public class EnvelopeBlock extends CasingBlock implements Envelope, SpecialBlock
         return false;
     }
 
-    @Override
-    protected int getLightBlock(final BlockState state, final BlockGetter level, final BlockPos pos) {
-        return 1;
-    }
-
-    @Override
     protected InteractionResult useItemOn(final ItemStack itemStack, final BlockState blockState, final Level level, final BlockPos blockPos, final Player player, final InteractionHand interactionHand, final BlockHitResult blockHitResult) {
         final DyeColor color = SimItemService.getDyeColor(itemStack);
 
@@ -150,8 +144,8 @@ public class EnvelopeBlock extends CasingBlock implements Envelope, SpecialBlock
     }
 
     @Override
-    public ItemStack getCloneItemStack(final LevelReader levelReader, final BlockPos blockPos, final BlockState blockState) {
-        return AeroBlocks.DYED_ENVELOPE_BLOCKS.get(this.color).asStack();
+    public ItemStack getCloneItemStack(final BlockState state, final HitResult target, final LevelReader level, final BlockPos pos, final Player player) {
+        return AeroBlocks.DYED_ENVELOPE_BLOCKS.get(this.color).asItem().getDefaultInstance();
     }
 
     public DyeColor getColor() {
@@ -159,21 +153,20 @@ public class EnvelopeBlock extends CasingBlock implements Envelope, SpecialBlock
     }
 
     @Override
-    public void fallOn(final Level pLevel, final BlockState pState, final BlockPos pPos, final Entity pEntity, final float pFallDistance) {
-        if (pEntity.isSuppressingBounce()) {
-            super.fallOn(pLevel, pState, pPos, pEntity, pFallDistance);
+    protected void fallOn(final BlockState state, final Level level, final BlockPos pos, final Entity entity, final double fallDistance) {
+        if (entity.isSuppressingBounce()) {
+            super.fallOn(state, level, pos, entity, fallDistance);
         } else {
-            pEntity.causeFallDamage(pFallDistance, 0.0F, pLevel.damageSources().fall());
+            entity.causeFallDamage((float) fallDistance, 0.0F, level.damageSources().fall());
         }
-
     }
 
     @Override
-    public void updateEntityAfterFallOn(final BlockGetter pLevel, final Entity pEntity) {
-        if (pEntity.isSuppressingBounce()) {
-            super.updateEntityAfterFallOn(pLevel, pEntity);
+    public void updateEntityMovementAfterFallOn(final BlockGetter level, final Entity entity) {
+        if (entity.isSuppressingBounce()) {
+            super.updateEntityMovementAfterFallOn(level, entity);
         } else {
-            this.bounceUp(pEntity);
+            this.bounceUp(entity);
         }
     }
 
@@ -187,7 +180,7 @@ public class EnvelopeBlock extends CasingBlock implements Envelope, SpecialBlock
 
     @Override
     public ItemRequirement getRequiredItems(BlockState state, @Nullable BlockEntity blockEntity) {
-        ItemStack stack = AeroBlocks.WHITE_ENVELOPE_BLOCK.asStack();
+        ItemStack stack = AeroBlocks.WHITE_ENVELOPE_BLOCK.asItem().getDefaultInstance();
         return new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, stack);
     }
 }

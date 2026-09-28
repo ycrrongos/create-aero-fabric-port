@@ -27,6 +27,14 @@ public class SoundEventRegistry {
 
     public void provideLang(final BiConsumer<String, String> consumer) {}
 
+    public static final class SoundVariantBuilder {
+        public SoundVariantBuilder setAttenuationDistance(final int distance) { return this; }
+        public SoundVariantBuilder setWeight(final int weight) { return this; }
+        public SoundVariantBuilder setStream(final boolean stream) { return this; }
+        public SoundVariantBuilder setPitch(final float pitch) { return this; }
+        public SoundVariantBuilder setVolume(final float volume) { return this; }
+    }
+
     public static final class DefinitionBuilder {
         public DefinitionBuilder defaultSubtitle(final String key) {
             return this;
@@ -40,11 +48,17 @@ public class SoundEventRegistry {
             return this;
         }
 
-        public DefinitionBuilder addFileVariant(final String path, final Consumer<Object> operator) {
+        public DefinitionBuilder addFileVariant(final String path, final Consumer<SoundVariantBuilder> operator) {
+            if (operator != null) {
+                operator.accept(new SoundVariantBuilder());
+            }
             return this;
         }
 
-        public DefinitionBuilder addFileVariant(final net.minecraft.resources.Identifier path, final UnaryOperator<Object> operator) {
+        public DefinitionBuilder addFileVariant(final net.minecraft.resources.Identifier path, final UnaryOperator<SoundVariantBuilder> operator) {
+            if (operator != null) {
+                operator.apply(new SoundVariantBuilder());
+            }
             return this;
         }
 
@@ -52,7 +66,10 @@ public class SoundEventRegistry {
             return this;
         }
 
-        public DefinitionBuilder addEventVariant(final Object sound, final UnaryOperator<Object> operator) {
+        public DefinitionBuilder addEventVariant(final Object sound, final UnaryOperator<SoundVariantBuilder> operator) {
+            if (operator != null) {
+                operator.apply(new SoundVariantBuilder());
+            }
             return this;
         }
     }

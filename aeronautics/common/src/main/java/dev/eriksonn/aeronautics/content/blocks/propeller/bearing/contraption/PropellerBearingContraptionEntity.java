@@ -27,8 +27,9 @@ public class PropellerBearingContraptionEntity extends ControlledContraptionEnti
     public Quaternionf previousTiltQuat = new Quaternionf();
     public Direction direction = Direction.UP;
 
+    @SuppressWarnings("unchecked")
     public PropellerBearingContraptionEntity(final EntityType<?> type, final Level world) {
-        super(type, world);
+        super((EntityType<? extends ControlledContraptionEntity>) type, world);
     }
 
     public static ControlledContraptionEntity create(final Level world, final IControlContraption controller,
@@ -83,7 +84,6 @@ public class PropellerBearingContraptionEntity extends ControlledContraptionEnti
         return partialTicks == 1.0F ? this.angle : angleLerp(partialTicks, this.prevAngle, this.angle);
     }
 
-    @Override
     @OnlyIn(Dist.CLIENT)
     public void applyLocalTransforms(final PoseStack poseStack, final float partialTicks) {
         //super.applyLocalTransforms(PoseStack, partialTicks);

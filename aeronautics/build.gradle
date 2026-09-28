@@ -81,10 +81,9 @@ tasks.named('compileJava', JavaCompile).configure {
     exclude '**/compat/**'
     exclude '**/mixin/**'
     exclude '**/content/ponder/**'
-    exclude '**/api/levitite_blend_crystallization/**'
 
 
-    exclude '**/content/particle/*Particle.java'
+    exclude 'dev/eriksonn/aeronautics/content/particle/*Particle.java'
     exclude '**/content/blocks/hot_air/balloon/ClientBalloon.java'
     exclude '**/content/blocks/hot_air/balloon/effect/**'
 
@@ -93,7 +92,7 @@ tasks.named('compileJava', JavaCompile).configure {
     exclude '**/*Visual.java'
     exclude '**/index/client/**'
     exclude '**/events/AeronauticsClientEvents.java'
-    exclude '**/aeronautics/AeronauticsClient.java'
+    exclude '**/aeronautics/common/**/AeronauticsClient.java'
     exclude '**/common/src/main/java/**/AeroAdvancements.java'
     exclude '**/data/AeroAdvancementTriggers.java'
     exclude '**/api/levitite_blend_crystallization/LevititeClientCatalyzerHandler.java'
@@ -110,5 +109,4 @@ tasks.named('compileJava', JavaCompile).configure {
     exclude '**/content/blocks/mounted_potato_cannon/**'
     exclude '**/LevititeShaderManager.java'
     exclude '**/common/src/main/java/**/data/AeroLang.java'
-    exclude '**/content/components/Converter.java'
 }

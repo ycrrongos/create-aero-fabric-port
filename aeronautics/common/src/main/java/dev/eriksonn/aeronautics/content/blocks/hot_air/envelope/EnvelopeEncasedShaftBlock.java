@@ -37,7 +37,7 @@ public class EnvelopeEncasedShaftBlock extends EncasedShaftBlock implements Enve
     protected final DyeColor color;
 
     public EnvelopeEncasedShaftBlock(final Properties properties, final DyeColor color) {
-        super(properties, () -> AeroBlocks.ENVELOPE_ENCASED_SHAFTS.get(color).get());
+        super(properties, AeroBlocks.DYED_ENVELOPE_BLOCKS.get(color).get());
         this.color = color;
     }
 
@@ -68,7 +68,7 @@ public class EnvelopeEncasedShaftBlock extends EncasedShaftBlock implements Enve
         if (world instanceof ServerLevel) {
             final Player player = context.getPlayer();
             if (player != null && !player.hasInfiniteMaterials())
-                player.getInventory().placeItemBackInInventory(AeroBlocks.WHITE_ENVELOPE_BLOCK.asStack());
+                player.getInventory().placeItemBackInInventory(AeroBlocks.WHITE_ENVELOPE_BLOCK.asItem().getDefaultInstance());
         }
         return InteractionResult.SUCCESS;
     }
@@ -89,20 +89,20 @@ public class EnvelopeEncasedShaftBlock extends EncasedShaftBlock implements Enve
     }
 
     @Override
-    public void fallOn(final Level pLevel, final BlockState pState, final BlockPos pPos, final Entity pEntity, final float pFallDistance) {
-        if (pEntity.isSuppressingBounce()) {
-            super.fallOn(pLevel, pState, pPos, pEntity, pFallDistance);
+    protected void fallOn(final BlockState state, final Level level, final BlockPos pos, final Entity entity, final double fallDistance) {
+        if (entity.isSuppressingBounce()) {
+            super.fallOn(state, level, pos, entity, fallDistance);
         } else {
-            pEntity.causeFallDamage(pFallDistance, 0.5F, pLevel.damageSources().fall());
+            entity.causeFallDamage((float) fallDistance, 0.5F, level.damageSources().fall());
         }
     }
 
     @Override
-    public void updateEntityAfterFallOn(final BlockGetter pLevel, final Entity pEntity) {
-        if (pEntity.isSuppressingBounce()) {
-            super.updateEntityAfterFallOn(pLevel, pEntity);
+    public void updateEntityMovementAfterFallOn(final BlockGetter level, final Entity entity) {
+        if (entity.isSuppressingBounce()) {
+            super.updateEntityMovementAfterFallOn(level, entity);
         } else {
-            this.bounceUp(pEntity);
+            this.bounceUp(entity);
         }
     }
 
@@ -134,7 +134,7 @@ public class EnvelopeEncasedShaftBlock extends EncasedShaftBlock implements Enve
 
     @Override
     public ItemRequirement getRequiredItems(BlockState state, BlockEntity be) {
-        ItemStack stack = AeroBlocks.WHITE_ENVELOPE_BLOCK.asStack();
+        ItemStack stack = AeroBlocks.WHITE_ENVELOPE_BLOCK.asItem().getDefaultInstance();
         return super.getRequiredItems(state, be).union(new ItemRequirement(ItemRequirement.ItemUseType.CONSUME, stack));
     }
 }

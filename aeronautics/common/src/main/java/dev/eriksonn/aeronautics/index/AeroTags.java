@@ -3,8 +3,6 @@ package dev.eriksonn.aeronautics.index;
 import com.zurrtum.create.AllBlocks;
 import com.zurrtum.create.AllTags;
 import com.zurrtum.create.foundation.data.TagGen;
-import com.tterrag.registrate.providers.ProviderType;
-import com.tterrag.registrate.providers.RegistrateItemTagsProvider;
 import com.tterrag.registrate.providers.RegistrateTagsProvider;
 import dev.eriksonn.aeronautics.Aeronautics;
 import net.minecraft.core.registries.Registries;
@@ -20,11 +18,7 @@ import static net.minecraft.tags.BlockTags.DAMPENS_VIBRATIONS;
 
 public class AeroTags {
 	public static void addGenerators() {
-		try {
-			Aeronautics.getRegistrate().addDataGenerator(ProviderType.BLOCK_TAGS, BlockTags::genBlockTags);
-			Aeronautics.getRegistrate().addDataGenerator(ProviderType.ITEM_TAGS, ItemTags::genItemTags);
-		} catch (Throwable ignored) {
-		}
+		// Tag datagen deferred until registrate tag ProviderTypes return on Create Fly.
 	}
 
 	public static class BlockTags {
@@ -56,7 +50,7 @@ public class AeroTags {
 					.add(Blocks.CLAY,Blocks.MUD,Blocks.PACKED_MUD,Blocks.COARSE_DIRT);
 
 			prov.tag(LEVITITE_CATALYZER)
-					.add(Blocks.CAMPFIRE, Blocks.MAGMA_BLOCK, Blocks.TORCH, Blocks.WALL_TORCH, AllBlocks.LIT_BLAZE_BURNER.get(), Blocks.FIRE);
+					.add(Blocks.CAMPFIRE, Blocks.MAGMA_BLOCK, Blocks.TORCH, Blocks.WALL_TORCH, AllBlocks.LIT_BLAZE_BURNER, Blocks.FIRE);
 			prov.tag(LEVITITE_ADJACENT_CATALYZER)
 					.add(Blocks.NETHERRACK)
 					.addTag(Tags.Blocks.STORAGE_BLOCKS_COAL);
@@ -89,7 +83,7 @@ public class AeroTags {
 			return TagKey.create(Registries.ITEM, Aeronautics.path(path));
 		}
 
-		public static void genItemTags(final RegistrateItemTagsProvider provIn) {
+		public static void genItemTags(final RegistrateTagsProvider<Item> provIn) {
 			final TagGen.CreateTagsProvider<Item> prov = new TagGen.CreateTagsProvider<>(provIn, Item::builtInRegistryHolder);
 
 			prov.tag(LEVITITE_CATALYZER).add(Items.FLINT_AND_STEEL, Items.FIRE_CHARGE, Items.TORCH, Items.CAMPFIRE);

@@ -14,9 +14,13 @@ import dev.ryanhcode.sable.util.SableNBTUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
@@ -137,9 +141,8 @@ public class GustEntity extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
-    protected @NotNull AABB makeBoundingBox() {
-        final AABB boundingBox = this.getDimensions(this.getPose()).makeBoundingBox(this.position());
-        return boundingBox.move(0, -boundingBox.getYsize() / 2.0, 0);
+    public boolean hurtServer(final ServerLevel level, final DamageSource source, final float amount) {
+        return false;
     }
 
     @Override
@@ -148,13 +151,14 @@ public class GustEntity extends Entity implements IEntityWithComplexSpawn {
     }
 
     @Override
-    protected void readAdditionalSaveData(final CompoundTag compoundTag) {
-        compoundTag.put("GustOrientation", SableNBTUtils.writeQuaternion(this.orientation));
+    protected void readAdditionalSaveData(final ValueInput input) {
+        input.read("GustOrientation", CompoundTag.CODEC)
+                .ifPresent(tag -> this.orientation.set(SableNBTUtils.readQuaternion(tag)));
     }
 
     @Override
-    protected void addAdditionalSaveData(final @NotNull CompoundTag compoundTag) {
-        this.orientation.set(SableNBTUtils.readQuaternion(compoundTag));
+    protected void addAdditionalSaveData(final ValueOutput output) {
+        output.store("GustOrientation", CompoundTag.CODEC, SableNBTUtils.writeQuaternion(this.orientation));
     }
 
     @Override

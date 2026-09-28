@@ -210,12 +210,30 @@ public class BearingSlowdownController {
         this.applyVelocityClamping();
     }
 
+    public void deserializeFromNBT(final net.minecraft.world.level.storage.ValueInput input) {
+        this.countdown = input.getFloatOr("CurrentTime", 0f);
+        this.maxTime = input.getFloatOr("DisassemblyTimerTotal", 0f);
+        this.symmetry = ContraptionSymmetry.values()[input.getIntOr("Symmetry", 0)];
+        this.initialAngle = input.getFloatOr("InitialSlowdownAngle", 0f);
+        this.initialVelocity = input.getFloatOr("InitialSlowdownVelocity", 0f);
+        this.generateConstants();
+        this.applyVelocityClamping();
+    }
+
     public void serializeIntoNBT(final CompoundTag nbt) {
         nbt.putFloat("CurrentTime", this.countdown);
         nbt.putFloat("DisassemblyTimerTotal", this.getMaxTime());
         nbt.putInt("Symmetry", this.symmetry.ordinal());
         nbt.putFloat("InitialSlowdownAngle", this.initialAngle);
         nbt.putFloat("InitialSlowdownVelocity", this.getInitialVelocity());
+    }
+
+    public void serializeIntoNBT(final net.minecraft.world.level.storage.ValueOutput output) {
+        output.putFloat("CurrentTime", this.countdown);
+        output.putFloat("DisassemblyTimerTotal", this.getMaxTime());
+        output.putInt("Symmetry", this.symmetry.ordinal());
+        output.putFloat("InitialSlowdownAngle", this.initialAngle);
+        output.putFloat("InitialSlowdownVelocity", this.getInitialVelocity());
     }
 
     public float getMaxTime() {

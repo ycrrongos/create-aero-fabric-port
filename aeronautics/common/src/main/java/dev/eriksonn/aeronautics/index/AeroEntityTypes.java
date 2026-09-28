@@ -15,24 +15,10 @@ public class AeroEntityTypes {
 
 	public static final EntityEntry<PropellerBearingContraptionEntity> PROPELLER_CONTROLLED_CONTRAPTION =
 			REGISTRATE.entity("propeller_bearing_contraption", PropellerBearingContraptionEntity::new, MobCategory.MISC)
-					.visual(() -> ContraptionVisual::new)
-					.renderer(() -> ContraptionEntityRenderer::new)
-					.transform((builder) -> builder.properties(b -> b
-										.clientTrackingRange(20)
-										.updateInterval(40)
-										.sized(1, 1)
-										.eyeHeight(0)
-										.fireImmune()))
 					.register();
 
     public static final EntityEntry<GustEntity> GUST =
             REGISTRATE.<GustEntity>entity("gust", GustEntity::new, MobCategory.MISC)
-                    .renderer(() -> NoopRenderer::new)
-                    .transform((builder) -> builder.properties(b -> b
-                            .clientTrackingRange(20)
-                            .sized(1, 1)
-                            .eyeHeight(0)
-                            .fireImmune()))
                     .register();
 
 	public static void init() {}

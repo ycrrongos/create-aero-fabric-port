@@ -28,7 +28,7 @@ public record Converter(ItemStack item, int ticks, Optional<Identifier> sound, O
 	).apply(instance, Converter::new));
 
 	public static Converter cloudSkipper() {
-		return new Converter(AeroItems.MUSIC_DISC_CLOUD_SKIPPER.asStack(), 60,
+		return new Converter(AeroItems.MUSIC_DISC_CLOUD_SKIPPER.asItem().getDefaultInstance(), 60,
 				Optional.of(AeroSoundEvents.CLOUD_SKIPPER_TRANSFORM.id()),
 				Optional.of(Identifier.withDefaultNamespace("white_smoke")));
 	}
@@ -51,16 +51,16 @@ public record Converter(ItemStack item, int ticks, Optional<Identifier> sound, O
 
 			if(converter.sound().isPresent()) {
 				Identifier soundLocation = converter.sound().get();
-				SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(soundLocation);
-				if(sound != null) {
+				final SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(soundLocation).map(net.minecraft.core.Holder::value).orElse(null);
+				if (sound != null) {
 					level.playSound(entity, entity.blockPosition(), sound, SoundSource.AMBIENT, 5.0f, 1.0f);
 				}
 			}
 
 			if(converter.particle().isPresent() && level instanceof ServerLevel serverLevel) {
-				ParticleType<?> particle = BuiltInRegistries.PARTICLE_TYPE.get(converter.particle().get());
+				final ParticleType<?> particle = BuiltInRegistries.PARTICLE_TYPE.get(converter.particle().get()).map(net.minecraft.core.Holder::value).orElse(null);
 
-				if(particle instanceof ParticleOptions particleOptions) {
+				if (particle instanceof final ParticleOptions particleOptions) {
 					Vec3 pos = entity.position();
 					float offset = entity.getBbHeight() + entity.getBbHeight() / 2.0f;
 					serverLevel.sendParticles(particleOptions, pos.x(), pos.y() + offset, pos.z(), 20, 0.0, 0.0, 0.0, 0.05);

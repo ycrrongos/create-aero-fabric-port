@@ -14,7 +14,14 @@ public final class AeroSoundDistUtil {
     public static void removePosHotAirBurnerSound(BlockPos pos) {}
     public static void removePosSteamVentSound(BlockPos pos) {}
     public static void removePosPropellerSound(BlockPos pos) {}
+    public static void addPosSteamVentSound(BlockPos pos) {}
+    public static void addPosHotAirBurnerSound(BlockPos pos) {}
+    public static void addPosPropellerSound(BlockPos pos) {}
     public static void tickHotAirBurnerSound(BlockPos pos, Level level, float pitch) {}
     public static void tickSteamVentSound(BlockPos pos, Level level, float pitch) {}
     public static void tickPropellerSound(BlockPos pos, Level level, float pitch) {}
+
+    public static Object tickPropellerSounds(final Object be, final Object current) {
+        return null;
+    }
 }

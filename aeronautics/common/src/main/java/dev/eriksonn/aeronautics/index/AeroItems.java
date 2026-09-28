@@ -22,24 +22,17 @@ public class AeroItems {
 	public static final ItemEntry<AviatorsGogglesItem> AVIATORS_GOGGLES = REGISTRATE
 					.item("aviators_goggles", AviatorsGogglesItem::new)
 					.lang("Aviator's Goggles")
-					.recipe((c, p) -> ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, c.get(), 1)
-							.requires(AeroTags.ItemTags.LEATHERS)
-							.requires(AllItems.GOGGLES)
-							.unlockedBy("has_ingredient", RegistrateRecipeProvider.has(AllItems.GOGGLES))
-							.save(p))
 					.tag(AeroTags.ItemTags.ARMORS)
 					.tag(AeroTags.ItemTags.HEAD_ARMOR)
 					.tag(ItemTags.FREEZE_IMMUNE_WEARABLES)
 					.register();
 
 	public static ItemEntry<Item> MUSIC_DISC_CLOUD_SKIPPER =
-			REGISTRATE.item("music_disc_cloud_skipper", Item::new)
-					.properties(p -> p
+			REGISTRATE.item("music_disc_cloud_skipper", props -> new Item(props
 							.stacksTo(1)
 							.rarity(Rarity.RARE)
 							.jukeboxPlayable(ResourceKey.create(Registries.JUKEBOX_SONG, Aeronautics.path("cloud_skipper")))
-							.component(AeroDataComponents.LEVITATING, Levitating.DEFAULT)
-					)
+							.component(AeroDataComponents.LEVITATING, Levitating.DEFAULT)))
 					.tag(AeroTags.ItemTags.MUSIC_DISCS)
 					.lang("Music Disc")
 					.register();

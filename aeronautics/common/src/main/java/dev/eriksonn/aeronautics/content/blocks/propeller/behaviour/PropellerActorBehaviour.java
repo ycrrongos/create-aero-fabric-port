@@ -7,7 +7,6 @@ import com.zurrtum.create.content.kinetics.fan.AirCurrent;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import com.zurrtum.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
-import dev.eriksonn.aeronautics.content.particle.PropellerAirParticle;
 import dev.eriksonn.aeronautics.content.particle.PropellerAirParticleData;
 import dev.eriksonn.aeronautics.data.AeroLang;
 import dev.ryanhcode.sable.Sable;
@@ -178,7 +177,7 @@ public class PropellerActorBehaviour extends BlockEntityBehaviour implements IHa
                     double layerDistance = entityDistance - layer.offset;
                     layerDistance *= thrustFlowMult;
                     if (layerDistance > 0 && radialDistanceSq < layer.outerRadiusSquared()) {
-                        final double distanceScale = layerDistance * PropellerAirParticle.frictionScale;
+                        final double distanceScale = layerDistance * PropellerAirParticleData.FRICTION_SCALE;
                         double innerRadiusScale = 0;
                         if (layer.innerRadius > 0 && radialDistanceSq < layer.innerRadiusSquared()) {
                             innerRadiusScale = (layer.innerRadiusSquared() - radialDistanceSq) / (layer.innerRadius * layer.outerRadius);
@@ -207,7 +206,7 @@ public class PropellerActorBehaviour extends BlockEntityBehaviour implements IHa
                         final float modifier = entity.isShiftKeyDown() ? 0.125f : 1;
                         // 0.55 is the acceleration required to keep living entities aloft,
                         // and this scaling causes those entities to float at the edge of the particle range at asymptotically high airflows
-                        final double forceScale = PropellerAirParticle.frictionScale * PropellerAirParticle.lifeTime * 0.55;
+                        final double forceScale = PropellerAirParticleData.FRICTION_SCALE * PropellerAirParticleData.LIFE_TIME * 0.55;
                         final double acceleration = forceScale * this.getAirflowTickSpeed() * modifier * layerForceScale * Math.min(this.getAirPressure(), 1);
 
                         final Vec3 previousMotion = entity.getDeltaMovement();
@@ -224,7 +223,7 @@ public class PropellerActorBehaviour extends BlockEntityBehaviour implements IHa
     }
 
     public double getParticleRange() {
-        return Math.signum(this.getAirflowTickSpeed()) * Math.log(Math.abs(this.getAirflowTickSpeed()) * PropellerAirParticle.frictionScale * PropellerAirParticle.lifeTime + 1) / PropellerAirParticle.frictionScale;
+        return Math.signum(this.getAirflowTickSpeed()) * Math.log(Math.abs(this.getAirflowTickSpeed()) * PropellerAirParticleData.FRICTION_SCALE * PropellerAirParticleData.LIFE_TIME + 1) / PropellerAirParticleData.FRICTION_SCALE;
     }
 
     /**
@@ -262,7 +261,7 @@ public class PropellerActorBehaviour extends BlockEntityBehaviour implements IHa
             STORED_MUT_POS.add(origin);
             final double positionNudge = speed * random.nextFloat();
             STORED_MUT_POS.fma(positionNudge, this.thrustDirection);
-            this.thrustDirection.mul(speed * Math.exp(-PropellerAirParticle.frictionScale * positionNudge), mutSpeed);
+            this.thrustDirection.mul(speed * Math.exp(-PropellerAirParticleData.FRICTION_SCALE * positionNudge), mutSpeed);
 
             this.getLevel().addParticle(new PropellerAirParticleData(true, false),
                     STORED_MUT_POS.x, STORED_MUT_POS.y, STORED_MUT_POS.z,
@@ -378,7 +377,7 @@ public class PropellerActorBehaviour extends BlockEntityBehaviour implements IHa
     public boolean addToGoggleTooltip(final List<Component> tooltip, final boolean isPlayerSneaking) {
         if (this.propeller.isActive()) {
             AeroLang.emptyLine(tooltip);
-            AeroLang.blockName(this.blockEntity.getBlockState()).text(":")
+            AeroLang.blockName(this.blockEntity.getBlockState()).append(":")
                     .forGoggles(tooltip);
 
             // We use updaters here to ensure we have proper, client side information at hand, as this can be called multiple times per tick

@@ -1,10 +1,13 @@
 package dev.eriksonn.aeronautics.content.particle;
 
 import com.mojang.serialization.MapCodec;
+import com.zurrtum.create.foundation.particle.ICustomParticleData;
 import com.zurrtum.create.foundation.particle.ICustomParticleDataWithSprite;
 import dev.eriksonn.aeronautics.index.AeroParticleTypes;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.SpriteSet;
+
+import java.util.function.Function;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
@@ -19,8 +22,18 @@ public class AirPoofParticleData implements ParticleOptions, ICustomParticleData
     private AirPoofParticleData() {}
 
     @Override
-    public ParticleProvider.Sprite<AirPoofParticleData> getMetaFactory() {
+    public Function<SpriteSet, ParticleProvider<AirPoofParticleData>> getMetaFactory() {
         return sprites -> null;
+    }
+
+    @Override
+    public void writeToNetwork(final FriendlyByteBuf buf) {
+        ParticleDataShim.writeEmpty(buf);
+    }
+
+    @Override
+    public ICustomParticleData.Deserializer<AirPoofParticleData> getDeserializer() {
+        return ParticleDataShim.emptyDeserializer();
     }
 
     @Override

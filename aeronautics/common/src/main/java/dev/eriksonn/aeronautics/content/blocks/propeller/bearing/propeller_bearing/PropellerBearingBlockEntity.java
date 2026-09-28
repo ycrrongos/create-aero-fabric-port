@@ -11,8 +11,10 @@ import com.zurrtum.create.content.contraptions.bearing.BearingBlock;
 import com.zurrtum.create.content.contraptions.bearing.BearingContraption;
 import com.zurrtum.create.content.contraptions.bearing.MechanicalBearingBlockEntity;
 import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.client.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
+import com.zurrtum.create.content.contraptions.DirectionalExtenderScrollOptionSlot;
 import dev.simulated_team.simulated.util.scroll.SimScrollOptionBehaviour;
 import com.zurrtum.create.client.foundation.gui.AllIcons;
 import com.zurrtum.create.foundation.utility.ServerSpeedProvider;
@@ -130,7 +132,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
 
         this.thrustDirectionOption = new SimScrollOptionBehaviour<>(ThrustDirection.class, SCROLL_OPTION_TITLE, this, this.getMovementModeSlot());
 
-        this.getThrustDirectionOption().withCallback($ -> this.onDirectionChanged());
+        this.getThrustDirectionOption().onValueChanged($ -> this.onDirectionChanged());
         behaviours.add(this.getThrustDirectionOption());
         behaviours.add(this.behavior = this.getAndPreparePropBehaviour());
     }
@@ -170,7 +172,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
 
     public float getDirectionIndependentSpeed() {
         /*rotation speed is multiplied by direction, so we need to multiply by the direction again*/
-        return this.getBlockState().getValue(BlockStateProperties.FACING).getAxisDirection().getStep() * this.getClampedRotationRate() * (10f / 3) * (this.getThrustDirectionOption().value == 1 ? -1 : 1);
+        return this.getBlockState().getValue(BlockStateProperties.FACING).getAxisDirection().getStep() * this.getClampedRotationRate() * (10f / 3) * (this.getThrustDirectionOption().getValue() == 1 ? -1 : 1);
     }
 
     @Override
@@ -181,7 +183,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
     @Override
     public void tick() {
         this.prevAngle = this.angle;
-        final Vec3i normal = this.getBlockState().getValue(BlockStateProperties.FACING).getNormal();
+        final Vec3i normal = this.getBlockState().getValue(BlockStateProperties.FACING).getUnitVec3i();
         this.facingDirection.set(normal.getX(), normal.getY(), normal.getZ());
 
 //        SubLevelHelper.getContaining(this.level, this.getBlockPos());
@@ -406,8 +408,8 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
 
     public float getSailPower(final StructureTemplate.StructureBlockInfo info) {
         BlockState state = info.state();
-        if (AllBlocks.COPYCAT_PANEL.has(state)) {
-            final BlockState newState = NbtUtils.readBlockState(this.blockHolderGetter(), info.nbt().getCompound("Material"));
+        if (state.is(AllBlocks.COPYCAT_PANEL)) {
+            final BlockState newState = NbtUtils.readBlockState(this.blockHolderGetter(), info.nbt().getCompoundOrEmpty("Material"));
             if (!newState.isAir()) {
                 state = newState;
             }
@@ -415,7 +417,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
 
         float power = 0;
 
-        if (state.is(AllTags.AllBlockTags.WINDMILL_SAILS.tag)) {
+        if (state.is(com.zurrtum.create.AllBlockTags.WINDMILL_SAILS)) {
             power += 1;
         }
 
@@ -429,7 +431,7 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
 
         if (this.movedContraption != null) {
             final Map<BlockPos, StructureTemplate.StructureBlockInfo> Blocks = this.movedContraption.getContraption().getBlocks();
-            final Vec3i direction = this.getBlockState().getValue(PropellerBearingBlock.FACING).getNormal();
+            final Vec3i direction = this.getBlockState().getValue(PropellerBearingBlock.FACING).getUnitVec3i();
             final HashMap<Integer, Tuple<Integer, Integer>> layerHashMap = new HashMap<>();
 
             for (final Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo> entry : Blocks.entrySet()) {
@@ -517,10 +519,6 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
 
     @Override
     public boolean addToGoggleTooltip(final List<Component> tooltip, final boolean isPlayerSneaking) {
-        if (!super.addToGoggleTooltip(tooltip, isPlayerSneaking)) {
-            return false;
-        }
-
         return this.behavior.addToGoggleTooltip(tooltip, isPlayerSneaking);
     }
 
@@ -528,6 +526,14 @@ public class PropellerBearingBlockEntity extends MechanicalBearingBlockEntity im
         if(this.movedContraption instanceof PropellerBearingContraptionEntity propellerBearingContraptionEntity)
             return propellerBearingContraptionEntity;
         return null;
+    }
+
+    public ValueBoxTransform getMovementModeSlot() {
+        return new DirectionalExtenderScrollOptionSlot((state, d) -> {
+            final Direction.Axis axis = d.getAxis();
+            final Direction.Axis bearingAxis = state.getValue(PropellerBearingBlock.FACING).getAxis();
+            return bearingAxis != axis;
+        });
     }
 
     public enum ThrustDirection implements INamedIconOptions {

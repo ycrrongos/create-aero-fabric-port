@@ -298,7 +298,7 @@ public class HotAirBurnerBlockEntity extends SmartBlockEntity
     public boolean addToGoggleTooltip(final List<Component> tooltip, final boolean isPlayerSneaking) {
         if (!this.canOutputGas()) return false;
 
-        AeroLang.blockName(this.getBlockState()).text(":").forGoggles(tooltip, 1);
+        AeroLang.blockName(this.getBlockState()).append(":").forGoggles(tooltip, 1);
         if (this.clientBalloonInfo != null) {
             this.addBalloonGoggleInformation(tooltip, this.clientBalloonInfo, this.ticksSinceSync, this.getAirPressure(this.clientBalloonInfo, this.level));
         }

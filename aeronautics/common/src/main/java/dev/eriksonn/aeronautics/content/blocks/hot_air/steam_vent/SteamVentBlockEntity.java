@@ -15,6 +15,7 @@ import dev.eriksonn.aeronautics.config.server.AeroBlockConfigs;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.BlockEntityLiftingGasProvider;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.GasEmitterRenderHandler;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.balloon.Balloon;
+import dev.eriksonn.aeronautics.content.blocks.hot_air.balloon.ClientBalloonInfo;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.balloon.ServerBalloon;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.hot_air_burner.HotAirBurnerValueBehaviour;
 import dev.eriksonn.aeronautics.content.blocks.hot_air.lifting_gas.LiftingGasType;
@@ -84,7 +85,7 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
         this.setMaxCapacity(config.steamVentMaxHotAir.get());
         this.steamAmountBehaviour = new SteamVentValueBehaviour(SCROLL_OPTION_TITLE, this,
                 new SteamVentValueBoxTransform())
-                .between(() -> 50, config.steamVentMaxHotAir::get)
+                .between(50, config.steamVentMaxHotAir.get())
                 .withFormatter(VALUE_FORMAT::formatted);
         this.steamAmountBehaviour.value = this.maxCapacity;
 
@@ -306,7 +307,7 @@ public class SteamVentBlockEntity extends SmartBlockEntity implements BlockEntit
     public boolean addToGoggleTooltip(final List<Component> tooltip, final boolean isPlayerSneaking) {
         if (!this.canOutputGas()) return false;
 
-        AeroLang.blockName(this.getBlockState()).text(":").forGoggles(tooltip, 1);
+        AeroLang.blockName(this.getBlockState()).append(":").forGoggles(tooltip, 1);
         if (this.clientBalloonInfo != null) {
             this.addBalloonGoggleInformation(tooltip, this.clientBalloonInfo, this.ticksSinceSync, this.getAirPressure(this.clientBalloonInfo, this.level));
         }
