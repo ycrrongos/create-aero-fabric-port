@@ -49,7 +49,10 @@ sourceSets {
             srcDirs = ['common/src/main/java', 'fabric/src/main/java', 'shim/java']
         }
         resources {
-            srcDirs = ['common/src/main/resources', 'fabric/src/main/resources']
+            srcDirs = [
+                'common/src/main/resources',
+                'fabric/src/main/resources',
+            ]
         }
     }
 }
@@ -82,6 +85,16 @@ processResources {
     }
     exclude 'META-INF/accesstransformer.cfg'
     exclude 'META-INF/neoforge.mods.toml'
+
+    // Datagen assets only — generated data/ tags reference many unregistered blocks/items.
+    from('common/src/generated/resources') {
+        include 'assets/**'
+    }
+    // Stub-block property-free blockstates + registry-name aliases overwrite mismatched datagen.
+    from('common/src/resource-overrides') {
+        include 'assets/**'
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 tasks.named('compileJava', JavaCompile).configure {

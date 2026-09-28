@@ -48,13 +48,18 @@ public class ChunkMapMixin {
     @Inject(method = "onFullChunkStatusChange", at = @At("TAIL"))
     private void sable$onStatusChange(final ChunkPos chunkPos, final FullChunkStatus fullChunkStatus, final CallbackInfo ci) {
         final ServerSubLevelContainer container = SubLevelContainer.getContainer(this.level);
-        assert container != null : "Sub-level container is null";
+        if (container == null) {
+            return;
+        }
 
         if (container.inBounds(chunkPos)) {
             return;
         }
 
         final SubLevelHoldingChunkMap holdingChunkMap = container.getHoldingChunkMap();
+        if (holdingChunkMap == null) {
+            return;
+        }
         holdingChunkMap.updateChunkStatus(chunkPos, Visibility.fromFullChunkStatus(fullChunkStatus) != Visibility.HIDDEN);
 
     }

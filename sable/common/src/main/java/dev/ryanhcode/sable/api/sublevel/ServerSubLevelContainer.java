@@ -75,6 +75,9 @@ public class ServerSubLevelContainer extends SubLevelContainer {
      * Initialize after method construction is done
      */
     public void initialize() {
+        if (this.holdingChunkMap != null) {
+            return;
+        }
         this.holdingChunkMap = new SubLevelHoldingChunkMap(this.getLevel(), this);
 
         this.loadForceLoadedSubLevels();
@@ -86,7 +89,12 @@ public class ServerSubLevelContainer extends SubLevelContainer {
     @Override
     public void tick() {
         super.tick();
-        this.holdingChunkMap.processChanges();
+        if (this.holdingChunkMap == null) {
+            this.initialize();
+        }
+        if (this.holdingChunkMap != null) {
+            this.holdingChunkMap.processChanges();
+        }
     }
 
     /**
@@ -167,6 +175,9 @@ public class ServerSubLevelContainer extends SubLevelContainer {
     }
 
     public SubLevelHoldingChunkMap getHoldingChunkMap() {
+        if (this.holdingChunkMap == null) {
+            this.initialize();
+        }
         return this.holdingChunkMap;
     }
 
@@ -332,7 +343,9 @@ public class ServerSubLevelContainer extends SubLevelContainer {
         }
 
         try {
-            this.holdingChunkMap.close();
+            if (this.holdingChunkMap != null) {
+                this.holdingChunkMap.close();
+            }
         } catch (final Exception e) {
             Sable.LOGGER.error("Failed closing sub-level holding chunk map", e);
         }

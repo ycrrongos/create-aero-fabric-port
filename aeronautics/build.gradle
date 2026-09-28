@@ -38,7 +38,10 @@ sourceSets {
             ]
         }
         resources {
-            srcDirs = ['common/src/main/resources', 'fabric/src/main/resources']
+            srcDirs = [
+                'common/src/main/resources',
+                'fabric/src/main/resources',
+            ]
         }
     }
 }
@@ -72,6 +75,25 @@ processResources {
     }
     exclude 'META-INF/accesstransformer.cfg'
     exclude 'META-INF/neoforge.mods.toml'
+
+    // Datagen assets only — full generated data/ tags reference unregistered blocks and fail 1.21.11 registry load.
+    from('common/src/generated/resources') {
+        include 'assets/**'
+        include 'data/aeronautics/tags/block/airtight.json'
+        include 'data/aeronautics/tags/block/envelope.json'
+        include 'data/aeronautics/tags/block/levitite.json'
+        include 'data/aeronautics/tags/block/levitite_*.json'
+        include 'data/aeronautics/tags/item/envelope.json'
+        include 'data/aeronautics/tags/item/levitite.json'
+        include 'data/aeronautics/tags/item/levitite_*.json'
+        include 'data/aeronautics/tags/item/burner_fire.json'
+        include 'data/aeronautics/tags/item/shaftless_envelope.json'
+    }
+    // Registry-name aliases (e.g. hot_air_burner <- adjustable_burner) win over datagen names.
+    from('common/src/resource-overrides') {
+        include 'assets/**'
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 tasks.named('compileJava', JavaCompile).configure {

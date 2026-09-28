@@ -69,10 +69,14 @@ public abstract class ServerLevelMixin extends Level {
         }
 
         final ServerSubLevelContainer container = SubLevelContainer.getContainer(self);
-        assert container != null : "No sub-level container";
+        if (container == null) {
+            return;
+        }
 
         final SubLevelHoldingChunkMap holdingChunkMap = container.getHoldingChunkMap();
-        holdingChunkMap.saveAll();
+        if (holdingChunkMap != null) {
+            holdingChunkMap.saveAll();
+        }
     }
 
     @Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("HEAD"))
