@@ -1,50 +1,35 @@
 package dev.eriksonn.aeronautics.index;
 
-import com.zurrtum.create.AllItems;
-import dev.simulated_team.simulated.registrate.SimulatedRegistrate;
-import com.tterrag.registrate.providers.RegistrateRecipeProvider;
 import com.tterrag.registrate.util.entry.ItemEntry;
-import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
 import dev.eriksonn.aeronautics.Aeronautics;
 import dev.eriksonn.aeronautics.content.components.Levitating;
 import dev.eriksonn.aeronautics.content.items.AviatorsGogglesItem;
+import dev.eriksonn.aeronautics.registry.AeroRegistrate;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 
+/** Slim registration — avoid ItemBuilder.properties/tag/lang (railways vs shim signature drift). */
 public class AeroItems {
-	private static final SimulatedRegistrate REGISTRATE = Aeronautics.getRegistrate();
+	private static final AeroRegistrate REGISTRATE = Aeronautics.getRegistrate();
 
 	public static final ItemEntry<AviatorsGogglesItem> AVIATORS_GOGGLES = REGISTRATE
-					.item("aviators_goggles", AviatorsGogglesItem::new)
-					.lang("Aviator's Goggles")
-					.tag(AeroTags.ItemTags.ARMORS)
-					.tag(AeroTags.ItemTags.HEAD_ARMOR)
-					.tag(ItemTags.FREEZE_IMMUNE_WEARABLES)
-					.register();
+			.item("aviators_goggles", AviatorsGogglesItem::new)
+			.register();
 
-	public static ItemEntry<Item> MUSIC_DISC_CLOUD_SKIPPER =
-			REGISTRATE.item("music_disc_cloud_skipper", props -> new Item(props
-							.stacksTo(1)
-							.rarity(Rarity.RARE)
-							.jukeboxPlayable(ResourceKey.create(Registries.JUKEBOX_SONG, Aeronautics.path("cloud_skipper")))
-							.component(AeroDataComponents.LEVITATING, Levitating.DEFAULT)))
-					.tag(AeroTags.ItemTags.MUSIC_DISCS)
-					.lang("Music Disc")
-					.register();
+	public static final ItemEntry<Item> MUSIC_DISC_CLOUD_SKIPPER = REGISTRATE
+			.item("music_disc_cloud_skipper", props -> new Item(props
+					.stacksTo(1)
+					.rarity(Rarity.RARE)
+					.jukeboxPlayable(ResourceKey.create(Registries.JUKEBOX_SONG, Aeronautics.path("cloud_skipper")))
+					.component(AeroDataComponents.LEVITATING, Levitating.DEFAULT)))
+			.register();
 
-	public static ItemEntry<Item> ENDSTONE_POWDER = ingredient("end_stone_powder", p -> p
-			.component(AeroDataComponents.LEVITATING, Levitating.END_STONE));
-
-	private static ItemEntry<Item> ingredient(final String name, NonNullUnaryOperator<Item.Properties> poperator) {
-		return REGISTRATE.item(name, Item::new)
-				.properties(poperator)
-				.register();
-	}
+	public static final ItemEntry<Item> ENDSTONE_POWDER = REGISTRATE
+			.item("end_stone_powder", props -> new Item(props
+					.component(AeroDataComponents.LEVITATING, Levitating.END_STONE)))
+			.register();
 
 	public static void init() {}
 }

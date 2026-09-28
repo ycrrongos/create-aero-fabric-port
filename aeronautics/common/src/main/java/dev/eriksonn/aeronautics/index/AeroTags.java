@@ -1,7 +1,6 @@
 package dev.eriksonn.aeronautics.index;
 
 import com.zurrtum.create.AllBlocks;
-import com.zurrtum.create.AllTags;
 import com.zurrtum.create.foundation.data.TagGen;
 import com.tterrag.registrate.providers.RegistrateTagsProvider;
 import dev.eriksonn.aeronautics.Aeronautics;
@@ -63,12 +62,17 @@ public class AeroTags {
 	}
 
 	public static class ItemTags {
-		public static final TagKey<Item> LEATHERS = AllTags.commonItemTag("leathers");
-		public static final TagKey<Item> ARMORS = AllTags.commonItemTag("armors");
+		/** Prefer direct c: tags — railways also ships com.zurrtum.create.AllTags without commonItemTag. */
+		private static TagKey<Item> common(final String path) {
+			return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", path));
+		}
+
+		public static final TagKey<Item> LEATHERS = common("leathers");
+		public static final TagKey<Item> ARMORS = common("armors");
 		public static final TagKey<Item> HEAD_ARMOR = TagKey.create(Registries.ITEM, Identifier.withDefaultNamespace("head_armor"));
-		public static final TagKey<Item> IRON_SHEET = AllTags.commonItemTag("plates/iron");
-		public static final TagKey<Item> GOLD_SHEET = AllTags.commonItemTag("plates/gold");
-		public static final TagKey<Item> MUSIC_DISCS = AllTags.commonItemTag("music_discs");
+		public static final TagKey<Item> IRON_SHEET = common("plates/iron");
+		public static final TagKey<Item> GOLD_SHEET = common("plates/gold");
+		public static final TagKey<Item> MUSIC_DISCS = common("music_discs");
 
 		public static final TagKey<Item> ENVELOPE = create("envelope");
 		public static final TagKey<Item> SHAFTLESS_ENVELOPE = create("shaftless_envelope");

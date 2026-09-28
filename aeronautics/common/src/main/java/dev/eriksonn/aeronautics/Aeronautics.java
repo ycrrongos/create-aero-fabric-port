@@ -1,23 +1,12 @@
 package dev.eriksonn.aeronautics;
 
-import com.zurrtum.create.client.foundation.item.ItemDescription;
-import com.zurrtum.create.client.foundation.item.KineticStats;
-import com.zurrtum.create.client.foundation.item.TooltipHelper;
-import com.zurrtum.create.client.foundation.item.TooltipModifier;
-import dev.simulated_team.simulated.util.SimColors;
-import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
-import dev.eriksonn.aeronautics.data.AeroLang;
 import dev.eriksonn.aeronautics.events.AeronauticsCommonEvents;
 import dev.eriksonn.aeronautics.index.*;
 import dev.eriksonn.aeronautics.network.AeroPacketManager;
 import dev.eriksonn.aeronautics.registry.AeroRegistrate;
 import dev.ryanhcode.sable.platform.SableEventPlatform;
-import com.zurrtum.create.client.catnip.lang.FontHelper;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Rarity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,45 +19,37 @@ public class Aeronautics {
 	private static final NonNullSupplier<AeroRegistrate> REGISTRATE = () -> REGISTRATE_INSTANCE;
 
 	public static void init() {
-		setTooltips();
-		try {
-			// getRegistrate().addDataGenerator(ProviderType.LANG, AeroLang::registrateLang);
-		} catch (Throwable t) {
-			LOGGER.warn("Aero lang datagen skipped: {}", t.toString());
-		}
-
-		AeroBlocks.init();
-		AeroBlockEntityTypes.init();
-		AeroItems.init();
-		AeroEntityTypes.init();
-		AeroArmorMaterials.init();
-		AeroSoundEvents.init();
-		AeroLiftingGasTypes.init();
-		AeroBlockMovementChecks.init();
-		AeroRegistries.init();
-		AeroPacketManager.init();
-		AeroLevititeBlendPropagationContexts.init();
-		AeroDataComponents.init();
-
+		safe("AeroBlocks", AeroBlocks::init);
+		safe("AeroBlockEntityTypes", AeroBlockEntityTypes::init);
+		safe("AeroItems", AeroItems::init);
+		safe("AeroEntityTypes", AeroEntityTypes::init);
+		safe("AeroArmorMaterials", AeroArmorMaterials::init);
+		safe("AeroSoundEvents", AeroSoundEvents::init);
+		safe("AeroLiftingGasTypes", AeroLiftingGasTypes::init);
+		safe("AeroBlockMovementChecks", AeroBlockMovementChecks::init);
+		safe("AeroRegistries", AeroRegistries::init);
+		safe("AeroPacketManager", AeroPacketManager::init);
+		safe("AeroLevititeBlendPropagationContexts", AeroLevititeBlendPropagationContexts::init);
+		safe("AeroDataComponents", AeroDataComponents::init);
 		listenCommonEvents();
 	}
 
-	public static void setTooltips() {
-		getRegistrate().setTooltipModifierFactory(item -> {
-			final Rarity rarity = item.getDefaultInstance().getRarity();
-			FontHelper.Palette color = FontHelper.Palette.STANDARD_CREATE;
-			if (rarity == Rarity.EPIC)
-				color = new FontHelper.Palette(TooltipHelper.styleFromColor(SimColors.EPIC_OURPLE), TooltipHelper.styleFromColor(rarity.color()));
-
-			return new ItemDescription
-					.Modifier(item, color)
-					.andThen(TooltipModifier.mapNull(KineticStats.create(item)));
-		});
+	private static void safe(final String name, final Runnable r) {
+		try {
+			r.run();
+		} catch (Throwable t) {
+			LOGGER.error("Aeronautics init step '{}' failed: {}", name, t.toString());
+			t.printStackTrace();
+		}
 	}
 
 	private static void listenCommonEvents() {
-		SableEventPlatform.INSTANCE.onPhysicsTick(AeronauticsCommonEvents::physicsTick);
-		SableEventPlatform.INSTANCE.onSubLevelContainerReady(AeronauticsCommonEvents::onSubLevelContainerReady);
+		try {
+			SableEventPlatform.INSTANCE.onPhysicsTick(AeronauticsCommonEvents::physicsTick);
+			SableEventPlatform.INSTANCE.onSubLevelContainerReady(AeronauticsCommonEvents::onSubLevelContainerReady);
+		} catch (Throwable t) {
+			LOGGER.warn("Sable common event hooks skipped: {}", t.toString());
+		}
 	}
 
 	public static AeroRegistrate getRegistrate() {

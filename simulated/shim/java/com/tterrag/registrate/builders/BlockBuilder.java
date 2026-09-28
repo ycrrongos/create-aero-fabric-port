@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 /**
  * Named replacement for the registrate shim's BlockBuilder.
@@ -46,7 +45,7 @@ public class BlockBuilder<T extends Block, P> extends AbstractBuilder<Block, T, 
         return this;
     }
 
-    public BlockBuilder<T, P> properties(UnaryOperator<BlockBehaviour.Properties> operator) {
+    public BlockBuilder<T, P> properties(Function<BlockBehaviour.Properties, BlockBehaviour.Properties> operator) {
         return this;
     }
 
