@@ -1,5 +1,7 @@
 package dev.simulated_team.simulated.content.blocks.nameplate;
 
+import dev.simulated_team.simulated.index.SimBlockEntityTypes;
+
 import com.zurrtum.create.foundation.block.IBE;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
@@ -17,5 +19,5 @@ public class NameplateBlock extends Block implements IBE<NameplateBlockEntity> {
         @Override public String getSerializedName() { return name().toLowerCase(); }
     }
     @Override public Class<NameplateBlockEntity> getBlockEntityClass() { return NameplateBlockEntity.class; }
-    @Override public BlockEntityType<? extends NameplateBlockEntity> getBlockEntityType() { return null; }
+    @Override public BlockEntityType<? extends NameplateBlockEntity> getBlockEntityType() { return SimBlockEntityTypes.NAMEPLATE.get(); }
 }

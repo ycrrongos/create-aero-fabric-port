@@ -1,4 +1,6 @@
 package dev.simulated_team.simulated.content.blocks.spring;
+
+import dev.simulated_team.simulated.index.SimBlockEntityTypes;
 import com.zurrtum.create.foundation.block.IBE;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
@@ -12,5 +14,5 @@ public class SpringBlock extends Block implements IBE<SpringBlockEntity> {
         @Override public String getSerializedName() { return name().toLowerCase(); }
     }
     @Override public Class<SpringBlockEntity> getBlockEntityClass() { return SpringBlockEntity.class; }
-    @Override public BlockEntityType<? extends SpringBlockEntity> getBlockEntityType() { return null; }
+    @Override public BlockEntityType<? extends SpringBlockEntity> getBlockEntityType() { return SimBlockEntityTypes.SPRING.get(); }
 }
